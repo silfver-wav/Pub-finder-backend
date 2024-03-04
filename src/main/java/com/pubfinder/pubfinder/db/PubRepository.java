@@ -13,9 +13,9 @@ public interface PubRepository extends JpaRepository<Pub, UUID> {
 
     Optional<Pub> findByName(String name);
 
-    @Query(value = "SELECT id, " +
-            "(6371 * acos ( cos ( radians(:lat) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(:lng) ) + sin ( radians(:lat) ) * sin( radians( lat ) ))) AS distance " +
-            "FROM location GROUP BY address GROUP BY HAVING distance < :distance ORDER BY distance ASC", nativeQuery = true)
-    List<Pub> filterByLocation(@Param("lat") String lat, @Param("lng")String lng, @Param("distance") int distance);
+    String HAVERSINE_FORMULA = "(6371 * acos(cos(radians(:lat)) * cos(radians(p.lat)) *" +
+            " cos(radians(p.lng) - radians(:lng)) + sin(radians(:lat)) * sin(radians(p.lat))))";
 
+    @Query("SELECT p FROM Pub p WHERE " + HAVERSINE_FORMULA + " < :distance ORDER BY " + HAVERSINE_FORMULA )
+    List<Pub> findPubsWithInRadius(@Param("lat") double lat, @Param("lng") double lng, @Param("distance") double distance);
 }

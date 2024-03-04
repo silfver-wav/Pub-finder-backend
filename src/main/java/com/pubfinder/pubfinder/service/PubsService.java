@@ -27,8 +27,8 @@ public class PubsService {
         return pubRepository.findByName(name).map(pub -> ResponseEntity.ok().body(PubMapper.INSTANCE.entityToDto(pub))).orElse(ResponseEntity.notFound().build());
     }
 
-    public ResponseEntity<List<PubDTO>> getPubs(Double lat, Double lng, int radius) {
-        List<PubDTO> pubs = pubRepository.filterByLocation(lat.toString(), lng.toString(),radius).stream().map(PubMapper.INSTANCE::entityToDto).toList();
+    public ResponseEntity<List<PubDTO>> getPubs(Double lat, Double lng, Double radius) {
+        List<PubDTO> pubs = pubRepository.findPubsWithInRadius( lat, lng, radius).stream().map(PubMapper.INSTANCE::entityToDto).toList();
         return ResponseEntity.ok().body(pubs);
     }
 

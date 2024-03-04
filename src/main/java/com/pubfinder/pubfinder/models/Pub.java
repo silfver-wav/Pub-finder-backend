@@ -1,15 +1,15 @@
 package com.pubfinder.pubfinder.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+
+import jakarta.persistence.*;
 import lombok.Data;
+
 
 import java.util.UUID;
 
 
-@Entity(name = "pub")
+@Entity
+@Table(name = "pub")
 @Data
 public class Pub {
     @Id

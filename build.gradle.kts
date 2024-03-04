@@ -28,6 +28,7 @@ dependencies {
 
 	// implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 	implementation("org.mapstruct:mapstruct:1.5.5.Final")
+	testImplementation("com.h2database:h2:2.2.224")
 }
 
 tasks.withType<Test> {

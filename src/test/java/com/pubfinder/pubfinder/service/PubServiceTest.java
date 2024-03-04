@@ -64,10 +64,10 @@ public class PubServiceTest {
     @Test
     public void getPubsTest() {
         List<Pub> pubs = new ArrayList<>(Collections.singletonList(pub));
-        when(pubRepository.filterByLocation("1.0","1.0",1)).thenReturn(pubs);
-        ResponseEntity<List<PubDTO>> result = pubsService.getPubs(1.0,1.0,1);
+        when(pubRepository.findPubsWithInRadius(1.0,1.0,1)).thenReturn(pubs);
+        ResponseEntity<List<PubDTO>> result = pubsService.getPubs(1.0,1.0,1.0);
         assertEquals( 1, Objects.requireNonNull(result.getBody()).size());
-        verify(pubRepository, times(1)).filterByLocation("1.0","1.0",1);
+        verify(pubRepository, times(1)).findPubsWithInRadius(1.0,1.0,1.0);
     }
 
     @Test
