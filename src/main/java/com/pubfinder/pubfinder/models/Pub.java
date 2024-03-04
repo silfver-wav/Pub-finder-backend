@@ -9,7 +9,7 @@ import lombok.Data;
 import java.util.UUID;
 
 
-@Entity
+@Entity(name = "pub")
 @Data
 public class Pub {
     @Id
@@ -18,8 +18,10 @@ public class Pub {
     private UUID id;
     @Column(nullable = false)
     private String name;
-    @Column(unique = true, nullable = false)
-    private Double[] geocode;
+    @Column(nullable = false)
+    private Double lat;
+    @Column(nullable = false)
+    private Double lng;
     @Column()
     private String open;
     @Column(nullable = false)
@@ -30,18 +32,20 @@ public class Pub {
     public Pub() {
     }
 
-    public Pub(UUID id, String name, Double[] geocode, String open, String location, String description) {
+    public Pub(UUID id, String name, Double lat, Double lng, String open, String location, String description) {
         this.id = id;
         this.name = name;
-        this.geocode = geocode;
+        this.lat = lat;
+        this.lng = lng;
         this.open = open;
         this.location = location;
         this.description = description;
     }
 
-    public Pub(String name, Double[] geocode, String open, String location, String description) {
+    public Pub(String name, Double lat, Double lng, String open, String location, String description) {
         this.name = name;
-        this.geocode = geocode;
+        this.lat = lat;
+        this.lng = lng;
         this.open = open;
         this.location = location;
         this.description = description;
