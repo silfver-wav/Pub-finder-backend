@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    username: admin
+    url: jdbc:postgresql://localhost:15432/pubdb
+    password: admin
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'false'
+    hibernate:
+      ddl-auto: update
+    show-sql: 'false'
+  cache:
+    jcache:
+      provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
+    cache-names:
+      - rate-limit-bucket
+    caffeine:
+      spec: maximumSize=100000,expireAfterAccess=3600s
+bucket4j:
+  enabled: true
+  filters:
+    - id: getRemoteAddr()
+      cache-name: rate-limit-bucket
+      url: .*
+      http-response-body: "{ \"status\": 429, \"error\": \"Too Many Requests\", \"message\": \"You have exhausted your API Request Quota\" }"
+      rate-limits:
+        - bandwidths:
+          - capacity: 2
+            refill-capacity: 1
+            time: 10
+            unit: minutes
+
+security:
+  auth:
+    token:
+      header_name: '"X-API-KEY"'
+      nodeValue: '"Pub"'

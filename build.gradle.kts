@@ -22,16 +22,21 @@ dependencies {
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
-
-	// implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 	implementation("org.mapstruct:mapstruct:1.5.5.Final")
 	testImplementation("com.h2database:h2:2.2.224")
 
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	testImplementation("org.springframework.security:spring-security-test")
+
+	implementation("com.giffing.bucket4j.spring.boot.starter:bucket4j-spring-boot-starter:0.11.0")
+	implementation("org.springframework.boot:spring-boot-starter-validation:3.2.3")
+	implementation("org.springframework.boot:spring-boot-starter-cache")
+	implementation("javax.cache:cache-api")
+
+	implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+	implementation("com.github.ben-manes.caffeine:jcache")
 }
 
 tasks.withType<Test> {

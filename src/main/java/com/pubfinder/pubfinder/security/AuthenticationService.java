@@ -1,12 +1,9 @@
 package com.pubfinder.pubfinder.security;
 
-import com.pubfinder.pubfinder.security.ApiKeyAuthentication;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.stereotype.Service;
 
 public class AuthenticationService {
 
@@ -17,9 +14,7 @@ public class AuthenticationService {
 
     public static Authentication getAuthentication(HttpServletRequest request)
     {
-        System.out.println("AUTH_TOKEN_HEADER_NAME: " + AUTH_TOKEN_HEADER_NAME);
         String apiKey = request.getHeader(AUTH_TOKEN_HEADER_NAME);
-        System.out.println("apiKey:" + apiKey);
         if (apiKey == null || !apiKey.equals(AUTH_TOKEN))
         {
             throw new BadCredentialsException("Invalid API Key");
