@@ -33,7 +33,5 @@ bucket4j:
             unit: minutes
 
 security:
-  auth:
-    token:
-      header_name: '"X-API-KEY"'
-      nodeValue: '"Pub"'
+  api-header-name: "X-API-KEY"
+  api-key: "pubaA6JW4SQsJX37jsLxWCnP72FUTChMuJlxuVWyqaiyACHt52rPzJpZFcyISf7Y"

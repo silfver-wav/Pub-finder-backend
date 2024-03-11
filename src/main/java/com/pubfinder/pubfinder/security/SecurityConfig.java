@@ -1,5 +1,6 @@
 package com.pubfinder.pubfinder.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -12,8 +13,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final AuthenticationService authenticationService;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -26,7 +29,7 @@ public class SecurityConfig {
                 .sessionManagement(
                         httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(new AuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new AuthenticationFilter(authenticationService), UsernamePasswordAuthenticationFilter.class);
     //.addFilter(new AuthenticationFilter()); // Look at this
 
         return http.build();
