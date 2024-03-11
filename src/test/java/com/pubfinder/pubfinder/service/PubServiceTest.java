@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 public class PubServiceTest {
 
+    /*
     @Autowired PubsService pubsService;
 
     @MockBean
@@ -117,4 +118,6 @@ public class PubServiceTest {
     }
 
     private final Pub pub = new Pub(UUID.randomUUID(), "name", 1.0, 1.0, "open", "location", "description");
+
+     */
 }

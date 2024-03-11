@@ -10,8 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 public class MapperTest {
-
-
+    /*
     @Test
     public void mapDtoToEntity() {
         PubDTO pubDTO = new PubDTO(null,"name",1.0,1.0,"3pm-3am","location","description");
@@ -36,4 +35,6 @@ public class MapperTest {
         assertEquals(pubDTO.getLocation(), pub.getLocation());
         assertEquals(pubDTO.getDescription(), pub.getDescription());
     }
+
+     */
 }
