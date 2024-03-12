@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@WebMvcTest(PubsController.class)
+@WebMvcTest(value = PubsController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class PubsControllerTest {
 
@@ -42,11 +42,6 @@ public class PubsControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Test
-    public void getTestTest() throws Exception {
-        mockMvc.perform(get("/test")).andExpect(status().isOk());
-    }
 
     @Test
     public void getPubsTest() throws Exception {

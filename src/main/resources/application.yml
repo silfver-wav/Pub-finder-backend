@@ -26,12 +26,12 @@ bucket4j:
       url: .*
       http-response-body: "{ \"status\": 429, \"error\": \"Too Many Requests\", \"message\": \"You have exhausted your API Request Quota\" }"
       rate-limits:
-        - bandwidths:
-          - capacity: 2
-            refill-capacity: 1
-            time: 10
-            unit: minutes
-
+      - bandwidths:
+        - capacity: 10
+          refill-capacity: 1
+          time: 30
+          unit: seconds
+          refill-speed: interval
 security:
   api-header-name: "X-API-KEY"
   api-key: "pubaA6JW4SQsJX37jsLxWCnP72FUTChMuJlxuVWyqaiyACHt52rPzJpZFcyISf7Y"
