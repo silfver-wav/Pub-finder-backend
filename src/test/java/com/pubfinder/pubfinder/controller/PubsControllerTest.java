@@ -3,13 +3,17 @@ package com.pubfinder.pubfinder.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.mapper.PubMapper;
+import com.pubfinder.pubfinder.security.SecurityConfig;
 import com.pubfinder.pubfinder.service.PubsService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/*
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
+
 @WebMvcTest(PubsController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class PubsControllerTest {
 
     @MockBean
@@ -42,7 +45,7 @@ public class PubsControllerTest {
 
     @Test
     public void getTestTest() throws Exception {
-        mockMvc.perform(get("/test").header("X-API-KEY", "Pub")).andExpect(status().isOk()); //.andExpect(content().json(new ObjectMapper().writeValueAsString(pubs)));
+        mockMvc.perform(get("/test")).andExpect(status().isOk());
     }
 
     @Test
@@ -50,14 +53,14 @@ public class PubsControllerTest {
         List<PubDTO> pubs = new ArrayList<>(List.of(pub));
         when(pubsService.getPubs(1.0,1.0,1.0)).thenReturn(ResponseEntity.ok().body(pubs));
 
-        mockMvc.perform(get("/getPubs/{lat}/{lng}/{radius}", 1.0, 1.0, 1.0).header("X-API-KEY", "Pub")).andExpect(status().isOk()); //.andExpect(content().json(new ObjectMapper().writeValueAsString(pubs)));
+        mockMvc.perform(get("/getPubs/{lat}/{lng}/{radius}", 1.0, 1.0, 1.0)).andExpect(status().isOk()).andExpect(content().json(new ObjectMapper().writeValueAsString(pubs)));
     }
 
     @Test
     public void getPubByNameTest() throws Exception {
         when(pubsService.getPubByName("name")).thenReturn(ResponseEntity.ok().body(pub));
 
-        mockMvc.perform(get("/getPub/{name}", "name")).andExpect(status().isOk()); //.andExpect(content().json(new ObjectMapper().writeValueAsString(pubs)));
+        mockMvc.perform(get("/getPub/{name}", "name")).andExpect(status().isOk()).andExpect(content().json(new ObjectMapper().writeValueAsString(pub)));
     }
 
     @Test
@@ -106,4 +109,3 @@ public class PubsControllerTest {
 
     PubDTO pub = new PubDTO(UUID.randomUUID(), "name", 1.0, 1.0,"open", "location", "desc");
 }
-*/
