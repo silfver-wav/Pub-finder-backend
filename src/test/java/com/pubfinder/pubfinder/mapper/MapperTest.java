@@ -8,10 +8,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "spring.cache.type=none",
+        "bucket4j.enabled=false",
+        "spring.datasource.url=",
+        "spring.jpa.database-platform=",
+        "spring.jpa.hibernate.ddl-auto=none"
+})
 public class MapperTest {
-
-
     @Test
     public void mapDtoToEntity() {
         PubDTO pubDTO = new PubDTO(null,"name",1.0,1.0,"3pm-3am","location","description");
