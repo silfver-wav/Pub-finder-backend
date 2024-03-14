@@ -22,9 +22,9 @@ public class RateLimitTest {
     @Test
     public void getTestTest() throws Exception {
         for (int i = 0; i < 10; i++) {
-            mockMvc.perform(get("/test").header("X-API-KEY", "pubaA6JW4SQsJX37jsLxWCnP72FUTChMuJlxuVWyqaiyACHt52rPzJpZFcyISf7Y")).andExpect(status().isOk());
+            mockMvc.perform(get("/pub/test").header("X-API-KEY", "pubaA6JW4SQsJX37jsLxWCnP72FUTChMuJlxuVWyqaiyACHt52rPzJpZFcyISf7Y")).andExpect(status().isOk());
         }
 
-        mockMvc.perform(get("/test").header("X-API-KEY", "pubaA6JW4SQsJX37jsLxWCnP72FUTChMuJlxuVWyqaiyACHt52rPzJpZFcyISf7Y")).andExpect(status().isTooManyRequests());
+        mockMvc.perform(get("/pub/test").header("X-API-KEY", "pubaA6JW4SQsJX37jsLxWCnP72FUTChMuJlxuVWyqaiyACHt52rPzJpZFcyISf7Y")).andExpect(status().isTooManyRequests());
     }
 }

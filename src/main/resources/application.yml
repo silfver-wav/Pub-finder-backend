@@ -35,12 +35,14 @@ bucket4j:
 security:
   api-header-name: "X-API-KEY"
   api-key: "pubaA6JW4SQsJX37jsLxWCnP72FUTChMuJlxuVWyqaiyACHt52rPzJpZFcyISf7Y"
+  jwt-secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  jwt-expiration-ms: 86400000
 
 server:
   port: 443
   ssl:
     key-store: "classpath:keystore/pubfinder.p12"
     key-store-password: "Himlen@rGr0n"
-    key-password: "Himlen@rGr0n"
+    key-password: ""
     keyStoreType: "PKCS12"
     keyAlias: "pubfinder"
