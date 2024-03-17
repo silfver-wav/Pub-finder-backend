@@ -42,7 +42,7 @@ server:
   port: 443
   ssl:
     key-store: "classpath:keystore/pubfinder.p12"
-    key-store-password: "Himlen@rGr0n"
+    key-store-password: ""
     key-password: ""
     keyStoreType: "PKCS12"
     keyAlias: "pubfinder"
