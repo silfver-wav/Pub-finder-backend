@@ -1,16 +1,19 @@
 package com.pubfinder.pubfinder.models;
 
-
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
-
 
 @Entity
 @Table(name = "pub")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Pub {
     @Id
     @GeneratedValue
@@ -28,19 +31,6 @@ public class Pub {
     private String location;
     @Column()
     private String description;
-
-    public Pub() {
-    }
-
-    public Pub(UUID id, String name, Double lat, Double lng, String open, String location, String description) {
-        this.id = id;
-        this.name = name;
-        this.lat = lat;
-        this.lng = lng;
-        this.open = open;
-        this.location = location;
-        this.description = description;
-    }
 
     public Pub(String name, Double lat, Double lng, String open, String location, String description) {
         this.name = name;
