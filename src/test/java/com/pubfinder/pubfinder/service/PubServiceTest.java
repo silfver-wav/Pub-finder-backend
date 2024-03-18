@@ -17,7 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "spring.cache.type=none",
+        "bucket4j.enabled=false",
+        "spring.datasource.url=",
+        "spring.jpa.database-platform=",
+        "spring.jpa.hibernate.ddl-auto=none"
+})
 public class PubServiceTest {
 
     @Autowired PubsService pubsService;
@@ -117,4 +123,5 @@ public class PubServiceTest {
     }
 
     private final Pub pub = new Pub(UUID.randomUUID(), "name", 1.0, 1.0, "open", "location", "description");
+
 }

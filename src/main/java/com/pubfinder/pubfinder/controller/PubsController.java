@@ -6,6 +6,7 @@ import com.pubfinder.pubfinder.service.PubsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -13,6 +14,11 @@ public class PubsController {
 
     @Autowired
     private PubsService pubsService;
+
+    @GetMapping("/test")
+    public ResponseEntity<String> getPubs() {
+        return ResponseEntity.ok().body("hello world");
+    }
 
     @GetMapping("/getPubs/{lat}/{lng}/{radius}")
     public ResponseEntity<List<PubDTO>> getPubs(@PathVariable("lat") Double lat, @PathVariable("lng") Double lng, @PathVariable("radius") Double radius) {
