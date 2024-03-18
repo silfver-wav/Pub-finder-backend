@@ -1,4 +1,6 @@
 spring:
+  config:
+    import:  optional:secrets.yml
   datasource:
     username: admin
     url: jdbc:postgresql://localhost:15432/pubdb
@@ -35,6 +37,8 @@ bucket4j:
 security:
   api-header-name: "X-API-KEY"
   api-key: ""
+  jwt-secret: ""
+  jwt-expiration-ms: 86400000
 
 # server:
 #  port: 443

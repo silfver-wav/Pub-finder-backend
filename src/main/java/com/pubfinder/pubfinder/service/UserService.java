@@ -40,11 +40,11 @@ public class UserService {
 
         String password = passwordEncoder.encode(user.getPassword());
         user.setPassword(password);
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.USER);
 
         userRepository.save(user);
-        // var jwtToken = authenticationService.generateToken(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthenticationResponse(null));
+        var jwtToken = authenticationService.generateToken(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthenticationResponse(jwtToken));
     }
 
     public ResponseEntity<String> deleteUser(UUID id) {
@@ -80,8 +80,8 @@ public class UserService {
         var user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow();
 
-        // var jwtToken = authenticationService.generateToken(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthenticationResponse(null));
+        var jwtToken = authenticationService.generateToken(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthenticationResponse(jwtToken));
     }
 
 }
