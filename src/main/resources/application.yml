@@ -1,4 +1,6 @@
 spring:
+  config:
+    import:  optional:secrets.yml
   datasource:
     username: admin
     url: jdbc:postgresql://localhost:15432/pubdb
@@ -34,13 +36,15 @@ bucket4j:
           refill-speed: interval
 security:
   api-header-name: "X-API-KEY"
-  api-key: "pubaA6JW4SQsJX37jsLxWCnP72FUTChMuJlxuVWyqaiyACHt52rPzJpZFcyISf7Y"
+  api-key: ""
+  jwt-secret: ""
+  jwt-expiration-ms: 86400000
 
-server:
-  port: 443
-  ssl:
-    key-store: "classpath:keystore/pubfinder.p12"
-    key-store-password: ""
-    key-password: ""
-    keyStoreType: "PKCS12"
-    keyAlias: "pubfinder"
+# server:
+#  port: 443
+#  ssl:
+#    key-store: "classpath:keystore/pubfinder.p12"
+#    key-store-password: ""
+#    key-password: ""
+#    keyStoreType: "PKCS12"
+#    keyAlias: "pubfinder"

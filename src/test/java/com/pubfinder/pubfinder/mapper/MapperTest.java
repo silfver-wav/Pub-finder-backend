@@ -20,7 +20,7 @@ public class MapperTest {
     public void mapDtoToEntity() {
         PubDTO pubDTO = new PubDTO(null,"name",1.0,1.0,"3pm-3am","location","description");
 
-        Pub pub = PubMapper.INSTANCE.dtoToEntity(pubDTO);
+        Pub pub = Mapper.INSTANCE.dtoToEntity(pubDTO);
         check(pubDTO, pub);
     }
 
@@ -28,7 +28,7 @@ public class MapperTest {
     public void mapEntityToDto() {
         Pub pub = new Pub("name",1.0,1.0,"3pm-3am","location","description");
 
-        PubDTO pubDTO = PubMapper.INSTANCE.entityToDto(pub);
+        PubDTO pubDTO = Mapper.INSTANCE.entityToDto(pub);
         check(pubDTO, pub);
     }
 

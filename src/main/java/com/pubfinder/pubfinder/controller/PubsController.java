@@ -1,7 +1,7 @@
 package com.pubfinder.pubfinder.controller;
 
 import com.pubfinder.pubfinder.dto.PubDTO;
-import com.pubfinder.pubfinder.mapper.PubMapper;
+import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.service.PubsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/pub")
 public class PubsController {
 
     @Autowired
@@ -30,19 +31,19 @@ public class PubsController {
         return pubsService.getPubByName(name);
     }
 
-    @PostMapping("/savePub")
-    public ResponseEntity<PubDTO> savePub(@RequestBody PubDTO pub) {
-        return pubsService.savePub(PubMapper.INSTANCE.dtoToEntity(pub));
+    @PostMapping("/createPub")
+    public ResponseEntity<PubDTO> createPub(@RequestBody PubDTO pub) {
+        return pubsService.savePub(Mapper.INSTANCE.dtoToEntity(pub));
     }
 
     @PutMapping("/editPub")
     public ResponseEntity<PubDTO> editPub(@RequestBody PubDTO pub) {
-        return pubsService.editPub(PubMapper.INSTANCE.dtoToEntity(pub));
+        return pubsService.editPub(Mapper.INSTANCE.dtoToEntity(pub));
     }
 
     @DeleteMapping("/deletePub")
     public ResponseEntity<PubDTO> deletePub(@RequestBody PubDTO pub) {
-        return pubsService.deletePub(PubMapper.INSTANCE.dtoToEntity(pub));
+        return pubsService.deletePub(Mapper.INSTANCE.dtoToEntity(pub));
     }
 
 }

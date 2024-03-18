@@ -1,10 +1,16 @@
 package com.pubfinder.pubfinder.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class PubDTO {
     private UUID id;
     private String name;
@@ -13,14 +19,4 @@ public class PubDTO {
     private String open;
     private String location;
     private String description;
-
-    public PubDTO(UUID id, String name, Double lat, Double lng, String open, String location, String description) {
-        this.id = id;
-        this.name = name;
-        this.lat = lat;
-        this.lng = lng;
-        this.open = open;
-        this.location = location;
-        this.description = description;
-    }
 }

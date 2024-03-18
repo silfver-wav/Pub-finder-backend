@@ -2,7 +2,7 @@ package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.dto.PubDTO;
-import com.pubfinder.pubfinder.mapper.PubMapper;
+import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class PubServiceTest {
         UUID pubId = pub.getId();
         when(pubRepository.findById(any())).thenReturn(Optional.of(pub));
         ResponseEntity<PubDTO> result = pubsService.getPub(pubId);
-        assertEquals(ResponseEntity.ok().body(PubMapper.INSTANCE.entityToDto(pub)), result);
+        assertEquals(ResponseEntity.ok().body(Mapper.INSTANCE.entityToDto(pub)), result);
         verify(pubRepository, times(1)).findById(pubId);
     }
 
@@ -54,7 +54,7 @@ public class PubServiceTest {
         String name = pub.getName();
         when(pubRepository.findByName(any())).thenReturn(Optional.of(pub));
         ResponseEntity<PubDTO> result = pubsService.getPubByName(name);
-        assertEquals(ResponseEntity.ok().body(PubMapper.INSTANCE.entityToDto(pub)), result);
+        assertEquals(ResponseEntity.ok().body(Mapper.INSTANCE.entityToDto(pub)), result);
         verify(pubRepository, times(1)).findByName(name);
     }
 
@@ -80,7 +80,7 @@ public class PubServiceTest {
     public void savePubTest() {
         when(pubRepository.save(any())).thenReturn(pub);
         ResponseEntity<PubDTO> result = pubsService.savePub(pub);
-        assertEquals(ResponseEntity.status(HttpStatus.CREATED).body(PubMapper.INSTANCE.entityToDto(pub)), result);
+        assertEquals(ResponseEntity.status(HttpStatus.CREATED).body(Mapper.INSTANCE.entityToDto(pub)), result);
         verify(pubRepository, times(1)).save(pub);
     }
 
@@ -96,7 +96,7 @@ public class PubServiceTest {
         when(pubRepository.findById(pub.getId())).thenReturn(Optional.of(pub));
         when(pubRepository.save(any())).thenReturn(updatedPub);
         ResponseEntity<PubDTO> result = pubsService.editPub(updatedPub);
-        assertEquals(ResponseEntity.ok().body(PubMapper.INSTANCE.entityToDto(updatedPub)), result);
+        assertEquals(ResponseEntity.ok().body(Mapper.INSTANCE.entityToDto(updatedPub)), result);
         verify(pubRepository, times(1)).save(updatedPub);
     }
 
