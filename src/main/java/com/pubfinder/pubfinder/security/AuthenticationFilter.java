@@ -41,7 +41,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
             final String authHeader = request.getHeader("Authorization");
-            if (authHeader == null ||!authHeader.startsWith("Bearer ")) { // problem hära
+            if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
                 throw new Exception();
             } else {
                 String jwt = request.getHeader("Authorization").substring(7);
@@ -77,7 +77,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
-        return Arrays.stream(SHOULD_NOT_FILTER).toList().stream().anyMatch(p -> antPathMatcher.match(p, request.getRequestURI()));
+        return Arrays.stream(SHOULD_NOT_FILTER).anyMatch(p -> antPathMatcher.match(p, request.getRequestURI()));
     }
 
 }

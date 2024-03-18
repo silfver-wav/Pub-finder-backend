@@ -31,8 +31,8 @@ public class PubsController {
         return pubsService.getPubByName(name);
     }
 
-    @PostMapping("/savePub")
-    public ResponseEntity<PubDTO> savePub(@RequestBody PubDTO pub) {
+    @PostMapping("/createPub")
+    public ResponseEntity<PubDTO> createPub(@RequestBody PubDTO pub) {
         return pubsService.savePub(Mapper.INSTANCE.dtoToEntity(pub));
     }
 

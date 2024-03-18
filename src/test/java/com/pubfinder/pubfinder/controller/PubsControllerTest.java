@@ -57,7 +57,7 @@ public class PubsControllerTest {
     public void savePubTest() throws Exception {
         when(pubsService.savePub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(pub));
 
-        mockMvc.perform(post("/savePub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub)))
+        mockMvc.perform(post("/createPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub)))
                 .andExpect(status().isCreated()).andDo(print());
     }
 
@@ -65,7 +65,7 @@ public class PubsControllerTest {
     public void savePubTest_BAD_REQUEST() throws Exception {
         when(pubsService.savePub(null)).thenReturn(ResponseEntity.badRequest().build());
 
-        mockMvc.perform(post("/savePub").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/createPub").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest()).andDo(print());
     }
 
