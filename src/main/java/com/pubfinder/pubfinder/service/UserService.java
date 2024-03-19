@@ -77,8 +77,7 @@ public class UserService {
                         loginRequest.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow();
+        var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
 
         var jwtToken = authenticationService.generateToken(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(new AuthenticationResponse(jwtToken));

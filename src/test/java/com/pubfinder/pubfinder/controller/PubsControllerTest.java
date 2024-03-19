@@ -1,9 +1,12 @@
 package com.pubfinder.pubfinder.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.service.PubsService;
+import com.pubfinder.pubfinder.util.TestUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -38,26 +41,31 @@ public class PubsControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @BeforeEach
+    public void setup() {
+        objectMapper.registerModule(new JavaTimeModule());
+    }
+
     @Test
     public void getPubsTest() throws Exception {
         List<PubDTO> pubs = new ArrayList<>(List.of(pub));
         when(pubsService.getPubs(1.0,1.0,1.0)).thenReturn(ResponseEntity.ok().body(pubs));
 
-        mockMvc.perform(get("/getPubs/{lat}/{lng}/{radius}", 1.0, 1.0, 1.0)).andExpect(status().isOk()).andExpect(content().json(new ObjectMapper().writeValueAsString(pubs)));
+        mockMvc.perform(get("/pub/getPubs/{lat}/{lng}/{radius}", 1.0, 1.0, 1.0)).andExpect(status().isOk()).andExpect(content().json(objectMapper.writeValueAsString(pubs)));
     }
 
     @Test
     public void getPubByNameTest() throws Exception {
         when(pubsService.getPubByName("name")).thenReturn(ResponseEntity.ok().body(pub));
 
-        mockMvc.perform(get("/getPub/{name}", "name")).andExpect(status().isOk()).andExpect(content().json(new ObjectMapper().writeValueAsString(pub)));
+        mockMvc.perform(get("/pub/getPub/{name}", "name")).andExpect(status().isOk()).andExpect(content().json(objectMapper.writeValueAsString(pub)));
     }
 
     @Test
     public void savePubTest() throws Exception {
         when(pubsService.savePub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(pub));
 
-        mockMvc.perform(post("/createPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub)))
+        mockMvc.perform(post("/pub/createPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub)))
                 .andExpect(status().isCreated()).andDo(print());
     }
 
@@ -65,7 +73,7 @@ public class PubsControllerTest {
     public void savePubTest_BAD_REQUEST() throws Exception {
         when(pubsService.savePub(null)).thenReturn(ResponseEntity.badRequest().build());
 
-        mockMvc.perform(post("/createPub").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/pub/createPub").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest()).andDo(print());
     }
 
@@ -73,29 +81,29 @@ public class PubsControllerTest {
     public void editPubTest() throws Exception {
         when(pubsService.editPub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(ResponseEntity.ok().body(pub));
 
-        mockMvc.perform(put("/editPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isOk());
+        mockMvc.perform(put("/pub/editPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isOk());
     }
 
     @Test
     public void editPubTest_BAD_REQUEST() throws Exception {
         when(pubsService.editPub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(ResponseEntity.badRequest().build());
 
-        mockMvc.perform(put("/editPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isBadRequest());
+        mockMvc.perform(put("/pub/editPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isBadRequest());
     }
 
     @Test
     public void editPubTest_NOT_FOUND() throws Exception {
         when(pubsService.editPub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(ResponseEntity.notFound().build());
 
-        mockMvc.perform(put("/editPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isNotFound());
+        mockMvc.perform(put("/pub/editPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isNotFound());
     }
 
     @Test
     public void deletePubTest() throws Exception {
         when(pubsService.deletePub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(ResponseEntity.ok().build());
 
-        mockMvc.perform(delete("/deletePub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isOk());
+        mockMvc.perform(delete("/pub/deletePub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isOk());
     }
 
-    PubDTO pub = new PubDTO(UUID.randomUUID(), "name", 1.0, 1.0,"open", "location", "desc");
+    PubDTO pub = new PubDTO(UUID.randomUUID(), "name", 1.0, 1.0, TestUtil.generateMockOpeningHours(), "location", "desc");
 }

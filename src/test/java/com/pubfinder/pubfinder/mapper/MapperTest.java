@@ -2,9 +2,15 @@ package com.pubfinder.pubfinder.mapper;
 
 
 import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.models.OpeningHours;
 import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,16 +24,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MapperTest {
     @Test
     public void mapDtoToEntity() {
-        PubDTO pubDTO = new PubDTO(null,"name",1.0,1.0,"3pm-3am","location","description");
-
+        PubDTO pubDTO = TestUtil.generateMockPubDTO();
         Pub pub = Mapper.INSTANCE.dtoToEntity(pubDTO);
         check(pubDTO, pub);
     }
 
     @Test
     public void mapEntityToDto() {
-        Pub pub = new Pub("name",1.0,1.0,"3pm-3am","location","description");
-
+        Pub pub = TestUtil.generateMockPub();
         PubDTO pubDTO = Mapper.INSTANCE.entityToDto(pub);
         check(pubDTO, pub);
     }
@@ -36,7 +40,7 @@ public class MapperTest {
         assertEquals(pubDTO.getName(), pub.getName());
         assertEquals(pubDTO.getLat(), pub.getLat());
         assertEquals(pubDTO.getLng(), pub.getLng());
-        assertEquals(pubDTO.getOpen(), pub.getOpen());
+        assertEquals(pubDTO.getOpeningHours(), pub.getOpeningHours());
         assertEquals(pubDTO.getLocation(), pub.getLocation());
         assertEquals(pubDTO.getDescription(), pub.getDescription());
     }
