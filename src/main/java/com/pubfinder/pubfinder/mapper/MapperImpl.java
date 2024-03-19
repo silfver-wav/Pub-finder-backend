@@ -15,7 +15,7 @@ public class MapperImpl implements Mapper {
                 .name(dto.getName())
                 .lat(dto.getLat())
                 .lng(dto.getLng())
-                .open(dto.getOpen())
+                .openingHours(dto.getOpeningHours())
                 .location(dto.getLocation())
                 .description(dto.getDescription());
 
@@ -34,7 +34,7 @@ public class MapperImpl implements Mapper {
                 .name(entity.getName())
                 .lat(entity.getLat())
                 .lng(entity.getLng())
-                .open(entity.getOpen())
+                .openingHours(entity.getOpeningHours())
                 .location(entity.getLocation())
                 .description(entity.getDescription())
                 .build();

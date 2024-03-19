@@ -4,6 +4,7 @@ import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -92,7 +93,7 @@ public class PubServiceTest {
 
     @Test
     public void editPubTest() {
-        Pub updatedPub = new Pub(pub.getId(), "something else", pub.getLat(), pub.getLng(), pub.getOpen(), pub.getLocation(), pub.getDescription());
+        Pub updatedPub = new Pub(pub.getId(), "something else", pub.getLat(), pub.getLng(), pub.getOpeningHours(), pub.getLocation(), pub.getDescription());
         when(pubRepository.findById(pub.getId())).thenReturn(Optional.of(pub));
         when(pubRepository.save(any())).thenReturn(updatedPub);
         ResponseEntity<PubDTO> result = pubsService.editPub(updatedPub);
@@ -102,7 +103,7 @@ public class PubServiceTest {
 
     @Test
     public void editPubTest_BAD_REQUEST() {
-        Pub updatedPub = new Pub(null, "something else", pub.getLat(), pub.getLng(), pub.getOpen(), pub.getLocation(), pub.getDescription());
+        Pub updatedPub = new Pub(null, "something else", pub.getLat(), pub.getLng(), pub.getOpeningHours(), pub.getLocation(), pub.getDescription());
         when(pubRepository.findById(pub.getId())).thenReturn(Optional.empty());
         ResponseEntity<PubDTO> result = pubsService.editPub(updatedPub);
         assertEquals(ResponseEntity.badRequest().build(), result);
@@ -122,6 +123,6 @@ public class PubServiceTest {
         assertEquals(ResponseEntity.badRequest().build(), result);
     }
 
-    private final Pub pub = new Pub(UUID.randomUUID(), "name", 1.0, 1.0, "open", "location", "description");
+    private final Pub pub = TestUtil.generateMockPub();
 
 }
