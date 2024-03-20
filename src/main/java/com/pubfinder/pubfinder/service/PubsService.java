@@ -5,6 +5,7 @@ import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,17 +20,20 @@ public class PubsService {
     @Autowired
     private PubRepository pubRepository;
 
-    public ResponseEntity<PubDTO> getPub(UUID id) {
-        return pubRepository.findById(id).map(pub -> ResponseEntity.ok().body(Mapper.INSTANCE.entityToDto(pub))).orElse(ResponseEntity.notFound().build());
+    @Cacheable(value = "getPub")
+    public PubDTO getPub(UUID id) {
+        return pubRepository.findById(id).map(Mapper.INSTANCE::entityToDto).orElseThrow();
     }
 
     public ResponseEntity<PubDTO> getPubByName(String name) {
         return pubRepository.findByName(name).map(pub -> ResponseEntity.ok().body(Mapper.INSTANCE.entityToDto(pub))).orElse(ResponseEntity.notFound().build());
     }
 
-    public ResponseEntity<List<PubDTO>> getPubs(Double lat, Double lng, Double radius) {
-        List<PubDTO> pubs = pubRepository.findPubsWithInRadius( lat, lng, radius).stream().map(Mapper.INSTANCE::entityToDto).toList();
-        return ResponseEntity.ok().body(pubs);
+    @Cacheable(value = "getPubs",
+            condition = "#radius <= 10",
+            key = "#lat.toString().substring(0, 5) + '-' + #lng.toString().substring(0, 5) + '-' + #radius.toString()")
+    public List<PubDTO> getPubs(Double lat, Double lng, Double radius) {
+        return pubRepository.findPubsWithInRadius( lat, lng, radius).stream().map(Mapper.INSTANCE::entityToDto).toList();
     }
 
     public ResponseEntity<PubDTO> savePub(Pub pub) {

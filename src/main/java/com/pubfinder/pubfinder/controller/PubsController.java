@@ -23,7 +23,7 @@ public class PubsController {
 
     @GetMapping("/getPubs/{lat}/{lng}/{radius}")
     public ResponseEntity<List<PubDTO>> getPubs(@PathVariable("lat") Double lat, @PathVariable("lng") Double lng, @PathVariable("radius") Double radius) {
-        return pubsService.getPubs(lat, lng, radius);
+        return ResponseEntity.ok().body(pubsService.getPubs(lat, lng, radius));
     }
 
     @GetMapping("/getPub/{name}")

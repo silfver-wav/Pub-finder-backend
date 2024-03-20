@@ -49,7 +49,7 @@ public class PubsControllerTest {
     @Test
     public void getPubsTest() throws Exception {
         List<PubDTO> pubs = new ArrayList<>(List.of(pub));
-        when(pubsService.getPubs(1.0,1.0,1.0)).thenReturn(ResponseEntity.ok().body(pubs));
+        when(pubsService.getPubs(1.0,1.0,1.0)).thenReturn(pubs);
 
         mockMvc.perform(get("/pub/getPubs/{lat}/{lng}/{radius}", 1.0, 1.0, 1.0)).andExpect(status().isOk()).andExpect(content().json(objectMapper.writeValueAsString(pubs)));
     }
