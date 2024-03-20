@@ -2,8 +2,10 @@ package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -21,12 +23,12 @@ public class PubsService {
     private PubRepository pubRepository;
 
     @Cacheable(value = "getPub")
-    public PubDTO getPub(UUID id) {
-        return pubRepository.findById(id).map(Mapper.INSTANCE::entityToDto).orElseThrow();
+    public PubDTO getPub(UUID id) throws ResourceNotFoundException {
+        return pubRepository.findById(id).map(Mapper.INSTANCE::entityToDto).orElseThrow(() -> new ResourceNotFoundException("Pub with id " + id + " was not found"));
     }
 
-    public ResponseEntity<PubDTO> getPubByName(String name) {
-        return pubRepository.findByName(name).map(pub -> ResponseEntity.ok().body(Mapper.INSTANCE.entityToDto(pub))).orElse(ResponseEntity.notFound().build());
+    public PubDTO getPubByName(String name) throws ResourceNotFoundException {
+        return pubRepository.findByName(name).map(Mapper.INSTANCE::entityToDto).orElseThrow(() -> new ResourceNotFoundException("Pub with name " + name + " was not found"));
     }
 
     @Cacheable(value = "getPubs",
@@ -36,26 +38,24 @@ public class PubsService {
         return pubRepository.findPubsWithInRadius( lat, lng, radius).stream().map(Mapper.INSTANCE::entityToDto).toList();
     }
 
-    public ResponseEntity<PubDTO> savePub(Pub pub) {
-        if (pub == null) return ResponseEntity.badRequest().build();
+    public PubDTO savePub(Pub pub) throws BadRequestException {
+        if (pub == null) throw new BadRequestException();
         Pub savedPub = pubRepository.save(pub);
-        return ResponseEntity.status(HttpStatus.CREATED).body(Mapper.INSTANCE.entityToDto(savedPub));
+        return Mapper.INSTANCE.entityToDto(savedPub);
     }
 
-    public ResponseEntity<PubDTO> editPub(Pub pub) {
-        if (pub == null || pub.getId() == null) return ResponseEntity.badRequest().build();
+    public PubDTO editPub(Pub pub) throws ResourceNotFoundException, BadRequestException {
+        if (pub == null || pub.getId() == null) throw new BadRequestException();
 
         Optional<Pub> foundPub = pubRepository.findById(pub.getId());
-        if (foundPub.isEmpty()) return ResponseEntity.notFound().build();
+        if (foundPub.isEmpty()) throw new ResourceNotFoundException("Pub with id " + pub.getId() + " was not found");
 
         Pub savedPub = pubRepository.save(pub);
-        return ResponseEntity.ok().body(Mapper.INSTANCE.entityToDto(savedPub));
+        return Mapper.INSTANCE.entityToDto(savedPub);
     }
 
-    public ResponseEntity<PubDTO> deletePub(Pub pub) {
-        if (pub == null) return ResponseEntity.badRequest().build();
+    public void deletePub(Pub pub) throws BadRequestException {
+        if (pub == null) throw new BadRequestException();
         pubRepository.delete(pub);
-        return ResponseEntity.ok().build();
     }
-
 }

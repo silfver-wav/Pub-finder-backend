@@ -2,6 +2,7 @@ package com.pubfinder.pubfinder.cache;
 
 import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.service.PubsService;
 import com.pubfinder.pubfinder.util.TestUtil;
@@ -66,7 +67,7 @@ public class PubServiceCacheTest {
     }
 
     @Test
-    public void testGetPub_CacheHit() {
+    public void testGetPub_CacheHit() throws ResourceNotFoundException {
         Pub pub = TestUtil.generateMockPub();
 
         when(pubRepository.findById(pub.getId())).thenReturn(Optional.of(pub));

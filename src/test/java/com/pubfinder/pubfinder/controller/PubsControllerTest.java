@@ -3,25 +3,25 @@ package com.pubfinder.pubfinder.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.service.PubsService;
 import com.pubfinder.pubfinder.util.TestUtil;
+import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -56,14 +56,14 @@ public class PubsControllerTest {
 
     @Test
     public void getPubByNameTest() throws Exception {
-        when(pubsService.getPubByName("name")).thenReturn(ResponseEntity.ok().body(pub));
+        when(pubsService.getPubByName("name")).thenReturn(pub);
 
         mockMvc.perform(get("/pub/getPub/{name}", "name")).andExpect(status().isOk()).andExpect(content().json(objectMapper.writeValueAsString(pub)));
     }
 
     @Test
     public void savePubTest() throws Exception {
-        when(pubsService.savePub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(pub));
+        when(pubsService.savePub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
         mockMvc.perform(post("/pub/createPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub)))
                 .andExpect(status().isCreated()).andDo(print());
@@ -71,7 +71,7 @@ public class PubsControllerTest {
 
     @Test
     public void savePubTest_BAD_REQUEST() throws Exception {
-        when(pubsService.savePub(null)).thenReturn(ResponseEntity.badRequest().build());
+        when(pubsService.savePub(null)).thenThrow(BadRequestException.class);
 
         mockMvc.perform(post("/pub/createPub").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest()).andDo(print());
@@ -79,30 +79,36 @@ public class PubsControllerTest {
 
     @Test
     public void editPubTest() throws Exception {
-        when(pubsService.editPub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(ResponseEntity.ok().body(pub));
+        when(pubsService.editPub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
         mockMvc.perform(put("/pub/editPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isOk());
     }
 
     @Test
     public void editPubTest_BAD_REQUEST() throws Exception {
-        when(pubsService.editPub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(ResponseEntity.badRequest().build());
+        when(pubsService.editPub(null)).thenThrow(BadRequestException.class);
 
-        mockMvc.perform(put("/pub/editPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isBadRequest());
+        mockMvc.perform(put("/pub/editPub").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andDo(print());
     }
 
     @Test
     public void editPubTest_NOT_FOUND() throws Exception {
-        when(pubsService.editPub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(ResponseEntity.notFound().build());
+        when(pubsService.editPub(Mapper.INSTANCE.dtoToEntity(pub))).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(put("/pub/editPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isNotFound());
     }
 
     @Test
     public void deletePubTest() throws Exception {
-        when(pubsService.deletePub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(ResponseEntity.ok().build());
+        mockMvc.perform(delete("/pub/deletePub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isNoContent());
+    }
 
-        mockMvc.perform(delete("/pub/deletePub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isOk());
+    @Test
+    public void deletePubTest_BAD_REQUEST() throws Exception {
+        doThrow(BadRequestException.class).when(pubsService).deletePub(null);
+        mockMvc.perform(delete("/pub/deletePub").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andDo(print());
     }
 
     PubDTO pub = new PubDTO(UUID.randomUUID(), "name", 1.0, 1.0, TestUtil.generateMockOpeningHours(), "location", "desc");
