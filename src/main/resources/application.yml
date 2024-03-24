@@ -43,7 +43,8 @@ security:
   api-header-name: "X-API-KEY"
   api-key: ""
   jwt-secret: ""
-  jwt-expiration-ms: 86400000
+  jwt-expiration-ms: ""
+  jwt-refresh-expiration-ms : ""
 
 # server:
 #  port: 443

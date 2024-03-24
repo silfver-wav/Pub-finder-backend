@@ -17,14 +17,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-import static com.pubfinder.pubfinder.models.Role.ADMIN;
-import static com.pubfinder.pubfinder.models.Role.USER;
+import static com.pubfinder.pubfinder.models.enums.Role.ADMIN;
 
 @Configuration
 @EnableWebSecurity
@@ -35,6 +35,7 @@ public class SecurityConfig {
     private final AuthenticationService authenticationService;
     private final AuthenticationProvider authenticationProvider;
     private final UserDetailsService userDetailsService;
+    private final LogoutHandler logoutHandler;
 
 
     private static final String[] WHITE_LIST_URL = {
@@ -42,7 +43,8 @@ public class SecurityConfig {
             "/v2/api-docs",
             "/pub/test",
             "/user/register",
-            "/user/login"
+            "/user/login",
+            "/user/refreshToken"
     };
 
 
@@ -62,14 +64,12 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(new AuthenticationFilter(authenticationService, userDetailsService), UsernamePasswordAuthenticationFilter.class);
-                /*
+                .addFilterBefore(new AuthenticationFilter(authenticationService, userDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .logout(logout ->
                         logout.logoutUrl("/user/logout")
                                 .addLogoutHandler(logoutHandler)
                                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 );
-                */
         ;
 
         return http.build();

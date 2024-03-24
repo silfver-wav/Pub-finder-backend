@@ -1,5 +1,6 @@
 package com.pubfinder.pubfinder.models;
 
+import com.pubfinder.pubfinder.models.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
