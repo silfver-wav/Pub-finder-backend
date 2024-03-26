@@ -2,9 +2,11 @@ package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.util.TestUtil;
+import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -33,11 +36,11 @@ public class PubServiceTest {
     private PubRepository pubRepository;
 
     @Test
-    public void getPubTest() {
+    public void getPubTest() throws ResourceNotFoundException {
         UUID pubId = pub.getId();
         when(pubRepository.findById(any())).thenReturn(Optional.of(pub));
-        ResponseEntity<PubDTO> result = pubsService.getPub(pubId);
-        assertEquals(ResponseEntity.ok().body(Mapper.INSTANCE.entityToDto(pub)), result);
+        PubDTO result = pubsService.getPub(pubId);
+        assertEquals(Mapper.INSTANCE.entityToDto(pub), result);
         verify(pubRepository, times(1)).findById(pubId);
     }
 
@@ -45,17 +48,16 @@ public class PubServiceTest {
     public void getPubTest_NOT_FOUND() {
         UUID pubId = pub.getId();
         when(pubRepository.findById(any())).thenReturn(Optional.empty());
-        ResponseEntity<PubDTO> result = pubsService.getPub(pubId);
-        assertEquals(ResponseEntity.notFound().build(), result);
+        assertThrows(ResourceNotFoundException.class, () -> pubsService.getPub(pubId));
         verify(pubRepository, times(1)).findById(pubId);
     }
 
     @Test
-    public void getPubByNameTest() {
+    public void getPubByNameTest() throws ResourceNotFoundException {
         String name = pub.getName();
         when(pubRepository.findByName(any())).thenReturn(Optional.of(pub));
-        ResponseEntity<PubDTO> result = pubsService.getPubByName(name);
-        assertEquals(ResponseEntity.ok().body(Mapper.INSTANCE.entityToDto(pub)), result);
+        PubDTO result = pubsService.getPubByName(name);
+        assertEquals(Mapper.INSTANCE.entityToDto(pub), result);
         verify(pubRepository, times(1)).findByName(name);
     }
 
@@ -63,41 +65,39 @@ public class PubServiceTest {
     public void getPubByNameTest_NOT_FOUND() {
         String name = pub.getName();
         when(pubRepository.findByName(any())).thenReturn(Optional.empty());
-        ResponseEntity<PubDTO> result = pubsService.getPubByName(name);
-        assertEquals(ResponseEntity.notFound().build(), result);
+        assertThrows(ResourceNotFoundException.class, () -> pubsService.getPubByName(name));
         verify(pubRepository, times(1)).findByName(name);
     }
 
     @Test
     public void getPubsTest() {
-        List<Pub> pubs = new ArrayList<>(Collections.singletonList(pub));
-        when(pubRepository.findPubsWithInRadius(1.0,1.0,1)).thenReturn(pubs);
-        ResponseEntity<List<PubDTO>> result = pubsService.getPubs(1.0,1.0,1.0);
-        assertEquals( 1, Objects.requireNonNull(result.getBody()).size());
-        verify(pubRepository, times(1)).findPubsWithInRadius(1.0,1.0,1.0);
+        List<Pub> pubs = new ArrayList<>(TestUtil.generateListOfMockPubs());
+        when(pubRepository.findPubsWithInRadius(40.712810, 74.006010,1)).thenReturn(pubs);
+        List<PubDTO> result = pubsService.getPubs(40.712810, 74.006010,1.0);
+        assertEquals( 3, result.size());
+        verify(pubRepository, times(1)).findPubsWithInRadius(40.712810, 74.006010,1);
     }
 
     @Test
-    public void savePubTest() {
+    public void savePubTest() throws BadRequestException {
         when(pubRepository.save(any())).thenReturn(pub);
-        ResponseEntity<PubDTO> result = pubsService.savePub(pub);
-        assertEquals(ResponseEntity.status(HttpStatus.CREATED).body(Mapper.INSTANCE.entityToDto(pub)), result);
+        PubDTO result = pubsService.savePub(pub);
+        assertEquals(Mapper.INSTANCE.entityToDto(pub), result);
         verify(pubRepository, times(1)).save(pub);
     }
 
     @Test
     public void savePubTest_BAD_REQUEST() {
-        ResponseEntity<PubDTO> result = pubsService.savePub(null);
-        assertEquals(ResponseEntity.badRequest().build(), result);
+        assertThrows( BadRequestException.class ,() -> pubsService.savePub(null));
     }
 
     @Test
-    public void editPubTest() {
+    public void editPubTest() throws BadRequestException, ResourceNotFoundException {
         Pub updatedPub = new Pub(pub.getId(), "something else", pub.getLat(), pub.getLng(), pub.getOpeningHours(), pub.getLocation(), pub.getDescription());
         when(pubRepository.findById(pub.getId())).thenReturn(Optional.of(pub));
         when(pubRepository.save(any())).thenReturn(updatedPub);
-        ResponseEntity<PubDTO> result = pubsService.editPub(updatedPub);
-        assertEquals(ResponseEntity.ok().body(Mapper.INSTANCE.entityToDto(updatedPub)), result);
+        PubDTO result = pubsService.editPub(updatedPub);
+        assertEquals(Mapper.INSTANCE.entityToDto(updatedPub), result);
         verify(pubRepository, times(1)).save(updatedPub);
     }
 
@@ -105,24 +105,20 @@ public class PubServiceTest {
     public void editPubTest_BAD_REQUEST() {
         Pub updatedPub = new Pub(null, "something else", pub.getLat(), pub.getLng(), pub.getOpeningHours(), pub.getLocation(), pub.getDescription());
         when(pubRepository.findById(pub.getId())).thenReturn(Optional.empty());
-        ResponseEntity<PubDTO> result = pubsService.editPub(updatedPub);
-        assertEquals(ResponseEntity.badRequest().build(), result);
+        assertThrows(BadRequestException.class, () -> pubsService.editPub(updatedPub));
     }
 
     @Test
-    public void deletePubTest() {
+    public void deletePubTest() throws BadRequestException {
         doNothing().when(pubRepository).delete(pub);
-        ResponseEntity<PubDTO> result = pubsService.deletePub(pub);
-        assertEquals(ResponseEntity.ok().build(), result);
+        pubsService.deletePub(pub);
         verify(pubRepository, times(1)).delete(any());
     }
 
     @Test
     public void deletePubTest_BAD_REQUEST() {
-        ResponseEntity<PubDTO> result = pubsService.deletePub(null);
-        assertEquals(ResponseEntity.badRequest().build(), result);
+        assertThrows(BadRequestException.class, () -> pubsService.deletePub(null));
     }
 
     private final Pub pub = TestUtil.generateMockPub();
-
 }

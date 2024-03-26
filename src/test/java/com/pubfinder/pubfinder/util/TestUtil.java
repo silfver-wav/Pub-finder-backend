@@ -48,4 +48,23 @@ public class TestUtil {
                 .description("description")
                 .build();
     }
+
+    public static List<Pub> generateListOfMockPubs() {
+        Pub pub1 = generateMockPub();
+        pub1.setId(UUID.randomUUID());
+        pub1.setLat(40.7128);
+        pub1.setLng(74.0060);
+
+        Pub pub2 = generateMockPub();
+        pub2.setId(UUID.randomUUID());
+        pub2.setLat(40.7130);
+        pub2.setLng(74.0064);
+
+        Pub pub3 = generateMockPub();
+        pub3.setId(UUID.randomUUID());
+        pub3.setLat(40.7132);
+        pub3.setLng(74.0061);
+
+        return List.of(pub1, pub2, pub3);
+    }
 }

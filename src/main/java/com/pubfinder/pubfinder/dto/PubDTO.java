@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PubDTO {
+public class PubDTO implements Serializable {
     private UUID id;
     private String name;
     private Double lat;

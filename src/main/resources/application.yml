@@ -18,8 +18,13 @@ spring:
       provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
     cache-names:
       - rate-limit-bucket
+      - getPubs
+      - getPub
     caffeine:
       spec: maximumSize=100000,expireAfterAccess=3600s
+      caches:
+        getPubs:
+          spec: maximumSize=100000,expireAfterAccess=3600s,eviction=LRU
 bucket4j:
   enabled: true
   filters:
