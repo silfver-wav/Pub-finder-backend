@@ -21,7 +21,10 @@ spring:
       - getPubs
       - getPub
     caffeine:
-      spec: maximumSize=100000,expireAfterAccess=3600s # make diffrent specs for the caches
+      spec: maximumSize=100000,expireAfterAccess=3600s
+      caches:
+        getPubs:
+          spec: maximumSize=100000,expireAfterAccess=3600s,eviction=LRU
 bucket4j:
   enabled: true
   filters:
