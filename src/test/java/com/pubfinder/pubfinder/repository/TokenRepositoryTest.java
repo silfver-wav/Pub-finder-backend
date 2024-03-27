@@ -31,8 +31,8 @@ public class TokenRepositoryTest {
 
     @Test
     public void saveAndGetTokenTest() {
-        User user = userRepository.save(TestUtil.generateUser());
-        Token savedToken = tokenRepository.save(TestUtil.generateToken(user));
+        User user = userRepository.save(TestUtil.generateMockUser());
+        Token savedToken = tokenRepository.save(TestUtil.generateMockToken(user));
         Optional<Token> foundToken = tokenRepository.findByToken(savedToken.getToken());
 
         assertTrue(foundToken.isPresent());
@@ -43,8 +43,8 @@ public class TokenRepositoryTest {
 
     @Test
     public void deleteTokenTest() {
-        User user = userRepository.save(TestUtil.generateUser());
-        Token savedToken = tokenRepository.save(TestUtil.generateToken(user));
+        User user = userRepository.save(TestUtil.generateMockUser());
+        Token savedToken = tokenRepository.save(TestUtil.generateMockToken(user));
         tokenRepository.delete(savedToken);
         Optional<Token> token = tokenRepository.findById(savedToken.getId());
         assertTrue(token.isEmpty());
@@ -52,8 +52,8 @@ public class TokenRepositoryTest {
 
     @Test
     public void editTokenTest() {
-        User user = userRepository.save(TestUtil.generateUser());
-        Token savedToken = tokenRepository.save(TestUtil.generateToken(user));
+        User user = userRepository.save(TestUtil.generateMockUser());
+        Token savedToken = tokenRepository.save(TestUtil.generateMockToken(user));
         savedToken.setRevoked(true);
         Token editedToken = tokenRepository.save(savedToken);
         assertEquals(savedToken, editedToken);
@@ -61,9 +61,9 @@ public class TokenRepositoryTest {
 
     @Test
     public void findAllTokensByUserTest() {
-        User user = userRepository.save(TestUtil.generateUser());
+        User user = userRepository.save(TestUtil.generateMockUser());
 
-        tokenRepository.saveAll(TestUtil.generateListOfTokens(user));
+        tokenRepository.saveAll(TestUtil.generateListOfMockedTokens(user));
         List<Token> foundTokens = tokenRepository.findAllTokensByUser(user.getId());
 
         assertEquals(foundTokens.size(), 3);

@@ -2,6 +2,7 @@ package com.pubfinder.pubfinder.util;
 
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.models.OpeningHours;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.models.Token;
@@ -73,7 +74,7 @@ public class TestUtil {
         return List.of(pub1, pub2, pub3);
     }
 
-    public static User generateUser() {
+    public static User generateMockUser() {
         return User.builder()
                 .id(UUID.randomUUID())
                 .firstName("firstName")
@@ -85,8 +86,17 @@ public class TestUtil {
                 .build();
     }
 
+    public static UserDTO generateMockUserDTO() {
+        return UserDTO.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("email")
+                .username("username")
+                .password("password")
+                .build();
+    }
 
-    public static Token generateToken(User user) {
+    public static Token generateMockToken(User user) {
         return Token.builder()
                 .token("token")
                 .tokenType(TokenType.BEARER)
@@ -96,23 +106,23 @@ public class TestUtil {
                 .build();
     }
 
-    public static List<Token> generateListOfTokens(User user) {
-        Token token1 = generateToken(user);
+    public static List<Token> generateListOfMockedTokens(User user) {
+        Token token1 = generateMockToken(user);
         token1.setToken("token1");
 
-        Token token2 = generateToken(user);
+        Token token2 = generateMockToken(user);
         token2.setToken("token2");
 
-        Token token3 = generateToken(user);
+        Token token3 = generateMockToken(user);
         token3.setToken("token3");
 
         return List.of(token1, token2, token3);
     }
 
-    public static AuthenticationResponse generateAuthenticationResponse() {
+    public static AuthenticationResponse generateMockAuthenticationResponse() {
         return AuthenticationResponse.builder()
-                .accessToken("token")
-                .refreshToken("refresher")
+                .accessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxMTU2ODQ1MiwiZXhwIjoxNzExNTczODUyfQ.zcLczdIhND1hnJMQvT4OMRzqTdBTw76O6Wb70uSzRks")
+                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxMTU2ODQ1MiwiZXhwIjoxNzExNjU0ODUyfQ.SSezTPT73RI03rM109o2Geetr1jHzOZgZoJR4qTLa-U")
                 .build();
     }
 }

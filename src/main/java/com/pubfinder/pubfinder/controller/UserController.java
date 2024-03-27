@@ -2,6 +2,7 @@ package com.pubfinder.pubfinder.controller;
 
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.LoginRequest;
+import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
@@ -30,8 +31,8 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID id) throws ResourceNotFoundException {
-        userService.deleteUser(id);
+    public ResponseEntity<String> deleteUser(@RequestBody UserDTO user) throws ResourceNotFoundException {
+        userService.deleteUser(Mapper.INSTANCE.dtoToEntity(user));
         return ResponseEntity.noContent().build();
     }
 
@@ -43,7 +44,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest loginRequest) throws ResourceNotFoundException {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.login(loginRequest));
+        return ResponseEntity.ok(userService.login(loginRequest));
     }
 
     @PostMapping("/refreshToken")

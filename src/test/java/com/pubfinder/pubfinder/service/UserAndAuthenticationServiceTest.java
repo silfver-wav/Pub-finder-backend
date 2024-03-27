@@ -7,7 +7,6 @@ import com.pubfinder.pubfinder.dto.LoginRequest;
 import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
-import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.models.Token;
 import com.pubfinder.pubfinder.models.User;
 import com.pubfinder.pubfinder.security.AuthenticationService;
@@ -19,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.testcontainers.shaded.com.google.common.net.HttpHeaders;
 
 import java.util.List;
 import java.util.Optional;
@@ -78,7 +75,7 @@ public class UserAndAuthenticationServiceTest {
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
         doNothing().when(tokenRepository).delete(token);
-        userService.deleteUser(user.getId());
+        userService.deleteUser(user);
         verify(userRepository, times(1)).findById(any());
         verify(userRepository, times(1)).delete(any());
         verify(tokenRepository, times(1)).findAllTokensByUser(any());
@@ -87,13 +84,13 @@ public class UserAndAuthenticationServiceTest {
 
     @Test
     public void deleteUserTestResourceNotFound() throws ResourceNotFoundException {
-        assertThrows(ResourceNotFoundException.class, () -> userService.deleteUser(user.getId()));
+        assertThrows(ResourceNotFoundException.class, () -> userService.deleteUser(user));
         verify(userRepository, times(1)).findById(any());
     }
 
     @Test
     public void editUserTest() throws BadRequestException, ResourceNotFoundException {
-        User editedUser = TestUtil.generateUser();
+        User editedUser = TestUtil.generateMockUser();
         editedUser.setUsername("Something else");
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
         when(userRepository.save(any())).thenReturn(editedUser);
@@ -108,12 +105,12 @@ public class UserAndAuthenticationServiceTest {
 
     @Test
     public void editUserTestBadRequest() {
-        assertThrows(BadRequestException.class, () -> userService.editUser(user));
+        assertThrows(BadRequestException.class, () -> userService.editUser(null));
     }
 
     @Test
     public void editUserTestResourceNotFound() {
-        User editedUser = TestUtil.generateUser();
+        User editedUser = TestUtil.generateMockUser();
         editedUser.setUsername("Something else");
         when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> userService.editUser(editedUser));
@@ -148,6 +145,6 @@ public class UserAndAuthenticationServiceTest {
     }
 
 
-    private final User user = TestUtil.generateUser();
-    private final Token token = TestUtil.generateToken(user);
+    private final User user = TestUtil.generateMockUser();
+    private final Token token = TestUtil.generateMockToken(user);
 }

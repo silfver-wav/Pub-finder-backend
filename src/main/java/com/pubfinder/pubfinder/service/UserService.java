@@ -57,17 +57,17 @@ public class UserService {
                 .build();
     }
 
-    public void deleteUser(UUID id) throws ResourceNotFoundException {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()) {
-            throw new ResourceNotFoundException("User with id: " + id + " was not found");
+    public void deleteUser(User user) throws ResourceNotFoundException {
+        Optional<User> foundUser = userRepository.findById(user.getId());
+        if (foundUser.isEmpty()) {
+            throw new ResourceNotFoundException("User with id: " + user.getId() + " was not found");
         }
-        deleteAllUserTokens(user.get());
-        userRepository.delete(user.get());
+        deleteAllUserTokens(foundUser.get());
+        userRepository.delete(foundUser.get());
     }
 
     public UserDTO editUser(User user) throws BadRequestException, ResourceNotFoundException {
-        if (user.getId() == null) {
+        if (user == null) {
             throw new BadRequestException();
         }
 
