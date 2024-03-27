@@ -29,9 +29,8 @@ public class AuthenticationService {
     @Value("${security.jwt-expiration-ms}")
     private long JWT_EXPIRATION;
 
-    @Value("${jwt-refresh-expiration-ms}")
+    @Value("${security.jwt-refresh-expiration-ms}")
     private long REFRESHER_EXPIRATION;
-
 
     public Authentication authenticateApiKey(HttpServletRequest request)
     {

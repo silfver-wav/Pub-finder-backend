@@ -1,4 +1,4 @@
-package com.pubfinder.pubfinder.controller;
+package com.pubfinder.pubfinder.exception;
 
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import org.apache.coyote.BadRequestException;
