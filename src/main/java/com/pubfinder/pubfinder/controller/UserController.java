@@ -42,8 +42,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest loginRequest) {
-        return userService.login(loginRequest);
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest loginRequest) throws ResourceNotFoundException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.login(loginRequest));
     }
 
     @PostMapping("/refreshToken")

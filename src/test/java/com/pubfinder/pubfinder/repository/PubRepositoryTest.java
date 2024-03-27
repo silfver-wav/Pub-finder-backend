@@ -1,6 +1,5 @@
 package com.pubfinder.pubfinder.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.util.TestUtil;
@@ -28,15 +27,15 @@ public class PubRepositoryTest {
     @Test
     public void saveAndGetPubTest() {
         Pub savedPub = pubRepository.save(TestUtil.generateMockPub());
-        Optional<Pub> pub = pubRepository.findById(savedPub.getId());
+        Optional<Pub> foundPub = pubRepository.findById(savedPub.getId());
 
-        assertTrue(pub.isPresent());
-        assertEquals(savedPub.getName(), pub.get().getName());
-        assertEquals(savedPub.getLat(), pub.get().getLat());
-        assertEquals(savedPub.getLng(), pub.get().getLng());
-        assertEquals(savedPub.getOpeningHours(), pub.get().getOpeningHours());
-        assertEquals(savedPub.getLocation(), pub.get().getLocation());
-        assertEquals(savedPub.getDescription(), pub.get().getDescription());
+        assertTrue(foundPub.isPresent());
+        assertEquals(savedPub.getName(), foundPub.get().getName());
+        assertEquals(savedPub.getLat(), foundPub.get().getLat());
+        assertEquals(savedPub.getLng(), foundPub.get().getLng());
+        assertEquals(savedPub.getOpeningHours(), foundPub.get().getOpeningHours());
+        assertEquals(savedPub.getLocation(), foundPub.get().getLocation());
+        assertEquals(savedPub.getDescription(), foundPub.get().getDescription());
     }
 
     @Test

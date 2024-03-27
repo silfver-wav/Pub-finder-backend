@@ -1,8 +1,13 @@
 package com.pubfinder.pubfinder.util;
 
+import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.models.OpeningHours;
 import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Token;
+import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.enums.Role;
+import com.pubfinder.pubfinder.models.enums.TokenType;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -66,5 +71,48 @@ public class TestUtil {
         pub3.setLng(74.0061);
 
         return List.of(pub1, pub2, pub3);
+    }
+
+    public static User generateUser() {
+        return User.builder()
+                .id(UUID.randomUUID())
+                .firstName("firstName")
+                .lastName("lastName")
+                .email("email")
+                .username("username")
+                .password("password")
+                .role(Role.USER)
+                .build();
+    }
+
+
+    public static Token generateToken(User user) {
+        return Token.builder()
+                .token("token")
+                .tokenType(TokenType.BEARER)
+                .expired(false)
+                .revoked(false)
+                .user(user)
+                .build();
+    }
+
+    public static List<Token> generateListOfTokens(User user) {
+        Token token1 = generateToken(user);
+        token1.setToken("token1");
+
+        Token token2 = generateToken(user);
+        token2.setToken("token2");
+
+        Token token3 = generateToken(user);
+        token3.setToken("token3");
+
+        return List.of(token1, token2, token3);
+    }
+
+    public static AuthenticationResponse generateAuthenticationResponse() {
+        return AuthenticationResponse.builder()
+                .accessToken("token")
+                .refreshToken("refresher")
+                .build();
     }
 }

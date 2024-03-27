@@ -21,16 +21,16 @@ public class Token {
     private UUID id;
 
     @Column(unique = true)
-    public String token;
+    private String token;
 
     @Enumerated(EnumType.STRING)
-    public TokenType tokenType;
+    private TokenType tokenType;
 
-    public boolean revoked;
+    private boolean revoked;
 
-    public boolean expired;
+    private boolean expired;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    public User user;
+    private User user;
 }

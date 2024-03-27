@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,9 +35,6 @@ public class UserService {
 
     @Autowired
     private TokenRepository tokenRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -73,32 +71,33 @@ public class UserService {
             throw new BadRequestException();
         }
 
-        Optional<User> foundUser = Optional.of(userRepository.findById(user.getId())).orElseThrow(() -> new ResourceNotFoundException("User with the id: " + user.getId() + " was not found"));
+        Optional<User> foundUser = userRepository.findById(user.getId());
 
-        if (!foundUser.get().getUsername().equals(user.getUsername()) || !foundUser.get().getEmail().equals(user.getEmail())) {
-            throw new BadRequestException("Cannot change username or email");
+        if (foundUser.isEmpty()) {
+            throw new ResourceNotFoundException("User with the id: " + user.getId() + " was not found");
         }
 
+        deleteAllUserTokens(foundUser.get());
         User editedUser = userRepository.save(user);
         return Mapper.INSTANCE.entityToDto(editedUser);
     }
 
-    public ResponseEntity<AuthenticationResponse> login(LoginRequest loginRequest) {
+    public AuthenticationResponse login(LoginRequest loginRequest) throws ResourceNotFoundException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
                         loginRequest.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
+        var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new ResourceNotFoundException("User with email: " + loginRequest.getEmail() + " not found"));
         var accessToken = authenticationService.generateToken(user);
         var refreshToken = authenticationService.generateRefresherToken(user);
         deleteAllUserTokens(user);
         saveToken(user, accessToken);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthenticationResponse(accessToken, refreshToken));
+        return new AuthenticationResponse(accessToken, refreshToken);
     }
 
-    public AuthenticationResponse refreshToken(HttpServletRequest request) throws Exception {
+    public AuthenticationResponse refreshToken(HttpServletRequest request) throws BadRequestException, ResourceNotFoundException {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || authHeader.startsWith("Bearer ")) {
             throw new BadRequestException();
@@ -115,7 +114,7 @@ public class UserService {
             saveToken(user, accessToken);
             return AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
         }
-        throw new Exception();
+        throw new BadCredentialsException("Token was invalid");
     }
 
     public void revokeUserAccess(String email) {
