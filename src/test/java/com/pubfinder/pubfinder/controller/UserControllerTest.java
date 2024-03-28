@@ -1,27 +1,17 @@
 package com.pubfinder.pubfinder.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pubfinder.pubfinder.config.ApplicationConfig;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.UserDTO;
-import com.pubfinder.pubfinder.mapper.Mapper;
-import com.pubfinder.pubfinder.mapper.MapperImpl;
-import com.pubfinder.pubfinder.models.User;
-import com.pubfinder.pubfinder.service.PubsService;
 import com.pubfinder.pubfinder.service.UserService;
-import com.pubfinder.pubfinder.util.TestConfig;
 import com.pubfinder.pubfinder.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
