@@ -9,6 +9,7 @@ import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Token;
 import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.models.enums.TokenType;
 import com.pubfinder.pubfinder.security.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,12 +21,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -42,10 +44,15 @@ public class UserService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public AuthenticationResponse registerUser(User user) throws BadRequestException {
         if (userRepository.findByEmail(user.getEmail()).isPresent() || userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new BadRequestException();
         }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         User savedUser = userRepository.save(user);
         String jwtToken = authenticationService.generateToken(savedUser);
@@ -57,7 +64,8 @@ public class UserService {
                 .build();
     }
 
-    public void deleteUser(User user) throws ResourceNotFoundException {
+    public void deleteUser(User user, HttpServletRequest request) throws ResourceNotFoundException {
+        isRequestAllowed(user, request);
         Optional<User> foundUser = userRepository.findById(user.getId());
         if (foundUser.isEmpty()) {
             throw new ResourceNotFoundException("User with id: " + user.getId() + " was not found");
@@ -66,7 +74,7 @@ public class UserService {
         userRepository.delete(foundUser.get());
     }
 
-    public UserDTO editUser(User user) throws BadRequestException, ResourceNotFoundException {
+    public UserDTO editUser(User user, HttpServletRequest request) throws BadRequestException, ResourceNotFoundException {
         if (user == null) {
             throw new BadRequestException();
         }
@@ -76,6 +84,10 @@ public class UserService {
         if (foundUser.isEmpty()) {
             throw new ResourceNotFoundException("User with the id: " + user.getId() + " was not found");
         }
+
+        isRequestAllowed(foundUser.get(), request);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         deleteAllUserTokens(foundUser.get());
         User editedUser = userRepository.save(user);
@@ -136,5 +148,16 @@ public class UserService {
                 .user(user)
                 .build();
         tokenRepository.save(token);
+    }
+
+    private void isRequestAllowed(User user, HttpServletRequest request) {
+        String jwt = request.getHeader("Authorization").substring(7);
+        String username = authenticationService.extractUsername(jwt);
+        if (!username.equals(user.getUsername())) {
+            Optional<User> userDetails = userRepository.findByUsername(username);
+            if (userDetails.isEmpty() || !userDetails.get().getRole().equals(Role.ADMIN)) {
+                throw new BadCredentialsException("Only admin or the user itself can delete a user");
+            }
+        }
     }
 }

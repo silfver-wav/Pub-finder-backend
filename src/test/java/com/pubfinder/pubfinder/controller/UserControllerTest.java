@@ -31,8 +31,6 @@ public class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // Does not work because of passwordEncoder nullPointerException
-    /*
     @Test
     public void registerUserTest() throws Exception {
         UserDTO userDTO = TestUtil.generateMockUserDTO();
@@ -47,7 +45,7 @@ public class UserControllerTest {
 
     @Test
     public void deleteUserTest() throws Exception {
-        doNothing().when(userService).deleteUser(any());
+        doNothing().when(userService).deleteUser(any(), any());
         mockMvc.perform(delete("/user/delete")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
@@ -56,13 +54,12 @@ public class UserControllerTest {
 
     @Test
     public void editUserTest() throws Exception {
-        when(userService.editUser(any())).thenReturn(TestUtil.generateMockUserDTO());
+        when(userService.editUser(any(), any())).thenReturn(TestUtil.generateMockUserDTO());
         mockMvc.perform(put("/user/edit", TestUtil.generateMockUserDTO())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
     }
-    */
 
     @Test
     public void loginTest() throws Exception {

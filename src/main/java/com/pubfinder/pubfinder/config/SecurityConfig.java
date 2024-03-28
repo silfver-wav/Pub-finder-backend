@@ -57,9 +57,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
-                                .requestMatchers(HttpMethod.POST, "/pub/createPub").hasAnyAuthority(USER.name())
+                                .requestMatchers(HttpMethod.POST, "/pub/createPub").hasAnyAuthority(ADMIN.name())
                                 .requestMatchers(HttpMethod.PUT, "/pub/editPub").hasAnyAuthority(ADMIN.name())
                                 .requestMatchers(HttpMethod.DELETE, "/pub/deletePub").hasAnyAuthority(ADMIN.name())
+                                .requestMatchers(HttpMethod.PUT, "/user/edit").hasAnyAuthority(ADMIN.name(), USER.name())
+                                .requestMatchers(HttpMethod.DELETE, "/user/delete").hasAnyAuthority(ADMIN.name(), USER.name())
                                 .anyRequest()
                                 .authenticated()
                 )
@@ -71,7 +73,6 @@ public class SecurityConfig {
                                 .addLogoutHandler(logoutHandler)
                                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 );
-        ;
 
         return http.build();
     }

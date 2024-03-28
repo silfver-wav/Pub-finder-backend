@@ -31,14 +31,14 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@RequestBody UserDTO user) throws ResourceNotFoundException {
-        userService.deleteUser(Mapper.INSTANCE.dtoToEntity(user));
+    public ResponseEntity<String> deleteUser(@RequestBody UserDTO user, HttpServletRequest request) throws ResourceNotFoundException {
+        userService.deleteUser(Mapper.INSTANCE.dtoToEntity(user), request);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<UserDTO> editUser(@RequestBody UserDTO userDTO) throws BadRequestException, ResourceNotFoundException {
-        UserDTO editedUser = userService.editUser(Mapper.INSTANCE.dtoToEntity(userDTO));
+    public ResponseEntity<UserDTO> editUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws BadRequestException, ResourceNotFoundException {
+        UserDTO editedUser = userService.editUser(Mapper.INSTANCE.dtoToEntity(userDTO), request);
         return ResponseEntity.ok().body(editedUser);
     }
 

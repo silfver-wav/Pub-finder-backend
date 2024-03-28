@@ -41,15 +41,13 @@ public class MapperTest {
         checkUser(userDTO, user);
     }
 
-    // Does not work because of passwordEncoder nullPointerException
-    /*
+
     @Test
     public void mapUserDtoToEntityTest() {
         UserDTO userDTO = TestUtil.generateMockUserDTO();
         User user = Mapper.INSTANCE.dtoToEntity(userDTO);
         checkUser(userDTO, user);
     }
-     */
 
     private void checkPub(PubDTO pubDTO, Pub pub) {
         assertEquals(pubDTO.getName(), pub.getName());

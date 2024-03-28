@@ -88,6 +88,7 @@ public class TestUtil {
 
     public static UserDTO generateMockUserDTO() {
         return UserDTO.builder()
+                .id(UUID.randomUUID())
                 .firstName("firstName")
                 .lastName("lastName")
                 .email("email")
