@@ -27,7 +27,10 @@ public class AuthenticationService {
     @Value("${security.jwt-secret}")
     private String SECRET_KEY;
     @Value("${security.jwt-expiration-ms}")
-    private int JWT_EXPIRATION;
+    private long JWT_EXPIRATION;
+
+    @Value("${security.jwt-refresh-expiration-ms}")
+    private long REFRESHER_EXPIRATION;
 
     public Authentication authenticateApiKey(HttpServletRequest request)
     {
@@ -50,16 +53,21 @@ public class AuthenticationService {
     }
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        return buildToken(new HashMap<>(), userDetails, JWT_EXPIRATION);
     }
 
-    public String generateToken(Map<String, Object> extractClaims, UserDetails userDetails) {
+    public String generateRefresherToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, REFRESHER_EXPIRATION);
+    }
+
+
+    public String buildToken(Map<String, Object> extractClaims, UserDetails userDetails, long exertionTime) {
         return Jwts
                 .builder()
                 .claims(extractClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
+                .expiration(new Date(System.currentTimeMillis() + exertionTime))
                 .signWith(getSignInKey(), Jwts.SIG.HS256)
                 .compact();
     }

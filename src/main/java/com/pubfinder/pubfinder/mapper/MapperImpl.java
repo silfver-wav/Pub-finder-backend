@@ -3,9 +3,14 @@ package com.pubfinder.pubfinder.mapper;
 import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.models.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 public class MapperImpl implements Mapper {
+
 
     @Override
     public Pub dtoToEntity(PubDTO dto) {
@@ -44,6 +49,7 @@ public class MapperImpl implements Mapper {
     public UserDTO entityToDto(User entity) {
         if (entity == null) return null;
         return UserDTO.builder()
+                .id(entity.getId())
                 .username(entity.getUsername())
                 .firstName(entity.getFirstName())
                 .lastName(entity.getLastName())
@@ -56,11 +62,13 @@ public class MapperImpl implements Mapper {
     public User dtoToEntity(UserDTO dto) {
         if (dto == null) return null;
         return User.builder()
+                .id(dto.getId())
                 .username(dto.getUsername())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
+                .role(Role.ADMIN)
                 .build();
     }
 }

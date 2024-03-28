@@ -65,7 +65,9 @@ public class PubsControllerTest {
     public void savePubTest() throws Exception {
         when(pubsService.savePub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
-        mockMvc.perform(post("/pub/createPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub)))
+        mockMvc.perform(post("/pub/createPub")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(pub)))
                 .andExpect(status().isCreated()).andDo(print());
     }
 
@@ -81,7 +83,10 @@ public class PubsControllerTest {
     public void editPubTest() throws Exception {
         when(pubsService.editPub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
-        mockMvc.perform(put("/pub/editPub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isOk());
+        mockMvc.perform(put("/pub/editPub")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(pub)))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -101,7 +106,10 @@ public class PubsControllerTest {
 
     @Test
     public void deletePubTest() throws Exception {
-        mockMvc.perform(delete("/pub/deletePub").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pub))).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/pub/deletePub")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(pub)))
+                .andExpect(status().isNoContent());
     }
 
     @Test
