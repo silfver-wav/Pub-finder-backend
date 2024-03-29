@@ -45,7 +45,8 @@ public class SecurityConfig {
             "/pub/test",
             "/user/register",
             "/user/login",
-            "/user/refreshToken"
+            "/user/refreshToken",
+            "/pub/searchPubs/**"
     };
 
 

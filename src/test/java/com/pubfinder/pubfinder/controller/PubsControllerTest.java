@@ -55,10 +55,10 @@ public class PubsControllerTest {
     }
 
     @Test
-    public void getPubByNameTest() throws Exception {
-        when(pubsService.getPubByName("name")).thenReturn(pub);
-
-        mockMvc.perform(get("/pub/getPub/{name}", "name")).andExpect(status().isOk()).andExpect(content().json(objectMapper.writeValueAsString(pub)));
+    public void searchForPubsTest() throws Exception {
+        List<PubDTO> pubs = new ArrayList<>(List.of(pub));
+        when(pubsService.searchPubsByTerm("name")).thenReturn(pubs);
+        mockMvc.perform(get("/pub/searchPubs/{term}", "name")).andExpect(status().isOk()).andExpect(content().json(objectMapper.writeValueAsString(pubs)));
     }
 
     @Test

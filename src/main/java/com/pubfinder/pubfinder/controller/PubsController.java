@@ -29,9 +29,9 @@ public class PubsController {
         return ResponseEntity.ok().body(pubsService.getPubs(lat, lng, radius));
     }
 
-    @GetMapping("/getPub/{name}")
-    public ResponseEntity<PubDTO> getPub(@PathVariable("name") String name) throws ResourceNotFoundException {
-        return ResponseEntity.ok().body(pubsService.getPubByName(name));
+    @GetMapping("/searchPubs/{term}")
+    public ResponseEntity<List<PubDTO>> searchForPubs(@PathVariable("term") String term) {
+        return ResponseEntity.ok(pubsService.searchPubsByTerm(term));
     }
 
     @PostMapping("/createPub")

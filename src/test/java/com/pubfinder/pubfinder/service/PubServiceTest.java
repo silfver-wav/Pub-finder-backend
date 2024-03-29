@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.*;
 
@@ -53,20 +51,16 @@ public class PubServiceTest {
     }
 
     @Test
-    public void getPubByNameTest() throws ResourceNotFoundException {
-        String name = pub.getName();
-        when(pubRepository.findByName(any())).thenReturn(Optional.of(pub));
-        PubDTO result = pubsService.getPubByName(name);
-        assertEquals(Mapper.INSTANCE.entityToDto(pub), result);
-        verify(pubRepository, times(1)).findByName(name);
-    }
+    public void searchPubsByTermTest() throws ResourceNotFoundException {
+        PubDTO bigBen = PubDTO.builder().id(UUID.randomUUID()).name("The Big Ben Pub").build();
+        PubDTO liffey = PubDTO.builder().id(UUID.randomUUID()).name("The Liffey").build();
 
-    @Test
-    public void getPubByNameTest_NOT_FOUND() {
-        String name = pub.getName();
-        when(pubRepository.findByName(any())).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> pubsService.getPubByName(name));
-        verify(pubRepository, times(1)).findByName(name);
+        List<Object[]> dbRs = List.of(new Object[]{bigBen.getId(), bigBen.getName()}, new Object[]{liffey.getId(), liffey.getName()});
+
+        when(pubRepository.findPubsByNameContaining(any())).thenReturn(dbRs);
+        List<PubDTO> result = pubsService.searchPubsByTerm("The");
+        assertEquals(List.of(bigBen, liffey), result);
+        verify(pubRepository, times(1)).findPubsByNameContaining("The");
     }
 
     @Test
