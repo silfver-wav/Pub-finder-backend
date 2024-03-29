@@ -12,8 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.CacheManager;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -76,4 +78,52 @@ public class PubServiceCacheTest {
 
         verify(pubRepository, times(1)).findById(pub.getId());
     }
+
+    @Test
+    public void testSearchPubsByTerm_CacheHit() {
+        PubDTO bigBen = PubDTO.builder().id(UUID.randomUUID()).name("The Big Ben Pub").build();
+        PubDTO liffey = PubDTO.builder().id(UUID.randomUUID()).name("The Liffey").build();
+        List<Object[]> dbRs = List.of(new Object[]{bigBen.getId(), bigBen.getName()}, new Object[]{liffey.getId(), liffey.getName()});
+
+        when(pubRepository.findPubsByNameContaining("The")).thenReturn(dbRs);
+
+        List<PubDTO> result1 = pubsService.searchPubsByTerm("The");
+        List<PubDTO> result2 = pubsService.searchPubsByTerm("The");
+
+        assertEquals(result1, result2);
+
+        verify(pubRepository, times(1)).findPubsByNameContaining("The");
+    }
+
+    @Test
+    public void testSearchPubsByTerm_CacheMissToSmall() {
+        PubDTO bigBen = PubDTO.builder().id(UUID.randomUUID()).name("The Big Ben Pub").build();
+        PubDTO liffey = PubDTO.builder().id(UUID.randomUUID()).name("The Liffey").build();
+        List<Object[]> dbRs = List.of(new Object[]{bigBen.getId(), bigBen.getName()}, new Object[]{liffey.getId(), liffey.getName()});
+
+        when(pubRepository.findPubsByNameContaining("T")).thenReturn(dbRs);
+
+        List<PubDTO> result1 = pubsService.searchPubsByTerm("T");
+        List<PubDTO> result2 = pubsService.searchPubsByTerm("T");
+
+        assertEquals(result1, result2);
+
+        verify(pubRepository, times(2)).findPubsByNameContaining("T");
+    }
+
+    @Test
+    public void testSearchPubsByTerm_CacheMissToBig() {
+        PubDTO bigBen = PubDTO.builder().id(UUID.randomUUID()).name("The Big Ben Pub").build();
+        List<Object[]> dbRs = Collections.singletonList(new Object[]{bigBen.getId(), bigBen.getName()});
+
+        when(pubRepository.findPubsByNameContaining("The Big Ben ")).thenReturn(dbRs);
+
+        List<PubDTO> result1 = pubsService.searchPubsByTerm("The Big Ben ");
+        List<PubDTO> result2 = pubsService.searchPubsByTerm("The Big Ben ");
+
+        assertEquals(result1, result2);
+
+        verify(pubRepository, times(2)).findPubsByNameContaining("The Big Ben ");
+    }
+
 }

@@ -54,7 +54,6 @@ public class PubServiceTest {
     public void searchPubsByTermTest() throws ResourceNotFoundException {
         PubDTO bigBen = PubDTO.builder().id(UUID.randomUUID()).name("The Big Ben Pub").build();
         PubDTO liffey = PubDTO.builder().id(UUID.randomUUID()).name("The Liffey").build();
-
         List<Object[]> dbRs = List.of(new Object[]{bigBen.getId(), bigBen.getName()}, new Object[]{liffey.getId(), liffey.getName()});
 
         when(pubRepository.findPubsByNameContaining(any())).thenReturn(dbRs);
