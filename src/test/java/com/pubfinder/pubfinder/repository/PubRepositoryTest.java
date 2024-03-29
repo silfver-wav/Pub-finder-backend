@@ -6,6 +6,7 @@ import com.pubfinder.pubfinder.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.security.core.parameters.P;
 import org.springframework.test.context.TestPropertySource;
 
 
@@ -82,4 +83,34 @@ public class PubRepositoryTest {
         assertEquals(filteredPubs, excepted);
     }
 
+    @Test
+    public void findMoviesByNameContainingTest() {
+        Pub bigBen = TestUtil.generateMockPub();
+        bigBen.setName("The Big Ben Pub");
+
+        Pub liffey = TestUtil.generateMockPub();
+        liffey.setName("The Liffey");
+
+        Pub connell = TestUtil.generateMockPub();
+        connell.setName("O’Connell’s Irish Pub");
+
+        Pub queens = TestUtil.generateMockPub();
+        queens.setName("The Queen's Head");
+
+        pubRepository.save(bigBen);
+        pubRepository.save(liffey);
+        pubRepository.save(connell);
+        pubRepository.save(queens);
+
+        List<Object[]> foundThePubs = pubRepository.findPubsByNameContaining("The");
+        assertEquals(foundThePubs.size(), 3);
+        assertEquals(foundThePubs.get(0)[1], bigBen.getName());
+        assertEquals(foundThePubs.get(1)[1], liffey.getName());
+        assertEquals(foundThePubs.get(2)[1], queens.getName());
+
+        List<Object[]> foundPubPubs = pubRepository.findPubsByNameContaining("Pub");
+        assertEquals(foundPubPubs.size(), 2);
+        assertEquals(foundPubPubs.get(0)[1], bigBen.getName());
+        assertEquals(foundPubPubs.get(1)[1], connell.getName());
+    }
 }
