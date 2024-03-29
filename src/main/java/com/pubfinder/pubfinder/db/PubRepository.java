@@ -18,4 +18,7 @@ public interface PubRepository extends JpaRepository<Pub, UUID> {
 
     @Query("SELECT p FROM Pub p WHERE " + HAVERSINE_FORMULA + " < :distance ORDER BY " + HAVERSINE_FORMULA )
     List<Pub> findPubsWithInRadius(@Param("lat") double lat, @Param("lng") double lng, @Param("distance") double distance);
+
+    @Query("SELECT p.id, p.name FROM Pub p WHERE p.name LIKE %:term% OR p.name LIKE %:term%")
+    List<Object[]> findPubsByNameContaining(@Param("term") String term);
 }

@@ -20,6 +20,7 @@ spring:
       - rate-limit-bucket
       - getPubs
       - getPub
+      - getPubsByTerm
     caffeine:
       spec: maximumSize=100000,expireAfterAccess=3600s
       caches:

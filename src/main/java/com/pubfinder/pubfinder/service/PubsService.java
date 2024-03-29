@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class PubsService {
@@ -25,8 +23,19 @@ public class PubsService {
         return pubRepository.findById(id).map(Mapper.INSTANCE::entityToDto).orElseThrow(() -> new ResourceNotFoundException("Pub with id " + id + " was not found"));
     }
 
-    public PubDTO getPubByName(String name) throws ResourceNotFoundException {
-        return pubRepository.findByName(name).map(Mapper.INSTANCE::entityToDto).orElseThrow(() -> new ResourceNotFoundException("Pub with name " + name + " was not found"));
+    // Note stop names (a, an, the, of etc) should not be sent to the backend, unless it's the unless it is the first word of the name
+    // And the prefix should be max length to 8, the average cardinality will be increased
+    @Cacheable(value = "getPubsByTerm",
+            condition = "#term.length() > 1 && #term.length() < 9",
+            key = "#term"
+    )
+    public List<PubDTO> searchPubsByTerm(String term) {
+        List<Object[]> pubs = pubRepository.findPubsByNameContaining(term);
+        List<PubDTO> pubsList = new ArrayList<>();
+        for (Object[] pub : pubs) {
+            pubsList.add(PubDTO.builder().id((UUID) pub[0]).name((String) pub[1]).build());
+        }
+        return pubsList;
     }
 
     @Cacheable(value = "getPubs",
