@@ -41,6 +41,7 @@ public class Pub {
     private String price;
     @Column()
     private String website;
+    @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
     private Accessibility accessibility;
     @Column()

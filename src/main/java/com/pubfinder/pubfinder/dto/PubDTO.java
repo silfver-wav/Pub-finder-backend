@@ -2,7 +2,6 @@ package com.pubfinder.pubfinder.dto;
 
 import com.pubfinder.pubfinder.models.Accessibility;
 import com.pubfinder.pubfinder.models.OpeningHours;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

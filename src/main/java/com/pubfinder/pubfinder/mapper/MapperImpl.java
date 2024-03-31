@@ -5,9 +5,6 @@ import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.models.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 public class MapperImpl implements Mapper {
 
