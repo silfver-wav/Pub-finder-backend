@@ -24,7 +24,7 @@ import java.util.*;
 import static com.pubfinder.pubfinder.applicationRunner.extractInfo.*;
 import static com.pubfinder.pubfinder.applicationRunner.extractTime.openingHours;
 
-@Component
+// @Component
 public class AddPubsToDatabase implements ApplicationRunner {
 
     @Autowired
@@ -41,6 +41,7 @@ public class AddPubsToDatabase implements ApplicationRunner {
 
         for (Pub pub : pubs) {
             System.out.println(pub.toString());
+            pubRepository.save(pub);
         }
     }
 
