@@ -1,6 +1,8 @@
 package com.pubfinder.pubfinder.dto;
 
+import com.pubfinder.pubfinder.models.Accessibility;
 import com.pubfinder.pubfinder.models.OpeningHours;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,4 +26,10 @@ public class PubDTO implements Serializable {
     private Map<DayOfWeek, List<OpeningHours>> openingHours;
     private String location;
     private String description;
+    private String price;
+    private String website;
+    private Accessibility accessibility;
+    private Boolean washroom;
+    private Boolean outDoorSeating;
+
 }

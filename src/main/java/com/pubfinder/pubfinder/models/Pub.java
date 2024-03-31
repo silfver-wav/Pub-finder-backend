@@ -1,6 +1,5 @@
 package com.pubfinder.pubfinder.models;
 
-import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,4 +37,32 @@ public class Pub {
     private String location;
     @Column()
     private String description;
+    @Column()
+    private String price;
+    @Column()
+    private String website;
+    @Column(columnDefinition = "jsonb")
+    private Accessibility accessibility;
+    @Column()
+    private Boolean washroom;
+    @Column()
+    private Boolean outDoorSeating;
+
+    @Override
+    public String toString() {
+        return "Pub{" + "\n" +
+                "id=" + id + "\n" +
+                ", name='" + name + '\'' + "\n" +
+                ", lat=" + lat + "\n" +
+                ", lng=" + lng + "\n" +
+                ", openingHours=" + openingHours + "\n" +
+                ", location='" + location + '\'' + "\n" +
+                ", description='" + description + '\'' + "\n" +
+                ", price='" + price + '\'' + "\n" +
+                ", website='" + website + '\'' + "\n" +
+                ", accessibility=" + accessibility + "\n" +
+                ", washroom=" + washroom + "\n" +
+                ", outDoorSeating=" + outDoorSeating + "\n" +
+                '}';
+    }
 }
