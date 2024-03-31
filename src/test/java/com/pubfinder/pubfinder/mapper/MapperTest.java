@@ -56,6 +56,10 @@ public class MapperTest {
         assertEquals(pubDTO.getOpeningHours(), pub.getOpeningHours());
         assertEquals(pubDTO.getLocation(), pub.getLocation());
         assertEquals(pubDTO.getDescription(), pub.getDescription());
+        assertEquals(pubDTO.getPrice(), pub.getPrice());
+        assertEquals(pubDTO.getWashroom(), pub.getWashroom());
+        assertEquals(pubDTO.getAccessibility(), pub.getAccessibility());
+        assertEquals(pubDTO.getOutDoorSeating(), pub.getOutDoorSeating());
     }
 
     private void checkUser(UserDTO userDTO, User user) {

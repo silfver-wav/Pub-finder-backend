@@ -119,5 +119,5 @@ public class PubsControllerTest {
                 .andExpect(status().isBadRequest()).andDo(print());
     }
 
-    PubDTO pub = new PubDTO(UUID.randomUUID(), "name", 1.0, 1.0, TestUtil.generateMockOpeningHours(), "location", "desc");
+    PubDTO pub = TestUtil.generateMockPubDTO();
 }
