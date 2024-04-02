@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -47,11 +48,28 @@ public class PubsControllerTest {
 
     @Test
     public void getPubsTest() throws Exception {
-        List<PubDTO> pubs = new ArrayList<>(List.of(pub));
+        List<PubDTO> pubs = new ArrayList<>(List.of(
+                PubDTO.builder()
+                        .name("Söderkällaren")
+                        .build()
+
+        ));
         when(pubsService.getPubs(1.0,1.0,1.0)).thenReturn(pubs);
 
-        mockMvc.perform(get("/pub/getPubs/{lat}/{lng}/{radius}", 1.0, 1.0, 1.0)).andExpect(status().isOk()).andExpect(content().json(objectMapper.writeValueAsString(pubs)));
+        mockMvc.perform(get("/pub/getPubs/{lat}/{lng}/{radius}", 1.0, 1.0, 1.0))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)) // Ensure UTF-8 charset
+                .andExpect(content().json(objectMapper.writeValueAsString(pubs)));
     }
+
+    @Test
+    public void getPubByIdTest() throws Exception {
+        UUID id = pub.getId();
+        when(pubsService.getPub(id)).thenReturn(pub);
+
+        mockMvc.perform(get("/pub/getPub/{id}", id)).andExpect(status().isOk()).andExpect(content().json(objectMapper.writeValueAsString(pub)));
+    }
+
 
     @Test
     public void searchForPubsTest() throws Exception {
