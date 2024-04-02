@@ -86,7 +86,21 @@ public class PubServiceTest {
 
     @Test
     public void editPubTest() throws BadRequestException, ResourceNotFoundException {
-        Pub updatedPub = new Pub(pub.getId(), "something else", pub.getLat(), pub.getLng(), pub.getOpeningHours(), pub.getLocation(), pub.getDescription());
+        Pub updatedPub = Pub.builder()
+                            .id(pub.getId())
+                            .name("something else")
+                            .lat(pub.getLat())
+                            .lng(pub.getLng())
+                            .openingHours(pub.getOpeningHours())
+                            .location(pub.getLocation())
+                            .description(pub.getDescription())
+                            .price(pub.getPrice())
+                            .website(pub.getWebsite())
+                            .outDoorSeating(pub.getOutDoorSeating())
+                            .washroom(pub.getWashroom())
+                            .accessibility(pub.getAccessibility())
+                            .build();
+
         when(pubRepository.findById(pub.getId())).thenReturn(Optional.of(pub));
         when(pubRepository.save(any())).thenReturn(updatedPub);
         PubDTO result = pubsService.editPub(updatedPub);
@@ -96,7 +110,20 @@ public class PubServiceTest {
 
     @Test
     public void editPubTest_BAD_REQUEST() {
-        Pub updatedPub = new Pub(null, "something else", pub.getLat(), pub.getLng(), pub.getOpeningHours(), pub.getLocation(), pub.getDescription());
+        Pub updatedPub = Pub.builder()
+                .id(null)
+                .name("something else")
+                .lat(pub.getLat())
+                .lng(pub.getLng())
+                .openingHours(pub.getOpeningHours())
+                .location(pub.getLocation())
+                .description(pub.getDescription())
+                .price(pub.getPrice())
+                .website(pub.getWebsite())
+                .outDoorSeating(pub.getOutDoorSeating())
+                .washroom(pub.getWashroom())
+                .accessibility(pub.getAccessibility())
+                .build();
         when(pubRepository.findById(pub.getId())).thenReturn(Optional.empty());
         assertThrows(BadRequestException.class, () -> pubsService.editPub(updatedPub));
     }

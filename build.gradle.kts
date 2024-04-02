@@ -46,6 +46,9 @@ dependencies {
 
 	testImplementation("org.testcontainers:postgresql:1.19.7")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0")
+
+	implementation("com.google.guava:guava:17.0")
+	implementation("org.json:json:20240303")
 }
 
 tasks.withType<Test> {

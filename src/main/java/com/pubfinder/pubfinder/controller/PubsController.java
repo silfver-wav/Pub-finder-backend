@@ -7,10 +7,12 @@ import com.pubfinder.pubfinder.service.PubsService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/pub")
@@ -24,9 +26,14 @@ public class PubsController {
         return ResponseEntity.ok().body("hello world");
     }
 
-    @GetMapping("/getPubs/{lat}/{lng}/{radius}")
+    @GetMapping(value = "/getPubs/{lat}/{lng}/{radius}", produces = "application/json;charset=UTF-8")
     public ResponseEntity<List<PubDTO>> getPubs(@PathVariable("lat") Double lat, @PathVariable("lng") Double lng, @PathVariable("radius") Double radius) {
         return ResponseEntity.ok().body(pubsService.getPubs(lat, lng, radius));
+    }
+
+    @GetMapping("/getPub/{id}")
+    public ResponseEntity<PubDTO> searchForPubs(@PathVariable("id") UUID id) throws ResourceNotFoundException {
+        return ResponseEntity.ok(pubsService.getPub(id));
     }
 
     @GetMapping("/searchPubs/{term}")

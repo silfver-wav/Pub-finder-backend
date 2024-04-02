@@ -70,11 +70,88 @@ public class PubRepositoryTest {
 
     @Test
     public void findPubsWithInRadiusTest() {
-        Pub pub1 = pubRepository.save(new Pub(UUID.randomUUID(),"Pub1", 1.0, 1.0, TestUtil.generateMockOpeningHours(), "location", "description"));
-        Pub pub2 = pubRepository.save(new Pub(UUID.randomUUID(),"Pub2", 1.01, 1.0, TestUtil.generateMockOpeningHours(), "location", "description"));
-        Pub pub3 = pubRepository.save(new Pub(UUID.randomUUID(),"Pub3", 1.0, 1.03, TestUtil.generateMockOpeningHours(), "location", "description"));
-        pubRepository.save(new Pub(UUID.randomUUID(),"Pub4", 1.01, 50.00, TestUtil.generateMockOpeningHours(), "location", "description"));
-        pubRepository.save(new Pub(UUID.randomUUID(),"Pub5", 1.01, 50.01, TestUtil.generateMockOpeningHours(), "location", "description"));
+        Pub pub1 = pubRepository.save(
+                    Pub.builder()
+                            .id(UUID.randomUUID())
+                            .name("Pub1")
+                            .lat(1.0)
+                            .lng(1.0)
+                            .openingHours(TestUtil.generateMockOpeningHours())
+                            .location("location")
+                            .description("description")
+                            .price("$")
+                            .website("google.com")
+                            .outDoorSeating(true)
+                            .washroom(true)
+                            .accessibility(TestUtil.generateMockAccessibility())
+                            .build()
+        );
+        Pub pub2 = pubRepository.save(
+                Pub.builder()
+                        .id(UUID.randomUUID())
+                        .name("Pub2")
+                        .lat(1.01)
+                        .lng(1.0)
+                        .openingHours(TestUtil.generateMockOpeningHours())
+                        .location("location")
+                        .description("description")
+                        .price("$")
+                        .website("google.com")
+                        .outDoorSeating(true)
+                        .washroom(true)
+                        .accessibility(TestUtil.generateMockAccessibility())
+                        .build()
+        );
+        Pub pub3 = pubRepository.save(
+                Pub.builder()
+                        .id(UUID.randomUUID())
+                        .name("Pub3")
+                        .lat(1.0)
+                        .lng(1.03)
+                        .openingHours(TestUtil.generateMockOpeningHours())
+                        .location("location")
+                        .description("description")
+                        .price("$")
+                        .website("google.com")
+                        .outDoorSeating(true)
+                        .washroom(true)
+                        .accessibility(TestUtil.generateMockAccessibility())
+                        .build()
+        );
+
+        pubRepository.save(
+            Pub.builder()
+                .id(UUID.randomUUID())
+                .name("Pub4")
+                .lat(1.01)
+                .lng(50.00)
+                .openingHours(TestUtil.generateMockOpeningHours())
+                .location("location")
+                .description("description")
+                .price("$")
+                .website("google.com")
+                .outDoorSeating(true)
+                .washroom(true)
+                .accessibility(TestUtil.generateMockAccessibility())
+                .build()
+        );
+        pubRepository.save(
+                Pub.builder()
+                        .id(UUID.randomUUID())
+                        .name("Pub5")
+                        .lat(1.01)
+                        .lng(50.01)
+                        .openingHours(TestUtil.generateMockOpeningHours())
+                        .location("location")
+                        .description("description")
+                        .price("$")
+                        .website("google.com")
+                        .outDoorSeating(true)
+                        .washroom(true)
+                        .accessibility(TestUtil.generateMockAccessibility())
+                        .build()
+        );
+
 
         List<Pub> excepted = new ArrayList<>(Arrays.asList(pub1, pub2, pub3));
         List<Pub> filteredPubs = pubRepository.findPubsWithInRadius(1.0,1.0,5.0);

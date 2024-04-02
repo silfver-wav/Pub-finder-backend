@@ -3,10 +3,7 @@ package com.pubfinder.pubfinder.util;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.dto.UserDTO;
-import com.pubfinder.pubfinder.models.OpeningHours;
-import com.pubfinder.pubfinder.models.Pub;
-import com.pubfinder.pubfinder.models.Token;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.*;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.models.enums.TokenType;
 
@@ -41,6 +38,11 @@ public class TestUtil {
                 .openingHours(generateMockOpeningHours())
                 .location("location")
                 .description("description")
+                .price("$")
+                .website("google.com")
+                .outDoorSeating(true)
+                .washroom(true)
+                .accessibility(generateMockAccessibility())
                 .build();
     }
 
@@ -52,6 +54,11 @@ public class TestUtil {
                 .openingHours(generateMockOpeningHours())
                 .location("location")
                 .description("description")
+                .price("$")
+                .website("google.com")
+                .outDoorSeating(true)
+                .washroom(true)
+                .accessibility(generateMockAccessibility())
                 .build();
     }
 
@@ -124,6 +131,14 @@ public class TestUtil {
         return AuthenticationResponse.builder()
                 .accessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxMTU2ODQ1MiwiZXhwIjoxNzExNTczODUyfQ.zcLczdIhND1hnJMQvT4OMRzqTdBTw76O6Wb70uSzRks")
                 .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxMTU2ODQ1MiwiZXhwIjoxNzExNjU0ODUyfQ.SSezTPT73RI03rM109o2Geetr1jHzOZgZoJR4qTLa-U")
+                .build();
+    }
+
+    public static Accessibility generateMockAccessibility() {
+        return Accessibility.builder()
+                .accessibleEntrance(true)
+                .accessibleSeating(true)
+                .accessibleParking(false)
                 .build();
     }
 }

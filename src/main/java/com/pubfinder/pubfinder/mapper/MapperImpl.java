@@ -5,9 +5,6 @@ import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.models.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 public class MapperImpl implements Mapper {
 
@@ -22,7 +19,12 @@ public class MapperImpl implements Mapper {
                 .lng(dto.getLng())
                 .openingHours(dto.getOpeningHours())
                 .location(dto.getLocation())
-                .description(dto.getDescription());
+                .description(dto.getDescription())
+                .accessibility(dto.getAccessibility())
+                .price(dto.getPrice())
+                .website(dto.getWebsite())
+                .washroom(dto.getWashroom())
+                .outDoorSeating(dto.getOutDoorSeating());
 
         if (dto.getId() != null) {
             builder.id(dto.getId());
@@ -42,6 +44,11 @@ public class MapperImpl implements Mapper {
                 .openingHours(entity.getOpeningHours())
                 .location(entity.getLocation())
                 .description(entity.getDescription())
+                .accessibility(entity.getAccessibility())
+                .price(entity.getPrice())
+                .website(entity.getWebsite())
+                .washroom(entity.getWashroom())
+                .outDoorSeating(entity.getOutDoorSeating())
                 .build();
     }
 
