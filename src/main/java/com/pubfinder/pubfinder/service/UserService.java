@@ -4,6 +4,7 @@ import com.pubfinder.pubfinder.db.TokenRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.LoginRequest;
+import com.pubfinder.pubfinder.dto.UVPDTO;
 import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
@@ -130,12 +131,17 @@ public class UserService {
         deleteAllUserTokens(user);
     }
 
-    public List<UserVisitedPub> getVisitedPubs(User user) throws ResourceNotFoundException {
+    public List<UVPDTO> getVisitedPubs(User user) throws ResourceNotFoundException {
         Optional<User> foundUser = userRepository.findByUsername(user.getUsername());
         if (foundUser.isEmpty()) {
             throw new ResourceNotFoundException("User: " + user.getUsername() + " was not found");
         }
-        return userRepository.getVisitedPubs(foundUser.get().getId());
+        List<UserVisitedPub> uvpList = userRepository.getVisitedPubs(foundUser.get().getId());
+        List<UVPDTO> uvpdtos = new ArrayList<>();
+        for (UserVisitedPub uvp : uvpList) {
+            uvpdtos.add(UVPDTO.builder().pubDTO(Mapper.INSTANCE.entityToDto(uvp.getPub())).visitedDate(uvp.getVisitedDate()).build());
+        }
+        return uvpdtos;
     }
 
     private void deleteAllUserTokens(User user) {

@@ -4,6 +4,7 @@ import com.pubfinder.pubfinder.db.TokenRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.LoginRequest;
+import com.pubfinder.pubfinder.dto.UVPDTO;
 import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
@@ -233,9 +234,10 @@ public class UserAndAuthenticationServiceTest {
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         List<UserVisitedPub> uvp = List.of(UserVisitedPub.builder().visitedDate(LocalDateTime.now()).pub(TestUtil.generateMockPub()).user(user).build());
         when(userRepository.getVisitedPubs(user.getId())).thenReturn(uvp);
-        List<UserVisitedPub> rs = userService.getVisitedPubs(user);
+        List<UVPDTO> rs = userService.getVisitedPubs(user);
 
-        assertEquals(rs, uvp);
+        assertEquals(rs.size(), 1);
+        assertEquals(rs.get(0).getPubDTO().getName(), uvp.get(0).getPub().getName());
     }
 
     @Test
