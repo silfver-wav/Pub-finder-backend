@@ -9,6 +9,7 @@ import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Token;
 import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.UserVisitedPub;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.security.AuthenticationService;
 import com.pubfinder.pubfinder.util.TestUtil;
@@ -24,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -224,6 +226,23 @@ public class UserAndAuthenticationServiceTest {
     public void refreshTokenTestBadRequest() {
         HttpServletRequest request = mock(HttpServletRequest.class);
         assertThrows(BadRequestException.class, () -> userService.refreshToken(request));
+    }
+
+    @Test
+    public void getVisitedPubsTest() throws ResourceNotFoundException {
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        List<UserVisitedPub> uvp = List.of(UserVisitedPub.builder().visitedDate(LocalDateTime.now()).pub(TestUtil.generateMockPub()).user(user).build());
+        when(userRepository.getVisitedPubs(user.getId())).thenReturn(uvp);
+        List<UserVisitedPub> rs = userService.getVisitedPubs(user);
+
+        assertEquals(rs, uvp);
+    }
+
+    @Test
+    public void getVisitedPubsTestResourceNotFound() throws ResourceNotFoundException {
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.getVisitedPubs(user));
     }
 
     private String generateUserToken(User user) {
