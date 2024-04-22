@@ -2,20 +2,17 @@ package com.pubfinder.pubfinder.controller;
 
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.LoginRequest;
-import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
+import com.pubfinder.pubfinder.models.User;
 import com.pubfinder.pubfinder.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
@@ -56,5 +53,10 @@ public class UserController {
     public ResponseEntity<Void> revokeUserAccess(@PathVariable String email) {
         userService.revokeUserAccess(email);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getVisitedPubs")
+    public ResponseEntity<Object> getVisitedPubs(@RequestBody User user) throws ResourceNotFoundException {
+        return ResponseEntity.ok(userService.getVisitedPubs(user));
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -36,6 +37,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private Role role;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<UserVisitedPub> visitedPubs;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

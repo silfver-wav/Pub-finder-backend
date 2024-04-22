@@ -11,6 +11,7 @@ import org.hibernate.annotations.Type;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity(name = "Pub")
@@ -48,6 +49,10 @@ public class Pub {
     private Boolean washroom;
     @Column()
     private Boolean outDoorSeating;
+
+    @OneToMany(mappedBy = "pub", fetch = FetchType.LAZY)
+    private Set<UserVisitedPub> visitors;
+
 
     @Override
     public String toString() {

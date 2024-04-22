@@ -38,7 +38,6 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final LogoutHandler logoutHandler;
 
-
     private static final String[] WHITE_LIST_URL = {
             "/pub/getPubs/**",
             "/v2/api-docs",

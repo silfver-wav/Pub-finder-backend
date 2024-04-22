@@ -56,4 +56,5 @@ public class PubsController {
         pubsService.deletePub(Mapper.INSTANCE.dtoToEntity(pub));
         return ResponseEntity.noContent().build();
     }
+
 }

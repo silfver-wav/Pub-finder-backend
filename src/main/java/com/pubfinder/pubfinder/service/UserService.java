@@ -9,6 +9,7 @@ import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Token;
 import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.UserVisitedPub;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.models.enums.TokenType;
 import com.pubfinder.pubfinder.security.AuthenticationService;
@@ -16,14 +17,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -132,6 +128,14 @@ public class UserService {
     public void revokeUserAccess(String email) {
         User user = userRepository.findByEmail(email).orElseThrow();
         deleteAllUserTokens(user);
+    }
+
+    public List<UserVisitedPub> getVisitedPubs(User user) throws ResourceNotFoundException {
+        Optional<User> foundUser = userRepository.findByUsername(user.getUsername());
+        if (foundUser.isEmpty()) {
+            throw new ResourceNotFoundException("User: " + user.getUsername() + " was not found");
+        }
+        return userRepository.getVisitedPubs(foundUser.get().getId());
     }
 
     private void deleteAllUserTokens(User user) {
