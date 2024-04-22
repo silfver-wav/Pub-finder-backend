@@ -4,6 +4,7 @@ import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.service.PubsService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,4 +58,9 @@ public class PubsController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/visited/{pubId}")
+    public ResponseEntity<Void> visitedPub(@PathVariable UUID pubId, HttpServletRequest request) throws ResourceNotFoundException {
+        pubsService.visitPub(pubId, request);
+        return ResponseEntity.ok().build();
+    }
 }

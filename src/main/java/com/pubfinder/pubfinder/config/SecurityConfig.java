@@ -63,6 +63,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/pub/deletePub").hasAnyAuthority(ADMIN.name())
                                 .requestMatchers(HttpMethod.PUT, "/user/edit").hasAnyAuthority(ADMIN.name(), USER.name())
                                 .requestMatchers(HttpMethod.DELETE, "/user/delete").hasAnyAuthority(ADMIN.name(), USER.name())
+                                .requestMatchers(HttpMethod.DELETE, "/pub/visited").hasAnyAuthority(ADMIN.name(), USER.name())
                                 .anyRequest()
                                 .authenticated()
                 )

@@ -94,11 +94,11 @@ public class UserService {
     public AuthenticationResponse login(LoginRequest loginRequest) throws ResourceNotFoundException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
+                        loginRequest.getUsername(),
                         loginRequest.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new ResourceNotFoundException("User with email: " + loginRequest.getEmail() + " not found"));
+        var user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User with username: " + loginRequest.getUsername() + " not found"));
         var accessToken = authenticationService.generateToken(user);
         var refreshToken = authenticationService.generateRefresherToken(user);
         deleteAllUserTokens(user);
@@ -169,5 +169,12 @@ public class UserService {
                 throw new BadCredentialsException("Only admin or the user itself can delete a user");
             }
         }
+    }
+
+    public User getUser(String jwt) throws ResourceNotFoundException {
+        String username = authenticationService.extractUsername(jwt);
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) throw new ResourceNotFoundException("User with username: " + username + " not found");
+        return user.get();
     }
 }
