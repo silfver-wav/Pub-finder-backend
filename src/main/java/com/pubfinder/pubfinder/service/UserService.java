@@ -103,7 +103,10 @@ public class UserService {
         var refreshToken = authenticationService.generateRefresherToken(user);
         deleteAllUserTokens(user);
         saveToken(user, accessToken);
-        return new AuthenticationResponse(accessToken, refreshToken);
+        return AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     public AuthenticationResponse refreshToken(HttpServletRequest request) throws BadRequestException, ResourceNotFoundException {
@@ -131,12 +134,10 @@ public class UserService {
         deleteAllUserTokens(user);
     }
 
-    public List<UVPDTO> getVisitedPubs(User user) throws ResourceNotFoundException {
-        Optional<User> foundUser = userRepository.findByUsername(user.getUsername());
-        if (foundUser.isEmpty()) {
-            throw new ResourceNotFoundException("User: " + user.getUsername() + " was not found");
-        }
-        List<UserVisitedPub> uvpList = userRepository.getVisitedPubs(foundUser.get().getId());
+    // Lägg till en cache
+    public List<UVPDTO> getVisitedPubs(String username) throws ResourceNotFoundException {
+        User user = getUser(username);
+        List<UserVisitedPub> uvpList = userRepository.getVisitedPubs(user.getId());
         List<UVPDTO> uvpdtos = new ArrayList<>();
         for (UserVisitedPub uvp : uvpList) {
             uvpdtos.add(UVPDTO.builder().pubDTO(Mapper.INSTANCE.entityToDto(uvp.getPub())).visitedDate(uvp.getVisitedDate()).build());
@@ -171,8 +172,7 @@ public class UserService {
         }
     }
 
-    public User getUser(String jwt) throws ResourceNotFoundException {
-        String username = authenticationService.extractUsername(jwt);
+    public User getUser(String username) throws ResourceNotFoundException {
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) throw new ResourceNotFoundException("User with username: " + username + " not found");
         return user.get();

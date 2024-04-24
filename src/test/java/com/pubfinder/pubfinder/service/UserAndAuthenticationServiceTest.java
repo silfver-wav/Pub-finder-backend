@@ -211,7 +211,7 @@ public class UserAndAuthenticationServiceTest {
         doNothing().when(tokenRepository).delete(token);
         when(tokenRepository.save(token)).thenReturn(token);
         when(userRepository.findByUsername(any())).thenReturn(Optional.of(user));
-        LoginRequest loginRequest = LoginRequest.builder().email("email").password("password").build();
+        LoginRequest loginRequest = LoginRequest.builder().username("username").password("password").build();
         AuthenticationResponse response = userService.login(loginRequest);
 
         assert(response.getAccessToken() != null && response.getRefreshToken() != null);
@@ -219,7 +219,7 @@ public class UserAndAuthenticationServiceTest {
 
     @Test
     public void loginTestResourceNotFound() {
-        LoginRequest loginRequest = LoginRequest.builder().email("email").password("password").build();
+        LoginRequest loginRequest = LoginRequest.builder().username("username").password("password").build();
         assertThrows(ResourceNotFoundException.class, () -> userService.login(loginRequest));
     }
 
@@ -234,7 +234,7 @@ public class UserAndAuthenticationServiceTest {
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         List<UserVisitedPub> uvp = List.of(UserVisitedPub.builder().visitedDate(LocalDateTime.now()).pub(TestUtil.generateMockPub()).user(user).build());
         when(userRepository.getVisitedPubs(user.getId())).thenReturn(uvp);
-        List<UVPDTO> rs = userService.getVisitedPubs(user);
+        List<UVPDTO> rs = userService.getVisitedPubs(user.getUsername());
 
         assertEquals(rs.size(), 1);
         assertEquals(rs.get(0).getPubDTO().getName(), uvp.get(0).getPub().getName());
@@ -244,7 +244,7 @@ public class UserAndAuthenticationServiceTest {
     public void getVisitedPubsTestResourceNotFound() throws ResourceNotFoundException {
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> userService.getVisitedPubs(user));
+        assertThrows(ResourceNotFoundException.class, () -> userService.getVisitedPubs(user.getUsername()));
     }
 
     private String generateUserToken(User user) {

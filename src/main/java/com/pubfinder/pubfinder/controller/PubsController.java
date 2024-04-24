@@ -58,9 +58,15 @@ public class PubsController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/visited/{pubId}")
-    public ResponseEntity<Void> visitedPub(@PathVariable UUID pubId, HttpServletRequest request) throws ResourceNotFoundException {
-        pubsService.visitPub(pubId, request);
+    @PutMapping("/visited/{pubId}/{username}")
+    public ResponseEntity<Void> visitedPub(@PathVariable UUID pubId, @PathVariable String username) throws ResourceNotFoundException {
+        pubsService.visitPub(pubId, username);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/visited/{pubId}/{username}")
+    public ResponseEntity<Void> removeVisitedPub(@PathVariable UUID pubId, @PathVariable String username) throws ResourceNotFoundException {
+        pubsService.removeVisitedPub(pubId, username);
+        return ResponseEntity.noContent().build();
     }
 }

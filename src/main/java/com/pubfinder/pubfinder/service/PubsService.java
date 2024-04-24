@@ -76,14 +76,34 @@ public class PubsService {
         pubRepository.delete(pub);
     }
 
-    public void visitPub(UUID pubId, HttpServletRequest request) throws ResourceNotFoundException {
+    public void visitPub(UUID pubId, String username) throws ResourceNotFoundException {
         Optional<Pub> pub = pubRepository.findById(pubId);
         if (pub.isEmpty()) throw new ResourceNotFoundException("Pub with id: " + pubId + " not found");
 
-        String jwt = request.getHeader("Authorization").substring(7);
-        User user = userService.getUser(jwt);
+        User user = userService.getUser(username);
 
-        UserVisitedPub uvp = UserVisitedPub.builder().user(user).pub(pub.get()).visitedDate(LocalDateTime.now()).build();
-        userVisitedPubRepository.save(uvp);
+        Optional<UserVisitedPub> uvp = userVisitedPubRepository.findByPubAndUser(pub.get(), user);
+        UserVisitedPub userVisitedPub;
+        if (uvp.isPresent()) {
+            userVisitedPub = uvp.get();
+            userVisitedPub.setVisitedDate(LocalDateTime.now());
+        } else {
+            userVisitedPub = UserVisitedPub.builder().user(user).pub(pub.get()).visitedDate(LocalDateTime.now()).build();
+        }
+        userVisitedPubRepository.save(userVisitedPub);
+    }
+
+    public void removeVisitedPub(UUID pubId, String username) throws ResourceNotFoundException {
+        Optional<Pub> pub = pubRepository.findById(pubId);
+        if (pub.isEmpty()) throw new ResourceNotFoundException("Pub with id: " + pubId + " not found");
+
+        User user = userService.getUser(username);
+
+        Optional<UserVisitedPub> uvp = userVisitedPubRepository.findByPubAndUser(pub.get(), user);
+        if (uvp.isPresent()) {
+            userVisitedPubRepository.delete(uvp.get());
+        } else {
+            throw new ResourceNotFoundException("User Visited Pub with pub: " + pubId + " and user: " + user.getId() + " not found");
+        }
     }
 }

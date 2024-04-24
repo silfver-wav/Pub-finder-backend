@@ -58,8 +58,8 @@ public class MapperImpl implements Mapper {
         return UserDTO.builder()
                 .id(entity.getId())
                 .username(entity.getUsername())
-                .firstName(entity.getFirstName())
-                .lastName(entity.getLastName())
+                .firstname(entity.getFirstname())
+                .lastname(entity.getLastname())
                 .email(entity.getEmail())
                 .password(entity.getPassword())
                 .build();
@@ -71,11 +71,11 @@ public class MapperImpl implements Mapper {
         return User.builder()
                 .id(dto.getId())
                 .username(dto.getUsername())
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
+                .firstname(dto.getFirstname())
+                .lastname(dto.getLastname())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
-                .role(Role.ADMIN)
+                .role(Role.USER)
                 .build();
     }
 }

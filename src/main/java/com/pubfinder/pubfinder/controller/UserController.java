@@ -58,8 +58,8 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/getVisitedPubs")
-    public ResponseEntity<List<UVPDTO>> getVisitedPubs(@RequestBody User user) throws ResourceNotFoundException {
-        return ResponseEntity.ok(userService.getVisitedPubs(user));
+    @GetMapping("/getVisitedPubs/{username}")
+    public ResponseEntity<List<UVPDTO>> getVisitedPubs(@PathVariable String username) throws ResourceNotFoundException {
+        return ResponseEntity.ok(userService.getVisitedPubs(username));
     }
 }
