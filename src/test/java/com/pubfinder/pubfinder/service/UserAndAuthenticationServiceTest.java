@@ -241,11 +241,26 @@ public class UserAndAuthenticationServiceTest {
     }
 
     @Test
-    public void getVisitedPubsTestResourceNotFound() throws ResourceNotFoundException {
+    public void getVisitedPubsTestResource_NotFound() throws ResourceNotFoundException {
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> userService.getVisitedPubs(user.getUsername()));
     }
+
+    @Test
+    public void getUserTest() throws ResourceNotFoundException {
+        when(userRepository.findByUsername(any())).thenReturn(Optional.of(user));
+
+        User result = userService.getUser(user.getUsername());
+        assertEquals(result, user);
+    }
+
+    @Test
+    public void getUserTest_NotFound() throws ResourceNotFoundException {
+        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUser(user.getUsername()));
+    }
+
 
     private String generateUserToken(User user) {
         return authenticationService.generateToken(user);
