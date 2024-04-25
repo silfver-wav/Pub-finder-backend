@@ -2,6 +2,7 @@ package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.TokenRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
+import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.LoginRequest;
 import com.pubfinder.pubfinder.dto.UVPDTO;
@@ -67,6 +68,9 @@ public class UserAndAuthenticationServiceTest {
     @MockBean
     private UserDetailsService userDetailsService;
 
+    @MockBean
+    private UserVisitedPubRepository userVisitedPubRepository;
+
     @Test
     public void registerUserTest() throws BadRequestException {
         when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
@@ -90,6 +94,7 @@ public class UserAndAuthenticationServiceTest {
         doNothing().when(userRepository).delete(user);
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
+        doNothing().when(userVisitedPubRepository).deleteAllByUser(user);
         doNothing().when(tokenRepository).delete(token);
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(user));

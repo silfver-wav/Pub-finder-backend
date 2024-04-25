@@ -2,6 +2,7 @@ package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.TokenRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
+import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.LoginRequest;
 import com.pubfinder.pubfinder.dto.UVPDTO;
@@ -44,6 +45,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserVisitedPubRepository userVisitedPubRepository;
+
     public AuthenticationResponse registerUser(User user) throws BadRequestException {
         if (userRepository.findByEmail(user.getEmail()).isPresent() || userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new BadRequestException();
@@ -68,6 +72,7 @@ public class UserService {
             throw new ResourceNotFoundException("User with id: " + user.getId() + " was not found");
         }
         deleteAllUserTokens(foundUser.get());
+        deleteAllUserVisits(foundUser.get());
         userRepository.delete(foundUser.get());
     }
 
@@ -134,7 +139,6 @@ public class UserService {
         deleteAllUserTokens(user);
     }
 
-    // Lägg till en cache
     public List<UVPDTO> getVisitedPubs(String username) throws ResourceNotFoundException {
         User user = getUser(username);
         List<UserVisitedPub> uvpList = userRepository.getVisitedPubs(user.getId());
@@ -143,6 +147,12 @@ public class UserService {
             uvpdtos.add(UVPDTO.builder().pubDTO(Mapper.INSTANCE.entityToDto(uvp.getPub())).visitedDate(uvp.getVisitedDate()).build());
         }
         return uvpdtos;
+    }
+
+    public User getUser(String username) throws ResourceNotFoundException {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) throw new ResourceNotFoundException("User with username: " + username + " not found");
+        return user.get();
     }
 
     private void deleteAllUserTokens(User user) {
@@ -172,9 +182,7 @@ public class UserService {
         }
     }
 
-    public User getUser(String username) throws ResourceNotFoundException {
-        Optional<User> user = userRepository.findByUsername(username);
-        if (user.isEmpty()) throw new ResourceNotFoundException("User with username: " + username + " not found");
-        return user.get();
+    private void deleteAllUserVisits(User user) {
+        userVisitedPubRepository.deleteAllByUser(user);
     }
 }

@@ -8,8 +8,6 @@ import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.models.User;
 import com.pubfinder.pubfinder.models.UserVisitedPub;
-import com.pubfinder.pubfinder.security.AuthenticationService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;

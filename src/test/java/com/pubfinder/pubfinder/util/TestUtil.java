@@ -8,6 +8,7 @@ import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.models.enums.TokenType;
 
 import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -139,6 +140,14 @@ public class TestUtil {
                 .accessibleEntrance(true)
                 .accessibleSeating(true)
                 .accessibleParking(false)
+                .build();
+    }
+
+    public static UserVisitedPub generateUserVisitedPub() {
+        return UserVisitedPub.builder()
+                .user(generateMockUser())
+                .pub(generateMockPub())
+                .visitedDate(LocalDateTime.now())
                 .build();
     }
 }
