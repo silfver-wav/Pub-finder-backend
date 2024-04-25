@@ -1,15 +1,19 @@
 package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.PubRepository;
+import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
 import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.UserVisitedPub;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -18,13 +22,17 @@ public class PubsService {
     @Autowired
     private PubRepository pubRepository;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserVisitedPubRepository userVisitedPubRepository;
+
     @Cacheable(value = "getPub")
     public PubDTO getPub(UUID id) throws ResourceNotFoundException {
         return pubRepository.findById(id).map(Mapper.INSTANCE::entityToDto).orElseThrow(() -> new ResourceNotFoundException("Pub with id " + id + " was not found"));
     }
 
-    // Note stop names (a, an, the, of etc) should not be sent to the backend, unless it's the unless it is the first word of the name
-    // And the prefix should be max length to 8, the average cardinality will be increased
     @Cacheable(value = "getPubsByTerm",
             condition = "#term.length() > 1 && #term.length() < 9",
             key = "#term"
@@ -64,5 +72,36 @@ public class PubsService {
     public void deletePub(Pub pub) throws BadRequestException {
         if (pub == null) throw new BadRequestException();
         pubRepository.delete(pub);
+    }
+
+    public void visitPub(UUID pubId, String username) throws ResourceNotFoundException {
+        Optional<Pub> pub = pubRepository.findById(pubId);
+        if (pub.isEmpty()) throw new ResourceNotFoundException("Pub with id: " + pubId + " not found");
+
+        User user = userService.getUser(username);
+
+        Optional<UserVisitedPub> uvp = userVisitedPubRepository.findByPubAndUser(pub.get(), user);
+        UserVisitedPub userVisitedPub;
+        if (uvp.isPresent()) {
+            userVisitedPub = uvp.get();
+            userVisitedPub.setVisitedDate(LocalDateTime.now());
+        } else {
+            userVisitedPub = UserVisitedPub.builder().user(user).pub(pub.get()).visitedDate(LocalDateTime.now()).build();
+        }
+        userVisitedPubRepository.save(userVisitedPub);
+    }
+
+    public void removeVisitedPub(UUID pubId, String username) throws ResourceNotFoundException {
+        Optional<Pub> pub = pubRepository.findById(pubId);
+        if (pub.isEmpty()) throw new ResourceNotFoundException("Pub with id: " + pubId + " not found");
+
+        User user = userService.getUser(username);
+
+        Optional<UserVisitedPub> uvp = userVisitedPubRepository.findByPubAndUser(pub.get(), user);
+        if (uvp.isPresent()) {
+            userVisitedPubRepository.delete(uvp.get());
+        } else {
+            throw new ResourceNotFoundException("User Visited Pub with pub: " + pubId + " and user: " + user.getId() + " not found");
+        }
     }
 }

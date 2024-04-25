@@ -43,6 +43,7 @@ public class SecurityConfig {
             "/v2/api-docs",
             "/pub/test",
             "/user/register",
+            "/user/logout",
             "/user/login",
             "/user/refreshToken",
             "/pub/searchPubs/**",
@@ -63,6 +64,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/pub/deletePub").hasAnyAuthority(ADMIN.name())
                                 .requestMatchers(HttpMethod.PUT, "/user/edit").hasAnyAuthority(ADMIN.name(), USER.name())
                                 .requestMatchers(HttpMethod.DELETE, "/user/delete").hasAnyAuthority(ADMIN.name(), USER.name())
+                                .requestMatchers(HttpMethod.PUT, "/pub/visited/**").hasAnyAuthority(ADMIN.name(), USER.name())
+                                .requestMatchers(HttpMethod.GET, "/user/getVisitedPubs").hasAnyAuthority(ADMIN.name(), USER.name())
                                 .anyRequest()
                                 .authenticated()
                 )

@@ -1,10 +1,13 @@
 package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.PubRepository;
+import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
 import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.UserVisitedPub;
 import com.pubfinder.pubfinder.util.TestUtil;
 import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.Test;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,6 +33,11 @@ import static org.mockito.Mockito.*;
 public class PubServiceTest {
 
     @Autowired PubsService pubsService;
+
+    @MockBean UserService userService;
+
+    @MockBean
+    UserVisitedPubRepository userVisitedPubRepository;
 
     @MockBean
     private PubRepository pubRepository;
@@ -140,5 +149,39 @@ public class PubServiceTest {
         assertThrows(BadRequestException.class, () -> pubsService.deletePub(null));
     }
 
+    @Test
+    public void visitPubTest() throws ResourceNotFoundException {
+        when(pubRepository.findById(any())).thenReturn(Optional.of(pub));
+        when(userService.getUser(any())).thenReturn(user);
+        when(userVisitedPubRepository.findByPubAndUser(any(), any())).thenReturn(Optional.empty());
+
+        pubsService.visitPub(pub.getId(), user.getUsername());
+
+        verify(userVisitedPubRepository, times(1)).findByPubAndUser(pub, user);
+        verify(userVisitedPubRepository, times(1)).save(any(UserVisitedPub.class));
+    }
+
+    @Test
+    public void visitPubTest_UpdateDate() throws ResourceNotFoundException {
+        when(pubRepository.findById(any())).thenReturn(Optional.of(pub));
+        when(userService.getUser(any())).thenReturn(user);
+
+        UserVisitedPub userVisitedPub = UserVisitedPub.builder().user(user).pub(pub).visitedDate(LocalDateTime.now()).build();
+        when(userVisitedPubRepository.findByPubAndUser(any(), any())).thenReturn(Optional.of(userVisitedPub));
+
+        pubsService.visitPub(pub.getId(), user.getUsername());
+
+        verify(userVisitedPubRepository, times(1)).findByPubAndUser(pub, user);
+        verify(userVisitedPubRepository, times(1)).save(any(UserVisitedPub.class));
+    }
+
+    @Test
+    public void visitPubTest_PubNotFound() {
+        when(pubRepository.findById(any())).thenReturn(Optional.empty());
+        assertThrows( ResourceNotFoundException.class,
+                    () -> pubsService.visitPub(pub.getId(), user.getUsername()));
+    }
+
+    private final User user = TestUtil.generateMockUser();
     private final Pub pub = TestUtil.generateMockPub();
 }

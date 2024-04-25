@@ -2,6 +2,7 @@ package com.pubfinder.pubfinder.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
+import com.pubfinder.pubfinder.dto.UVPDTO;
 import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.service.UserService;
 import com.pubfinder.pubfinder.util.TestUtil;
@@ -12,6 +13,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -78,6 +81,13 @@ public class UserControllerTest {
         mockMvc.perform(post("/user/refreshToken", response)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getVisitedPubsTest() throws Exception {
+        when(userService.getVisitedPubs(any())).thenReturn(new ArrayList<UVPDTO>());
+        mockMvc.perform(get("/user//getVisitedPubs/{username}", "username"))
                 .andExpect(status().isOk());
     }
 

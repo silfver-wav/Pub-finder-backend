@@ -2,8 +2,10 @@ package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.TokenRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
+import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.LoginRequest;
+import com.pubfinder.pubfinder.dto.UVPDTO;
 import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
@@ -66,6 +68,9 @@ public class UserAndAuthenticationServiceTest {
     @MockBean
     private UserDetailsService userDetailsService;
 
+    @MockBean
+    private UserVisitedPubRepository userVisitedPubRepository;
+
     @Test
     public void registerUserTest() throws BadRequestException {
         when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
@@ -89,6 +94,7 @@ public class UserAndAuthenticationServiceTest {
         doNothing().when(userRepository).delete(user);
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
+        doNothing().when(userVisitedPubRepository).deleteAllByUser(user);
         doNothing().when(tokenRepository).delete(token);
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(user));
@@ -210,7 +216,7 @@ public class UserAndAuthenticationServiceTest {
         doNothing().when(tokenRepository).delete(token);
         when(tokenRepository.save(token)).thenReturn(token);
         when(userRepository.findByUsername(any())).thenReturn(Optional.of(user));
-        LoginRequest loginRequest = LoginRequest.builder().email("email").password("password").build();
+        LoginRequest loginRequest = LoginRequest.builder().username("username").password("password").build();
         AuthenticationResponse response = userService.login(loginRequest);
 
         assert(response.getAccessToken() != null && response.getRefreshToken() != null);
@@ -218,7 +224,7 @@ public class UserAndAuthenticationServiceTest {
 
     @Test
     public void loginTestResourceNotFound() {
-        LoginRequest loginRequest = LoginRequest.builder().email("email").password("password").build();
+        LoginRequest loginRequest = LoginRequest.builder().username("username").password("password").build();
         assertThrows(ResourceNotFoundException.class, () -> userService.login(loginRequest));
     }
 
@@ -233,17 +239,33 @@ public class UserAndAuthenticationServiceTest {
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         List<UserVisitedPub> uvp = List.of(UserVisitedPub.builder().visitedDate(LocalDateTime.now()).pub(TestUtil.generateMockPub()).user(user).build());
         when(userRepository.getVisitedPubs(user.getId())).thenReturn(uvp);
-        List<UserVisitedPub> rs = userService.getVisitedPubs(user);
+        List<UVPDTO> rs = userService.getVisitedPubs(user.getUsername());
 
-        assertEquals(rs, uvp);
+        assertEquals(rs.size(), 1);
+        assertEquals(rs.get(0).getPubDTO().getName(), uvp.get(0).getPub().getName());
     }
 
     @Test
-    public void getVisitedPubsTestResourceNotFound() throws ResourceNotFoundException {
+    public void getVisitedPubsTestResource_NotFound() throws ResourceNotFoundException {
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> userService.getVisitedPubs(user));
+        assertThrows(ResourceNotFoundException.class, () -> userService.getVisitedPubs(user.getUsername()));
     }
+
+    @Test
+    public void getUserTest() throws ResourceNotFoundException {
+        when(userRepository.findByUsername(any())).thenReturn(Optional.of(user));
+
+        User result = userService.getUser(user.getUsername());
+        assertEquals(result, user);
+    }
+
+    @Test
+    public void getUserTest_NotFound() throws ResourceNotFoundException {
+        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUser(user.getUsername()));
+    }
+
 
     private String generateUserToken(User user) {
         return authenticationService.generateToken(user);

@@ -50,9 +50,12 @@ public class Pub {
     @Column()
     private Boolean outDoorSeating;
 
-    @OneToMany(mappedBy = "pub", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "pub", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE )
     private Set<UserVisitedPub> visitors;
 
+    public void addVisitor(UserVisitedPub userVisitedPub) {
+        visitors.add(userVisitedPub);
+    }
 
     @Override
     public String toString() {

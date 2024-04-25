@@ -43,8 +43,8 @@ public class UserRepositoryTest {
         Optional<User> foundUser = userRepository.findById(savedUser.getId());
 
         assertTrue(foundUser.isPresent());
-        assertEquals(savedUser.getFirstName(), foundUser.get().getFirstName());
-        assertEquals(savedUser.getLastName(), foundUser.get().getLastName());
+        assertEquals(savedUser.getFirstname(), foundUser.get().getFirstname());
+        assertEquals(savedUser.getLastname(), foundUser.get().getLastname());
         assertEquals(savedUser.getEmail(), foundUser.get().getEmail());
         assertEquals(savedUser.getUsername(), foundUser.get().getUsername());
         assertEquals(savedUser.getPassword(), foundUser.get().getPassword());
@@ -57,8 +57,8 @@ public class UserRepositoryTest {
         Optional<User> foundUser = userRepository.findByUsername(savedUser.getUsername());
 
         assertTrue(foundUser.isPresent());
-        assertEquals(savedUser.getFirstName(), foundUser.get().getFirstName());
-        assertEquals(savedUser.getLastName(), foundUser.get().getLastName());
+        assertEquals(savedUser.getFirstname(), foundUser.get().getFirstname());
+        assertEquals(savedUser.getLastname(), foundUser.get().getLastname());
         assertEquals(savedUser.getEmail(), foundUser.get().getEmail());
         assertEquals(savedUser.getUsername(), foundUser.get().getUsername());
         assertEquals(savedUser.getPassword(), foundUser.get().getPassword());
@@ -71,8 +71,8 @@ public class UserRepositoryTest {
         Optional<User> foundUser = userRepository.findByEmail(savedUser.getEmail());
 
         assertTrue(foundUser.isPresent());
-        assertEquals(savedUser.getFirstName(), foundUser.get().getFirstName());
-        assertEquals(savedUser.getLastName(), foundUser.get().getLastName());
+        assertEquals(savedUser.getFirstname(), foundUser.get().getLastname());
+        assertEquals(savedUser.getLastname(), foundUser.get().getLastname());
         assertEquals(savedUser.getEmail(), foundUser.get().getEmail());
         assertEquals(savedUser.getUsername(), foundUser.get().getUsername());
         assertEquals(savedUser.getPassword(), foundUser.get().getPassword());
@@ -90,7 +90,7 @@ public class UserRepositoryTest {
     @Test
     public void editUser() {
         User savedUser = userRepository.save(TestUtil.generateMockUser());
-        savedUser.setFirstName("something else");
+        savedUser.setFirstname("something else");
         User editedUser = userRepository.save(savedUser);
         assertEquals(savedUser, editedUser);
     }

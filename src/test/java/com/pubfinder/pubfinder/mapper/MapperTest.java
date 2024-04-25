@@ -63,8 +63,8 @@ public class MapperTest {
     }
 
     private void checkUser(UserDTO userDTO, User user) {
-        assertEquals(userDTO.getFirstName(), user.getFirstName());
-        assertEquals(userDTO.getLastName(), user.getLastName());
+        assertEquals(userDTO.getFirstname(), user.getFirstname());
+        assertEquals(userDTO.getLastname(), user.getLastname());
         assertEquals(userDTO.getEmail(), user.getEmail());
         assertEquals(userDTO.getUsername(), user.getUsername());
         assertEquals(userDTO.getPassword(), user.getPassword());

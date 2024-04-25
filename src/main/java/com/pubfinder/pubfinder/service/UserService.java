@@ -2,8 +2,10 @@ package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.TokenRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
+import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.LoginRequest;
+import com.pubfinder.pubfinder.dto.UVPDTO;
 import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
@@ -43,6 +45,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserVisitedPubRepository userVisitedPubRepository;
+
     public AuthenticationResponse registerUser(User user) throws BadRequestException {
         if (userRepository.findByEmail(user.getEmail()).isPresent() || userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new BadRequestException();
@@ -67,6 +72,7 @@ public class UserService {
             throw new ResourceNotFoundException("User with id: " + user.getId() + " was not found");
         }
         deleteAllUserTokens(foundUser.get());
+        deleteAllUserVisits(foundUser.get());
         userRepository.delete(foundUser.get());
     }
 
@@ -93,16 +99,19 @@ public class UserService {
     public AuthenticationResponse login(LoginRequest loginRequest) throws ResourceNotFoundException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
+                        loginRequest.getUsername(),
                         loginRequest.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new ResourceNotFoundException("User with email: " + loginRequest.getEmail() + " not found"));
+        var user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User with username: " + loginRequest.getUsername() + " not found"));
         var accessToken = authenticationService.generateToken(user);
         var refreshToken = authenticationService.generateRefresherToken(user);
         deleteAllUserTokens(user);
         saveToken(user, accessToken);
-        return new AuthenticationResponse(accessToken, refreshToken);
+        return AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     public AuthenticationResponse refreshToken(HttpServletRequest request) throws BadRequestException, ResourceNotFoundException {
@@ -130,12 +139,20 @@ public class UserService {
         deleteAllUserTokens(user);
     }
 
-    public List<UserVisitedPub> getVisitedPubs(User user) throws ResourceNotFoundException {
-        Optional<User> foundUser = userRepository.findByUsername(user.getUsername());
-        if (foundUser.isEmpty()) {
-            throw new ResourceNotFoundException("User: " + user.getUsername() + " was not found");
+    public List<UVPDTO> getVisitedPubs(String username) throws ResourceNotFoundException {
+        User user = getUser(username);
+        List<UserVisitedPub> uvpList = userRepository.getVisitedPubs(user.getId());
+        List<UVPDTO> uvpdtos = new ArrayList<>();
+        for (UserVisitedPub uvp : uvpList) {
+            uvpdtos.add(UVPDTO.builder().pubDTO(Mapper.INSTANCE.entityToDto(uvp.getPub())).visitedDate(uvp.getVisitedDate()).build());
         }
-        return userRepository.getVisitedPubs(foundUser.get().getId());
+        return uvpdtos;
+    }
+
+    public User getUser(String username) throws ResourceNotFoundException {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) throw new ResourceNotFoundException("User with username: " + username + " not found");
+        return user.get();
     }
 
     private void deleteAllUserTokens(User user) {
@@ -163,5 +180,9 @@ public class UserService {
                 throw new BadCredentialsException("Only admin or the user itself can delete a user");
             }
         }
+    }
+
+    private void deleteAllUserVisits(User user) {
+        userVisitedPubRepository.deleteAllByUser(user);
     }
 }

@@ -64,10 +64,11 @@ public class PubsControllerTest {
 
     @Test
     public void getPubByIdTest() throws Exception {
-        UUID id = pub.getId();
-        when(pubsService.getPub(id)).thenReturn(pub);
+        when(pubsService.getPub(any())).thenReturn(pub);
 
-        mockMvc.perform(get("/pub/getPub/{id}", id)).andExpect(status().isOk()).andExpect(content().json(objectMapper.writeValueAsString(pub)));
+        mockMvc.perform(get("/pub/getPub/{id}", UUID.randomUUID()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(pub)));
     }
 
 
@@ -134,6 +135,34 @@ public class PubsControllerTest {
         doThrow(BadRequestException.class).when(pubsService).deletePub(null);
         mockMvc.perform(delete("/pub/deletePub").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest()).andDo(print());
+    }
+
+    @Test
+    public void visitedPubTest() throws Exception {
+        doNothing().when(pubsService).visitPub(any(), any());
+        mockMvc.perform(put("/pub/visited/{pubId}/{username}", UUID.randomUUID(), "username"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void visitedPubTest_ResourceNotFound() throws Exception {
+        doThrow(ResourceNotFoundException.class).when(pubsService).visitPub(any(), any());
+        mockMvc.perform(put("/pub/visited/{pubId}/{username}", UUID.randomUUID(), "username"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void removeVisitedPubTest() throws Exception {
+        doNothing().when(pubsService).removeVisitedPub(any(), any());
+        mockMvc.perform(delete("/pub/visited/{pubId}/{username}", UUID.randomUUID(), "username"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void removeVisitedPubTest_ResourceNotFound() throws Exception {
+        doThrow(ResourceNotFoundException.class).when(pubsService).removeVisitedPub(any(), any());
+        mockMvc.perform(delete("/pub/visited/{pubId}/{username}", UUID.randomUUID(), "username"))
+                .andExpect(status().isNotFound());
     }
 
     PubDTO pub = TestUtil.generateMockPubDTO();
