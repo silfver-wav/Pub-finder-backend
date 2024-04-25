@@ -84,8 +84,8 @@ public class TestUtil {
     public static User generateMockUser() {
         return User.builder()
                 .id(UUID.randomUUID())
-                .firstName("firstName")
-                .lastName("lastName")
+                .firstname("firstName")
+                .lastname("lastName")
                 .email("email")
                 .username("username")
                 .password("password")
@@ -96,8 +96,8 @@ public class TestUtil {
     public static UserDTO generateMockUserDTO() {
         return UserDTO.builder()
                 .id(UUID.randomUUID())
-                .firstName("firstName")
-                .lastName("lastName")
+                .firstname("firstName")
+                .lastname("lastName")
                 .email("email")
                 .username("username")
                 .password("password")
