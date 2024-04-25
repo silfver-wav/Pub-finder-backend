@@ -29,8 +29,8 @@ public class PubsService {
     private UserVisitedPubRepository userVisitedPubRepository;
 
     @Cacheable(value = "getPub")
-    public PubDTO getPub(UUID id) throws ResourceNotFoundException {
-        return pubRepository.findById(id).map(Mapper.INSTANCE::entityToDto).orElseThrow(() -> new ResourceNotFoundException("Pub with id " + id + " was not found"));
+    public Pub getPub(UUID id) throws ResourceNotFoundException {
+        return pubRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Pub with id " + id + " was not found"));
     }
 
     @Cacheable(value = "getPubsByTerm",

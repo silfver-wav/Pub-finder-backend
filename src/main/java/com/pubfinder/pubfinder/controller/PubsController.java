@@ -3,6 +3,7 @@ package com.pubfinder.pubfinder.controller;
 import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
+import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.service.PubsService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
@@ -34,7 +35,8 @@ public class PubsController {
 
     @GetMapping("/getPub/{id}")
     public ResponseEntity<PubDTO> searchForPubs(@PathVariable("id") UUID id) throws ResourceNotFoundException {
-        return ResponseEntity.ok(pubsService.getPub(id));
+        Pub pub = pubsService.getPub(id);
+        return ResponseEntity.ok(Mapper.INSTANCE.entityToDto(pub));
     }
 
     @GetMapping("/searchPubs/{term}")

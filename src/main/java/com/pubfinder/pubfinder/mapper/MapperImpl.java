@@ -1,13 +1,14 @@
 package com.pubfinder.pubfinder.mapper;
 
 import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.dto.ReviewDTO;
 import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Review;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.models.User;
 
 public class MapperImpl implements Mapper {
-
 
     @Override
     public Pub dtoToEntity(PubDTO dto) {
@@ -76,6 +77,32 @@ public class MapperImpl implements Mapper {
                 .email(dto.getEmail())
                 .password(dto.getPassword())
                 .role(Role.USER)
+                .build();
+    }
+
+    @Override
+    public ReviewDTO entityToDto(Review entity) {
+        return ReviewDTO.builder()
+                .id(entity.getId())
+                .pubId(entity.getPub().getId())
+                .username(entity.getReviewer().getUsername())
+                .reviewDate(entity.getReviewDate())
+                .review(entity.getReview())
+                .rating(entity.getRating())
+                .toilets(entity.getToilets())
+                .loudness(entity.getLoudness())
+                .service(entity.getService())
+                .build();
+    }
+
+    @Override
+    public Review dtoToEntity(ReviewDTO dto) {
+        return Review.builder()
+                .review(dto.getReview())
+                .rating(dto.getRating())
+                .toilets(dto.getToilets())
+                .loudness(dto.getLoudness())
+                .service(dto.getService())
                 .build();
     }
 }
