@@ -56,10 +56,6 @@ public class Pub {
     @OneToMany(mappedBy = "pub", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE )
     private Set<Review> reviews;
 
-    public void addVisitor(UserVisitedPub userVisitedPub) {
-        visitors.add(userVisitedPub);
-    }
-
     @Override
     public String toString() {
         return "Pub{" + "\n" +

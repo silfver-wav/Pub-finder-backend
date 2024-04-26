@@ -3,6 +3,7 @@ package com.pubfinder.pubfinder.service;
 import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
 import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.dto.ReviewDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
@@ -103,5 +104,12 @@ public class PubsService {
         } else {
             throw new ResourceNotFoundException("User Visited Pub with pub: " + pubId + " and user: " + user.getId() + " not found");
         }
+    }
+
+    public List<ReviewDTO> getReviews(UUID id) {
+        return pubRepository.findAllReviewsForPub(id)
+                .stream()
+                .map(Mapper.INSTANCE::entityToDto)
+                .toList();
     }
 }

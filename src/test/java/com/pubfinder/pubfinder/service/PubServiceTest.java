@@ -46,8 +46,8 @@ public class PubServiceTest {
     public void getPubTest() throws ResourceNotFoundException {
         UUID pubId = pub.getId();
         when(pubRepository.findById(any())).thenReturn(Optional.of(pub));
-        PubDTO result = pubsService.getPub(pubId);
-        assertEquals(Mapper.INSTANCE.entityToDto(pub), result);
+        Pub result = pubsService.getPub(pubId);
+        assertEquals(pub, result);
         verify(pubRepository, times(1)).findById(pubId);
     }
 

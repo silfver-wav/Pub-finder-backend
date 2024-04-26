@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
+import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.service.PubsService;
 import com.pubfinder.pubfinder.util.TestUtil;
 import org.apache.coyote.BadRequestException;
@@ -64,6 +65,7 @@ public class PubsControllerTest {
 
     @Test
     public void getPubByIdTest() throws Exception {
+        Pub pub = TestUtil.generateMockPub();
         when(pubsService.getPub(any())).thenReturn(pub);
 
         mockMvc.perform(get("/pub/getPub/{id}", UUID.randomUUID()))

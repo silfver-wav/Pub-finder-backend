@@ -1,11 +1,14 @@
 package com.pubfinder.pubfinder.repository;
 
 import com.pubfinder.pubfinder.db.PubRepository;
+import com.pubfinder.pubfinder.db.ReviewRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
 import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
 import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Review;
 import com.pubfinder.pubfinder.models.User;
 import com.pubfinder.pubfinder.models.UserVisitedPub;
+import com.pubfinder.pubfinder.models.enums.Rating;
 import com.pubfinder.pubfinder.util.TestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -36,6 +39,9 @@ public class UserRepositoryTest {
 
     @Autowired
     private UserVisitedPubRepository userVisitedPubRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Test
     public void saveAndGetUserTest() {
@@ -105,5 +111,24 @@ public class UserRepositoryTest {
         List<UserVisitedPub> uvpList = userRepository.getVisitedPubs(savedUser.getId());
         assertEquals(uvpList.size(), 1);
         assertEquals(uvpList.get(0).getPub(), uvp.getPub());
+    }
+
+    @Test void getReviews() {
+        User user = userRepository.save(TestUtil.generateMockUser());
+        Pub pub = pubRepository.save(TestUtil.generateMockPub());
+        Review review = Review.builder()
+                        .pub(pub)
+                        .reviewer(user)
+                        .reviewDate(LocalDateTime.now())
+                        .rating(Rating.FIVE)
+                        .build();
+
+        List<Review> reviews1 = userRepository.findAllReviewsByUser(user.getUsername());
+        assertEquals(0,reviews1.size());
+
+        reviewRepository.save(review);
+
+        List<Review> reviews2 = userRepository.findAllReviewsByUser(user.getUsername());
+        assertEquals(1,reviews2.size());
     }
 }

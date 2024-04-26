@@ -4,6 +4,7 @@ import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.PubDTO;
 import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.models.*;
+import com.pubfinder.pubfinder.models.enums.Rating;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.models.enums.TokenType;
 
@@ -148,6 +149,15 @@ public class TestUtil {
                 .user(generateMockUser())
                 .pub(generateMockPub())
                 .visitedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public static Review generateMockReview(User user, Pub pub) {
+        return Review.builder()
+                .pub(pub)
+                .reviewer(user)
+                .reviewDate(LocalDateTime.now())
+                .rating(Rating.FIVE)
                 .build();
     }
 }

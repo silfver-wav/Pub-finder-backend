@@ -3,10 +3,7 @@ package com.pubfinder.pubfinder.service;
 import com.pubfinder.pubfinder.db.TokenRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
 import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
-import com.pubfinder.pubfinder.dto.AuthenticationResponse;
-import com.pubfinder.pubfinder.dto.LoginRequest;
-import com.pubfinder.pubfinder.dto.UVPDTO;
-import com.pubfinder.pubfinder.dto.UserDTO;
+import com.pubfinder.pubfinder.dto.*;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Token;
@@ -153,6 +150,13 @@ public class UserService {
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) throw new ResourceNotFoundException("User with username: " + username + " not found");
         return user.get();
+    }
+
+    public List<ReviewDTO> getUserReviews(String username) throws ResourceNotFoundException {
+        return userRepository.findAllReviewsByUser(username)
+                .stream()
+                .map(Mapper.INSTANCE::entityToDto)
+                .toList();
     }
 
     private void deleteAllUserTokens(User user) {

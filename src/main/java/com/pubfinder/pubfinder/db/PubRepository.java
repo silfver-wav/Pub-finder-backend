@@ -1,6 +1,7 @@
 package com.pubfinder.pubfinder.db;
 
 import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,4 +22,7 @@ public interface PubRepository extends JpaRepository<Pub, UUID> {
 
     @Query("SELECT p.id, p.name FROM Pub p WHERE LOWER(p.name) LIKE %:term% OR LOWER(p.name) LIKE %:term%")
     List<Object[]> findPubsByNameContaining(@Param("term") String term);
+
+    @Query("SELECT u.reviews FROM Pub u WHERE u.id = :id")
+    List<Review> findAllReviewsForPub(@Param("id") UUID id);
 }

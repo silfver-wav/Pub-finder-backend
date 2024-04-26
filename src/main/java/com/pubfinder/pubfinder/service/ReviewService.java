@@ -29,36 +29,24 @@ public class ReviewService {
     @Autowired
     private PubsService pubsService;
 
-    public List<ReviewDTO> getReviewsForPub(UUID pubId) throws ResourceNotFoundException {
-        Pub pub = pubsService.getPub(pubId);
-        return reviewRepository.findAllByPub(pub)
-                .stream()
-                .map(Mapper.INSTANCE::entityToDto)
-                .toList();
-    }
-
-    public List<ReviewDTO> getReviewsFormUser(String username) throws ResourceNotFoundException {
-        User user = userService.getUser(username);
-        return reviewRepository.findAllByUser(user)
-                .stream()
-                .map(Mapper.INSTANCE::entityToDto)
-                .toList();
-    }
-
     public ReviewDTO saveReview(Review review, UUID pubId, String username) throws ResourceNotFoundException, ReviewAlreadyExistsException {
         User user = userService.getUser(username);
         Pub pub = pubsService.getPub(pubId);
-        reviewRepository.findByPubAndUser(pub, user)
+        reviewRepository.findByPubAndReviewer(pub, user)
                 .orElseThrow(() -> new ReviewAlreadyExistsException("User: " + username + " has already made an review on Pub: " + pubId));
 
         review.setReviewDate(LocalDateTime.now());
         return Mapper.INSTANCE.entityToDto(reviewRepository.save(review));
     }
 
-    public void deleteReview(Review review) {
+    public void deleteReview(Review review) throws ResourceNotFoundException {
+        reviewRepository.findById(review.getId()).orElseThrow(() -> new ResourceNotFoundException("Review: " + review.getId() + " not found."));
+        reviewRepository.delete(review);
     }
 
-    public ReviewDTO updateReview(Review review) {
-        return new ReviewDTO();
+    public ReviewDTO updateReview(Review review) throws ResourceNotFoundException {
+        reviewRepository.findById(review.getId()).orElseThrow(() -> new ResourceNotFoundException("Review: " + review.getId() + " not found."));
+        review.setReviewDate(LocalDateTime.now());
+        return Mapper.INSTANCE.entityToDto(reviewRepository.save(review));
     }
 }
