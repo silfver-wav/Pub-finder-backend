@@ -32,8 +32,9 @@ public class ReviewService {
     public ReviewDTO saveReview(Review review, UUID pubId, String username) throws ResourceNotFoundException, ReviewAlreadyExistsException {
         User user = userService.getUser(username);
         Pub pub = pubsService.getPub(pubId);
-        reviewRepository.findByPubAndReviewer(pub, user)
-                .orElseThrow(() -> new ReviewAlreadyExistsException("User: " + username + " has already made an review on Pub: " + pubId));
+        if (reviewRepository.findByPubAndReviewer(pub, user).isPresent()) {
+            throw new ReviewAlreadyExistsException("User: " + username + " has already made a review on Pub: " + pubId);
+        }
 
         review.setReviewDate(LocalDateTime.now());
         return Mapper.INSTANCE.entityToDto(reviewRepository.save(review));
