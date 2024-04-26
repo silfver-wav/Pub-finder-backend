@@ -1,11 +1,22 @@
 package com.pubfinder.pubfinder.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
-import com.pubfinder.pubfinder.dto.UVPDTO;
-import com.pubfinder.pubfinder.dto.UserDTO;
+import com.pubfinder.pubfinder.dto.UserDto;
+import com.pubfinder.pubfinder.dto.VisitedDto;
 import com.pubfinder.pubfinder.service.UserService;
 import com.pubfinder.pubfinder.util.TestUtil;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,91 +25,82 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(value = UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class UserControllerTest {
 
-    @MockBean
-    private UserService userService;
+  @MockBean
+  private UserService userService;
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-    @Test
-    public void registerUserTest() throws Exception {
-        UserDTO userDTO = TestUtil.generateMockUserDTO();
-        AuthenticationResponse response = TestUtil.generateMockAuthenticationResponse();
-        when(userService.registerUser(TestUtil.generateMockUser())).thenReturn(response);
+  @Test
+  public void registerUserTest() throws Exception {
+    UserDto userDTO = TestUtil.generateMockUserDTO();
+    AuthenticationResponse response = TestUtil.generateMockAuthenticationResponse();
+    when(userService.registerUser(TestUtil.generateMockUser())).thenReturn(response);
 
-        mockMvc.perform(post("/user/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userDTO)))
-                .andExpect(status().isCreated());
-    }
+    mockMvc.perform(post("/user/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(userDTO)))
+        .andExpect(status().isCreated());
+  }
 
-    @Test
-    public void deleteUserTest() throws Exception {
-        doNothing().when(userService).deleteUser(any(), any());
-        mockMvc.perform(delete("/user/delete")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isNoContent());
-    }
+  @Test
+  public void deleteUserTest() throws Exception {
+    doNothing().when(userService).delete(any(), any());
+    mockMvc.perform(delete("/user/delete")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(user)))
+        .andExpect(status().isNoContent());
+  }
 
-    @Test
-    public void editUserTest() throws Exception {
-        when(userService.editUser(any(), any())).thenReturn(TestUtil.generateMockUserDTO());
-        mockMvc.perform(put("/user/edit", TestUtil.generateMockUserDTO())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk());
-    }
+  @Test
+  public void editUserTest() throws Exception {
+    when(userService.edit(any(), any())).thenReturn(TestUtil.generateMockUserDTO());
+    mockMvc.perform(put("/user/edit", TestUtil.generateMockUserDTO())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(user)))
+        .andExpect(status().isOk());
+  }
 
-    @Test
-    public void loginTest() throws Exception {
-        AuthenticationResponse response = TestUtil.generateMockAuthenticationResponse();
-        when(userService.login(any())).thenReturn(response);
-        mockMvc.perform(post("/user/login", response)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk());
-    }
+  @Test
+  public void loginTest() throws Exception {
+    AuthenticationResponse response = TestUtil.generateMockAuthenticationResponse();
+    when(userService.login(any())).thenReturn(response);
+    mockMvc.perform(post("/user/login", response)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(user)))
+        .andExpect(status().isOk());
+  }
 
-    @Test
-    public void refreshTokenTest() throws Exception {
-        AuthenticationResponse response = TestUtil.generateMockAuthenticationResponse();
-        when(userService.refreshToken(any())).thenReturn(response);
-        mockMvc.perform(post("/user/refreshToken", response)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk());
-    }
+  @Test
+  public void refreshTokenTest() throws Exception {
+    AuthenticationResponse response = TestUtil.generateMockAuthenticationResponse();
+    when(userService.refreshToken(any())).thenReturn(response);
+    mockMvc.perform(post("/user/refreshToken", response)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(user)))
+        .andExpect(status().isOk());
+  }
 
-    @Test
-    public void getVisitedPubsTest() throws Exception {
-        when(userService.getVisitedPubs(any())).thenReturn(new ArrayList<UVPDTO>());
-        mockMvc.perform(get("/user//getVisitedPubs/{username}", "username"))
-                .andExpect(status().isOk());
-    }
+  @Test
+  public void getVisitedPubsTest() throws Exception {
+    when(userService.getVisitedPubs(any())).thenReturn(new ArrayList<VisitedDto>());
+    mockMvc.perform(get("/user//getVisitedPubs/{username}", "username"))
+        .andExpect(status().isOk());
+  }
 
-    @Test
-    public void getReviewsTest() throws Exception {
-        when(userService.getUserReviews(any())).thenReturn(List.of(TestUtil.generateMockReviewDTO()));
-        mockMvc.perform(get("/user/reviews/{username}", "username"))
-                .andExpect(status().isOk());
-    }
+  @Test
+  public void getReviewsTest() throws Exception {
+    when(userService.getUserReviews(any())).thenReturn(List.of(TestUtil.generateMockReviewDTO()));
+    mockMvc.perform(get("/user/reviews/{username}", "username"))
+        .andExpect(status().isOk());
+  }
 
-    UserDTO user = TestUtil.generateMockUserDTO();
+  UserDto user = TestUtil.generateMockUserDTO();
 }

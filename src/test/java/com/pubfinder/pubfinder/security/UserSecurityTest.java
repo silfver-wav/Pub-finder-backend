@@ -1,7 +1,7 @@
 package com.pubfinder.pubfinder.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pubfinder.pubfinder.dto.UserDTO;
+import com.pubfinder.pubfinder.dto.UserDto;
 import com.pubfinder.pubfinder.models.User;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.service.UserService;
@@ -119,5 +119,5 @@ public class UserSecurityTest {
                 .andExpect(status().isForbidden());
     }
 
-    UserDTO userDTO = TestUtil.generateMockUserDTO();
+    UserDto userDTO = TestUtil.generateMockUserDTO();
 }

@@ -1,16 +1,17 @@
 package com.pubfinder.pubfinder.dto;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
+@Builder
+public class VisitedDto {
 
-  private String accessToken;
-  private String refreshToken;
+  private PubDto pubDto;
+  private LocalDateTime visitedDate;
 }

@@ -1,7 +1,7 @@
 package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.ReviewRepository;
-import com.pubfinder.pubfinder.dto.ReviewDTO;
+import com.pubfinder.pubfinder.dto.ReviewDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.exception.ReviewAlreadyExistsException;
 import com.pubfinder.pubfinder.mapper.Mapper;
@@ -47,7 +47,7 @@ public class ReviewServiceTest {
         when(reviewRepository.findByPubAndReviewer(pub, user)).thenReturn(Optional.empty());
         Review review = TestUtil.generateMockReview(user, pub);
         when(reviewRepository.save(any())).thenReturn(review);
-        ReviewDTO result = reviewService.saveReview(review, pub.getId(), user.getUsername());
+        ReviewDto result = reviewService.saveReview(review, pub.getId(), user.getUsername());
 
         assertEquals(result, Mapper.INSTANCE.entityToDto(review));
         verify(reviewRepository, times(1)).save(review);
@@ -114,7 +114,7 @@ public class ReviewServiceTest {
         review.setLoudness(LoudnessRating.LOUD);
         when(reviewRepository.save(any())).thenReturn(review);
 
-        ReviewDTO result = reviewService.updateReview(review);
+        ReviewDto result = reviewService.updateReview(review);
         assertEquals(Mapper.INSTANCE.entityToDto(review), result);
         verify(reviewRepository, times(1)).save(review);
     }

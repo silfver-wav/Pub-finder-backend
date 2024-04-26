@@ -1,7 +1,7 @@
 package com.pubfinder.pubfinder.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.service.PubsService;
 import com.pubfinder.pubfinder.util.TestUtil;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ public class RateLimitTest {
 
     @Test
     public void rateLimitTest() throws Exception {
-        List<PubDTO> pubs = new ArrayList<>(List.of(pub));
+        List<PubDto> pubs = new ArrayList<>(List.of(pub));
         when(pubsService.getPubs(1.0,1.0,1.0)).thenReturn(pubs);
 
         for (int i = 0; i < 10; i++) {
@@ -46,5 +46,5 @@ public class RateLimitTest {
 
         mockMvc.perform(get("/pub/getPubs/{lat}/{lng}/{radius}", 1.0, 1.0, 1.0)).andExpect(status().isTooManyRequests());
     }
-    PubDTO pub = TestUtil.generateMockPubDTO();
+    PubDto pub = TestUtil.generateMockPubDTO();
 }

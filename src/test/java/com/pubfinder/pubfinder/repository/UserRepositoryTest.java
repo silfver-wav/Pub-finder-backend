@@ -3,11 +3,11 @@ package com.pubfinder.pubfinder.repository;
 import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.db.ReviewRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
-import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
+import com.pubfinder.pubfinder.db.VisitedRepository;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.models.Review;
 import com.pubfinder.pubfinder.models.User;
-import com.pubfinder.pubfinder.models.UserVisitedPub;
+import com.pubfinder.pubfinder.models.Visited;
 import com.pubfinder.pubfinder.models.enums.Rating;
 import com.pubfinder.pubfinder.util.TestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +16,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +36,7 @@ public class UserRepositoryTest {
     private PubRepository pubRepository;
 
     @Autowired
-    private UserVisitedPubRepository userVisitedPubRepository;
+    private VisitedRepository visitedRepository;
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -105,10 +103,10 @@ public class UserRepositoryTest {
     public void getVisitedPubs() {
         List<Pub> pubs = pubRepository.saveAll(TestUtil.generateListOfMockPubs());
         User savedUser = userRepository.save(TestUtil.generateMockUser());
-        UserVisitedPub uvp = UserVisitedPub.builder().user(savedUser).pub(pubs.get(0)).visitedDate(LocalDateTime.now()).build();
-        userVisitedPubRepository.save(uvp);
+        Visited uvp = Visited.builder().visitor(savedUser).pub(pubs.get(0)).visitedDate(LocalDateTime.now()).build();
+        visitedRepository.save(uvp);
 
-        List<UserVisitedPub> uvpList = userRepository.getVisitedPubs(savedUser.getId());
+        List<Visited> uvpList = userRepository.getVisitedPubs(savedUser.getId());
         assertEquals(uvpList.size(), 1);
         assertEquals(uvpList.get(0).getPub(), uvp.getPub());
     }
