@@ -92,7 +92,7 @@ public class ReviewServiceTest {
         when(reviewRepository.findById(any())).thenReturn(Optional.of(review));
         doNothing().when(reviewRepository).delete(review);
 
-        reviewService.deleteReview(review);
+        reviewService.deleteReview(review.getId());
         verify(reviewRepository, times(1)).delete(review);
     }
 
@@ -102,7 +102,7 @@ public class ReviewServiceTest {
         Pub pub = TestUtil.generateMockPub();
         Review review = TestUtil.generateMockReview(user, pub);
         when(reviewRepository.findById(any())).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> reviewService.deleteReview(review));
+        assertThrows(ResourceNotFoundException.class, () -> reviewService.deleteReview(review.getId()));
     }
 
     @Test

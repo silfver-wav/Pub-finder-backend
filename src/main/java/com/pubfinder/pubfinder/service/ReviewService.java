@@ -40,8 +40,8 @@ public class ReviewService {
         return Mapper.INSTANCE.entityToDto(reviewRepository.save(review));
     }
 
-    public void deleteReview(Review review) throws ResourceNotFoundException {
-        reviewRepository.findById(review.getId()).orElseThrow(() -> new ResourceNotFoundException("Review: " + review.getId() + " not found."));
+    public void deleteReview(UUID id) throws ResourceNotFoundException {
+        Review review = reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Review: " + id + " not found."));
         reviewRepository.delete(review);
     }
 
