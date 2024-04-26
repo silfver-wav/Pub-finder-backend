@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -88,6 +90,13 @@ public class UserControllerTest {
     public void getVisitedPubsTest() throws Exception {
         when(userService.getVisitedPubs(any())).thenReturn(new ArrayList<UVPDTO>());
         mockMvc.perform(get("/user//getVisitedPubs/{username}", "username"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getReviewsTest() throws Exception {
+        when(userService.getUserReviews(any())).thenReturn(List.of(TestUtil.generateMockReviewDTO()));
+        mockMvc.perform(get("/user/reviews/{username}", "username"))
                 .andExpect(status().isOk());
     }
 

@@ -1,6 +1,7 @@
 package com.pubfinder.pubfinder.controller;
 
 import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.dto.ReviewDTO;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
@@ -70,5 +71,10 @@ public class PubsController {
     public ResponseEntity<Void> removeVisitedPub(@PathVariable UUID pubId, @PathVariable String username) throws ResourceNotFoundException {
         pubsService.removeVisitedPub(pubId, username);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reviews/{id}")
+    public ResponseEntity<List<ReviewDTO>> getReviews(@PathVariable("id") UUID id) {
+        return ResponseEntity.ok(pubsService.getReviews(id));
     }
 }

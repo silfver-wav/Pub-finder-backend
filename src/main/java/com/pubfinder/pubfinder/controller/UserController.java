@@ -1,9 +1,6 @@
 package com.pubfinder.pubfinder.controller;
 
-import com.pubfinder.pubfinder.dto.AuthenticationResponse;
-import com.pubfinder.pubfinder.dto.LoginRequest;
-import com.pubfinder.pubfinder.dto.UVPDTO;
-import com.pubfinder.pubfinder.dto.UserDTO;
+import com.pubfinder.pubfinder.dto.*;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.User;
@@ -61,5 +58,10 @@ public class UserController {
     @GetMapping("/getVisitedPubs/{username}")
     public ResponseEntity<List<UVPDTO>> getVisitedPubs(@PathVariable String username) throws ResourceNotFoundException {
         return ResponseEntity.ok(userService.getVisitedPubs(username));
+    }
+
+    @GetMapping("/reviews/{username}")
+    public ResponseEntity<List<ReviewDTO>> getReviews(@PathVariable("username") String username) throws ResourceNotFoundException {
+        return ResponseEntity.ok(userService.getUserReviews(username));
     }
 }

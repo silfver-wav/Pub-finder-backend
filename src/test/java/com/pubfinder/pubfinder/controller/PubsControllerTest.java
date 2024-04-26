@@ -167,5 +167,12 @@ public class PubsControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    public void getReviewsTest() throws Exception {
+        when(pubsService.getReviews(any())).thenReturn(List.of(TestUtil.generateMockReviewDTO()));
+        mockMvc.perform(get("/pub/reviews/{id}", UUID.randomUUID()))
+                .andExpect(status().isOk());
+    }
+
     PubDTO pub = TestUtil.generateMockPubDTO();
 }
