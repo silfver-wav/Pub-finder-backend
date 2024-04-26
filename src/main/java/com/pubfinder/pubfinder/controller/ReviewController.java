@@ -17,20 +17,20 @@ import java.util.UUID;
 public class ReviewController {
     @Autowired
     private ReviewService reviewService;
-    @PostMapping("/save")
-    public ResponseEntity<ReviewDTO> save(ReviewDTO review, UUID pudId, String username) throws ReviewAlreadyExistsException, ResourceNotFoundException {
+    @PostMapping("/save/{pubId}/{username}")
+    public ResponseEntity<ReviewDTO> save(@RequestBody ReviewDTO review, @PathVariable("pubId") UUID pudId, @PathVariable("username") String username) throws ReviewAlreadyExistsException, ResourceNotFoundException {
         ReviewDTO reviewDTO = reviewService.saveReview(Mapper.INSTANCE.dtoToEntity(review), pudId, username);
         return ResponseEntity.status(HttpStatus.CREATED).body(reviewDTO);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") UUID id) throws ResourceNotFoundException {
         reviewService.deleteReview(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<ReviewDTO> edit(ReviewDTO review) throws ResourceNotFoundException {
+    public ResponseEntity<ReviewDTO> edit(@RequestBody ReviewDTO review) throws ResourceNotFoundException {
         return ResponseEntity.ok(reviewService.updateReview(Mapper.INSTANCE.dtoToEntity(review)));
     }
 }

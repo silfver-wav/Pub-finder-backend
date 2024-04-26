@@ -2,6 +2,7 @@ package com.pubfinder.pubfinder.util;
 
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.dto.ReviewDTO;
 import com.pubfinder.pubfinder.dto.UserDTO;
 import com.pubfinder.pubfinder.models.*;
 import com.pubfinder.pubfinder.models.enums.Rating;
@@ -156,6 +157,16 @@ public class TestUtil {
         return Review.builder()
                 .pub(pub)
                 .reviewer(user)
+                .reviewDate(LocalDateTime.now())
+                .rating(Rating.FIVE)
+                .build();
+    }
+
+    public static ReviewDTO generateMockReviewDTO() {
+        return ReviewDTO.builder()
+                .id(UUID.randomUUID())
+                .pubId(UUID.randomUUID())
+                .username("username")
                 .reviewDate(LocalDateTime.now())
                 .rating(Rating.FIVE)
                 .build();
