@@ -1,107 +1,140 @@
 package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.PubRepository;
-import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
-import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.db.VisitedRepository;
+import com.pubfinder.pubfinder.dto.PubDto;
+import com.pubfinder.pubfinder.dto.ReviewDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
-import com.pubfinder.pubfinder.models.User;
-import com.pubfinder.pubfinder.models.UserVisitedPub;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.*;
-
+/**
+ * The type Pubs service.
+ */
 @Service
 public class PubsService {
 
-    @Autowired
-    private PubRepository pubRepository;
+  @Autowired
+  private PubRepository pubRepository;
 
-    @Autowired
-    private UserService userService;
+  @Autowired
+  private UserService userService;
 
-    @Autowired
-    private UserVisitedPubRepository userVisitedPubRepository;
+  /**
+   * Gets pub.
+   *
+   * @param id the pub id
+   * @return the pub
+   * @throws ResourceNotFoundException the resource not found exception
+   */
+  @Cacheable(value = "getPub")
+  public Pub getPub(UUID id) throws ResourceNotFoundException {
+    return pubRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Pub with id " + id + " was not found"));
+  }
 
-    @Cacheable(value = "getPub")
-    public PubDTO getPub(UUID id) throws ResourceNotFoundException {
-        return pubRepository.findById(id).map(Mapper.INSTANCE::entityToDto).orElseThrow(() -> new ResourceNotFoundException("Pub with id " + id + " was not found"));
+  /**
+   * Search pubs by term list.
+   *
+   * @param term the term
+   * @return list of pubs
+   */
+  @Cacheable(value = "getPubsByTerm",
+      condition = "#term.length() > 1 && #term.length() < 9",
+      key = "#term"
+  )
+  public List<PubDto> searchPubsByTerm(String term) {
+    List<Object[]> pubs = pubRepository.findPubsByNameContaining(term);
+    List<PubDto> pubsList = new ArrayList<>();
+    for (Object[] pub : pubs) {
+      pubsList.add(PubDto.builder().id((UUID) pub[0]).name((String) pub[1]).build());
+    }
+    return pubsList;
+  }
+
+  /**
+   * Gets pubs within the radius of the location(lat, lng).
+   *
+   * @param lat    the latitude
+   * @param lng    the longitude
+   * @param radius the radius
+   * @return the pubs
+   */
+  @Cacheable(value = "getPubs",
+      condition = "#radius <= 10",
+      key = "#lat.toString().substring(0, 5) + '-' + "
+          + "#lng.toString().substring(0, 5) + '-' + "
+          + "#radius.toString()")
+  public List<PubDto> getPubs(Double lat, Double lng, Double radius) {
+    return pubRepository.findPubsWithInRadius(lat, lng, radius).stream()
+        .map(Mapper.INSTANCE::entityToDto).toList();
+  }
+
+  /**
+   * Save pub.
+   *
+   * @param pub the pub
+   * @return the pub dto
+   * @throws BadRequestException the pub param is empty
+   */
+  public PubDto save(Pub pub) throws BadRequestException {
+    if (pub == null) {
+      throw new BadRequestException();
+    }
+    Pub savedPub = pubRepository.save(pub);
+    return Mapper.INSTANCE.entityToDto(savedPub);
+  }
+
+  /**
+   * Edit pub.
+   *
+   * @param pub the pub
+   * @return the pub dto
+   * @throws ResourceNotFoundException the resource not found exception
+   * @throws BadRequestException       the pub param is empty
+   */
+  public PubDto edit(Pub pub) throws ResourceNotFoundException, BadRequestException {
+    if (pub == null || pub.getId() == null) {
+      throw new BadRequestException();
     }
 
-    @Cacheable(value = "getPubsByTerm",
-            condition = "#term.length() > 1 && #term.length() < 9",
-            key = "#term"
-    )
-    public List<PubDTO> searchPubsByTerm(String term) {
-        List<Object[]> pubs = pubRepository.findPubsByNameContaining(term);
-        List<PubDTO> pubsList = new ArrayList<>();
-        for (Object[] pub : pubs) {
-            pubsList.add(PubDTO.builder().id((UUID) pub[0]).name((String) pub[1]).build());
-        }
-        return pubsList;
+    pubRepository.findById(pub.getId()).orElseThrow(
+        () -> new ResourceNotFoundException("Pub with id " + pub.getId() + " was not found"));
+
+    Pub savedPub = pubRepository.save(pub);
+    return Mapper.INSTANCE.entityToDto(savedPub);
+  }
+
+  /**
+   * Delete.
+   *
+   * @param pub the pub
+   * @throws BadRequestException the pub param is empty
+   */
+  public void delete(Pub pub) throws BadRequestException {
+    if (pub == null) {
+      throw new BadRequestException();
     }
+    pubRepository.delete(pub);
+  }
 
-    @Cacheable(value = "getPubs",
-            condition = "#radius <= 10",
-            key = "#lat.toString().substring(0, 5) + '-' + #lng.toString().substring(0, 5) + '-' + #radius.toString()")
-    public List<PubDTO> getPubs(Double lat, Double lng, Double radius) {
-        return pubRepository.findPubsWithInRadius( lat, lng, radius).stream().map(Mapper.INSTANCE::entityToDto).toList();
-    }
-
-    public PubDTO savePub(Pub pub) throws BadRequestException {
-        if (pub == null) throw new BadRequestException();
-        Pub savedPub = pubRepository.save(pub);
-        return Mapper.INSTANCE.entityToDto(savedPub);
-    }
-
-    public PubDTO editPub(Pub pub) throws ResourceNotFoundException, BadRequestException {
-        if (pub == null || pub.getId() == null) throw new BadRequestException();
-
-        Optional<Pub> foundPub = pubRepository.findById(pub.getId());
-        if (foundPub.isEmpty()) throw new ResourceNotFoundException("Pub with id " + pub.getId() + " was not found");
-
-        Pub savedPub = pubRepository.save(pub);
-        return Mapper.INSTANCE.entityToDto(savedPub);
-    }
-
-    public void deletePub(Pub pub) throws BadRequestException {
-        if (pub == null) throw new BadRequestException();
-        pubRepository.delete(pub);
-    }
-
-    public void visitPub(UUID pubId, String username) throws ResourceNotFoundException {
-        Optional<Pub> pub = pubRepository.findById(pubId);
-        if (pub.isEmpty()) throw new ResourceNotFoundException("Pub with id: " + pubId + " not found");
-
-        User user = userService.getUser(username);
-
-        Optional<UserVisitedPub> uvp = userVisitedPubRepository.findByPubAndUser(pub.get(), user);
-        UserVisitedPub userVisitedPub;
-        if (uvp.isPresent()) {
-            userVisitedPub = uvp.get();
-            userVisitedPub.setVisitedDate(LocalDateTime.now());
-        } else {
-            userVisitedPub = UserVisitedPub.builder().user(user).pub(pub.get()).visitedDate(LocalDateTime.now()).build();
-        }
-        userVisitedPubRepository.save(userVisitedPub);
-    }
-
-    public void removeVisitedPub(UUID pubId, String username) throws ResourceNotFoundException {
-        Optional<Pub> pub = pubRepository.findById(pubId);
-        if (pub.isEmpty()) throw new ResourceNotFoundException("Pub with id: " + pubId + " not found");
-
-        User user = userService.getUser(username);
-
-        Optional<UserVisitedPub> uvp = userVisitedPubRepository.findByPubAndUser(pub.get(), user);
-        if (uvp.isPresent()) {
-            userVisitedPubRepository.delete(uvp.get());
-        } else {
-            throw new ResourceNotFoundException("User Visited Pub with pub: " + pubId + " and user: " + user.getId() + " not found");
-        }
-    }
+  /**
+   * Gets reviews.
+   *
+   * @param id the id
+   * @return the reviews
+   */
+  public List<ReviewDto> getReviews(UUID id) {
+    return pubRepository.findAllReviewsForPub(id)
+        .stream()
+        .map(Mapper.INSTANCE::entityToDto)
+        .toList();
+  }
 }

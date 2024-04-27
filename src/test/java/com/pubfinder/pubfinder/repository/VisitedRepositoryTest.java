@@ -2,10 +2,10 @@ package com.pubfinder.pubfinder.repository;
 
 import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
-import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
+import com.pubfinder.pubfinder.db.VisitedRepository;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.models.User;
-import com.pubfinder.pubfinder.models.UserVisitedPub;
+import com.pubfinder.pubfinder.models.Visited;
 import com.pubfinder.pubfinder.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         "spring.test.database.replace=none",
         "spring.datasource.url=jdbc:tc:postgresql:16-alpine:///db"
 })
-public class UserVisitedPubRepositoryTest {
+public class VisitedRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -35,12 +34,12 @@ public class UserVisitedPubRepositoryTest {
     private PubRepository pubRepository;
 
     @Autowired
-    private UserVisitedPubRepository userVisitedPubRepository;
+    private VisitedRepository visitedRepository;
 
     @Test
     public void saveAndGetTest() {
-        UserVisitedPub savedUVP = userVisitedPubRepository.save(uvp);
-        Optional<UserVisitedPub> foundUVP = userVisitedPubRepository.findById(savedUVP.getId());
+        Visited savedUVP = visitedRepository.save(uvp);
+        Optional<Visited> foundUVP = visitedRepository.findById(savedUVP.getId());
 
         assertTrue(foundUVP.isPresent());
         assertEquals(foundUVP.get(), savedUVP);
@@ -48,13 +47,13 @@ public class UserVisitedPubRepositoryTest {
 
     @Test
     public void saveAndGetByPubAndUserTest() {
-        User user = userRepository.save(uvp.getUser());
+        User user = userRepository.save(uvp.getVisitor());
         Pub pub = pubRepository.save(uvp.getPub());
-        uvp.setUser(user);
+        uvp.setVisitor(user);
         uvp.setPub(pub);
 
-        UserVisitedPub savedUVP = userVisitedPubRepository.save(uvp);
-        Optional<UserVisitedPub> foundUVP = userVisitedPubRepository.findByPubAndUser(pub, user);
+        Visited savedUVP = visitedRepository.save(uvp);
+        Optional<Visited> foundUVP = visitedRepository.findByPubAndVisitor(pub, user);
 
         assertTrue(foundUVP.isPresent());
         assertEquals(foundUVP.get(), savedUVP);
@@ -62,54 +61,54 @@ public class UserVisitedPubRepositoryTest {
 
     @Test
     public void deleteAllByUserTest() {
-        User user = userRepository.save(uvp.getUser());
+        User user = userRepository.save(uvp.getVisitor());
         Pub pub1 = pubRepository.save(uvp.getPub());
         Pub pub2 = pubRepository.save(uvp.getPub());
         Pub pub3 = pubRepository.save(uvp.getPub());
-        UserVisitedPub uvp1 = UserVisitedPub.builder()
-                .user(user)
+        Visited uvp1 = Visited.builder()
+                .visitor(user)
                 .pub(pub1)
                 .visitedDate(LocalDateTime.now())
                 .build();
 
-        UserVisitedPub uvp2 = UserVisitedPub.builder()
-                .user(user)
+        Visited uvp2 = Visited.builder()
+                .visitor(user)
                 .pub(pub2)
                 .visitedDate(LocalDateTime.now())
                 .build();
 
-        UserVisitedPub uvp3 = UserVisitedPub.builder()
-                .user(user)
+        Visited uvp3 = Visited.builder()
+                .visitor(user)
                 .pub(pub3)
                 .visitedDate(LocalDateTime.now())
                 .build();
 
-        userVisitedPubRepository.saveAll(Arrays.asList(uvp1, uvp2, uvp3));
+        visitedRepository.saveAll(Arrays.asList(uvp1, uvp2, uvp3));
 
-        List<UserVisitedPub> uvps1 = userVisitedPubRepository.findAllByUser(user);
+        List<Visited> uvps1 = visitedRepository.findAllByVisitor(user);
         assertEquals(3, uvps1.size());
 
-        userVisitedPubRepository.deleteAllByUser(user);
+        visitedRepository.deleteAllByVisitor(user);
 
-        List<UserVisitedPub> uvps2 = userVisitedPubRepository.findAllByUser(user);
+        List<Visited> uvps2 = visitedRepository.findAllByVisitor(user);
         assertEquals(0, uvps2.size());
     }
 
     @Test
     public void deleteTest() {
-        UserVisitedPub savedUVP = userVisitedPubRepository.save(uvp);
-        userVisitedPubRepository.delete(savedUVP);
-        Optional<UserVisitedPub> foundUVP = userVisitedPubRepository.findById(savedUVP.getId());
+        Visited savedUVP = visitedRepository.save(uvp);
+        visitedRepository.delete(savedUVP);
+        Optional<Visited> foundUVP = visitedRepository.findById(savedUVP.getId());
         assertTrue(foundUVP.isEmpty());
     }
 
     @Test
     public void editTest() {
-        UserVisitedPub savedUVP = userVisitedPubRepository.save(uvp);
+        Visited savedUVP = visitedRepository.save(uvp);
         savedUVP.setVisitedDate(LocalDateTime.now());
-        UserVisitedPub editedUVP = userVisitedPubRepository.save(uvp);
+        Visited editedUVP = visitedRepository.save(uvp);
         assertEquals(savedUVP, editedUVP);
     }
 
-    private final UserVisitedPub uvp = TestUtil.generateUserVisitedPub();
+    private final Visited uvp = TestUtil.generateUserVisitedPub();
 }

@@ -1,8 +1,8 @@
 package com.pubfinder.pubfinder.mapper;
 
 
-import com.pubfinder.pubfinder.dto.PubDTO;
-import com.pubfinder.pubfinder.dto.UserDTO;
+import com.pubfinder.pubfinder.dto.PubDto;
+import com.pubfinder.pubfinder.dto.UserDto;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.models.User;
 import com.pubfinder.pubfinder.util.TestUtil;
@@ -22,7 +22,7 @@ public class MapperTest {
 
     @Test
     public void mapPubDtoToEntityTest() {
-        PubDTO pubDTO = TestUtil.generateMockPubDTO();
+        PubDto pubDTO = TestUtil.generateMockPubDTO();
         Pub pub = Mapper.INSTANCE.dtoToEntity(pubDTO);
         checkPub(pubDTO, pub);
     }
@@ -30,26 +30,26 @@ public class MapperTest {
     @Test
     public void mapPubEntityToDtoTest() {
         Pub pub = TestUtil.generateMockPub();
-        PubDTO pubDTO = Mapper.INSTANCE.entityToDto(pub);
+        PubDto pubDTO = Mapper.INSTANCE.entityToDto(pub);
         checkPub(pubDTO, pub);
     }
 
     @Test
     public void mapUserEntityToDtoTest() {
         User user = TestUtil.generateMockUser();
-        UserDTO userDTO = Mapper.INSTANCE.entityToDto(user);
+        UserDto userDTO = Mapper.INSTANCE.entityToDto(user);
         checkUser(userDTO, user);
     }
 
 
     @Test
     public void mapUserDtoToEntityTest() {
-        UserDTO userDTO = TestUtil.generateMockUserDTO();
+        UserDto userDTO = TestUtil.generateMockUserDTO();
         User user = Mapper.INSTANCE.dtoToEntity(userDTO);
         checkUser(userDTO, user);
     }
 
-    private void checkPub(PubDTO pubDTO, Pub pub) {
+    private void checkPub(PubDto pubDTO, Pub pub) {
         assertEquals(pubDTO.getName(), pub.getName());
         assertEquals(pubDTO.getLat(), pub.getLat());
         assertEquals(pubDTO.getLng(), pub.getLng());
@@ -62,7 +62,7 @@ public class MapperTest {
         assertEquals(pubDTO.getOutDoorSeating(), pub.getOutDoorSeating());
     }
 
-    private void checkUser(UserDTO userDTO, User user) {
+    private void checkUser(UserDto userDTO, User user) {
         assertEquals(userDTO.getFirstname(), user.getFirstname());
         assertEquals(userDTO.getLastname(), user.getLastname());
         assertEquals(userDTO.getEmail(), user.getEmail());

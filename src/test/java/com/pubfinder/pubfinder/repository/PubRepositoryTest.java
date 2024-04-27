@@ -1,7 +1,12 @@
 package com.pubfinder.pubfinder.repository;
 
 import com.pubfinder.pubfinder.db.PubRepository;
+import com.pubfinder.pubfinder.db.ReviewRepository;
+import com.pubfinder.pubfinder.db.UserRepository;
 import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Review;
+import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.enums.Rating;
 import com.pubfinder.pubfinder.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,6 +29,12 @@ public class PubRepositoryTest {
 
     @Autowired
     private PubRepository pubRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Test
     public void saveAndGetPubTest() {
@@ -160,7 +172,7 @@ public class PubRepositoryTest {
     }
 
     @Test
-    public void findMoviesByNameContainingTest() {
+    public void findPubsByNameContainingTest() {
         Pub bigBen = TestUtil.generateMockPub();
         bigBen.setName("The Big Ben Pub");
 
@@ -188,5 +200,25 @@ public class PubRepositoryTest {
         assertEquals(foundPubPubs.size(), 2);
         assertEquals(foundPubPubs.get(0)[1], bigBen.getName());
         assertEquals(foundPubPubs.get(1)[1], connell.getName());
+    }
+
+    @Test
+    public void getReview() {
+        User user = userRepository.save(TestUtil.generateMockUser());
+        Pub pub = pubRepository.save(TestUtil.generateMockPub());
+        Review review = Review.builder()
+                .pub(pub)
+                .reviewer(user)
+                .reviewDate(LocalDateTime.now())
+                .rating(Rating.FIVE)
+                .build();
+
+        List<Review> reviews1 = pubRepository.findAllReviewsForPub(pub.getId());
+        assertEquals(0,reviews1.size());
+
+        reviewRepository.save(review);
+
+        List<Review> reviews2 = pubRepository.findAllReviewsForPub(pub.getId());
+        assertEquals(1,reviews2.size());
     }
 }

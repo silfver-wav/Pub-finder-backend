@@ -2,7 +2,7 @@ package com.pubfinder.pubfinder.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.User;
 import com.pubfinder.pubfinder.models.enums.Role;
@@ -58,7 +58,7 @@ public class PubsSecurityTest {
         String jwtToken = authenticationService.generateToken(user);
 
         when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-        when(pubsService.savePub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+        when(pubsService.save(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
         mockMvc.perform(post("/pub/createPub")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -74,7 +74,7 @@ public class PubsSecurityTest {
         String jwtToken = authenticationService.generateToken(user);
 
         when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-        when(pubsService.savePub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+        when(pubsService.save(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
         mockMvc.perform(post("/pub/createPub")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -96,7 +96,7 @@ public class PubsSecurityTest {
         String jwtToken = authenticationService.generateToken(user);
 
         when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-        when(pubsService.editPub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+        when(pubsService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
         mockMvc.perform(put("/pub/editPub")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +112,7 @@ public class PubsSecurityTest {
         String jwtToken = authenticationService.generateToken(user);
 
         when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-        when(pubsService.editPub(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+        when(pubsService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
         mockMvc.perform(put("/pub/editPub")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -162,5 +162,5 @@ public class PubsSecurityTest {
                 .andExpect(status().isForbidden());
     }
 
-    PubDTO pub = TestUtil.generateMockPubDTO();
+    PubDto pub = TestUtil.generateMockPubDTO();
 }

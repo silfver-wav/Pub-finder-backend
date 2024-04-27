@@ -1,9 +1,11 @@
 package com.pubfinder.pubfinder.util;
 
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
-import com.pubfinder.pubfinder.dto.PubDTO;
-import com.pubfinder.pubfinder.dto.UserDTO;
+import com.pubfinder.pubfinder.dto.PubDto;
+import com.pubfinder.pubfinder.dto.ReviewDto;
+import com.pubfinder.pubfinder.dto.UserDto;
 import com.pubfinder.pubfinder.models.*;
+import com.pubfinder.pubfinder.models.enums.Rating;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.models.enums.TokenType;
 
@@ -47,8 +49,8 @@ public class TestUtil {
                 .build();
     }
 
-    public static PubDTO generateMockPubDTO() {
-        return PubDTO.builder()
+    public static PubDto generateMockPubDTO() {
+        return PubDto.builder()
                 .name("name")
                 .lat(1.0)
                 .lng(1.0)
@@ -94,8 +96,8 @@ public class TestUtil {
                 .build();
     }
 
-    public static UserDTO generateMockUserDTO() {
-        return UserDTO.builder()
+    public static UserDto generateMockUserDTO() {
+        return UserDto.builder()
                 .id(UUID.randomUUID())
                 .firstname("firstName")
                 .lastname("lastName")
@@ -143,11 +145,38 @@ public class TestUtil {
                 .build();
     }
 
-    public static UserVisitedPub generateUserVisitedPub() {
-        return UserVisitedPub.builder()
-                .user(generateMockUser())
+    public static Visited generateUserVisitedPub() {
+        return Visited.builder()
+                .visitor(generateMockUser())
                 .pub(generateMockPub())
                 .visitedDate(LocalDateTime.now())
                 .build();
+    }
+
+    public static Review generateMockReview(User user, Pub pub) {
+        return Review.builder()
+                .pub(pub)
+                .reviewer(user)
+                .reviewDate(LocalDateTime.now())
+                .rating(Rating.FIVE)
+                .build();
+    }
+
+    public static ReviewDto generateMockReviewDTO() {
+        return ReviewDto.builder()
+                .id(UUID.randomUUID())
+                .pubId(UUID.randomUUID())
+                .username("username")
+                .reviewDate(LocalDateTime.now())
+                .rating(Rating.FIVE)
+                .build();
+    }
+
+    public static Visited generateMockVisited() {
+        return Visited.builder()
+            .visitedDate(LocalDateTime.now())
+            .pub(TestUtil.generateMockPub())
+            .visitor(TestUtil.generateMockUser())
+            .build();
     }
 }

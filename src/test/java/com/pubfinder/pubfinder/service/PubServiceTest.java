@@ -1,27 +1,29 @@
 package com.pubfinder.pubfinder.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.pubfinder.pubfinder.db.PubRepository;
-import com.pubfinder.pubfinder.db.UserVisitedPubRepository;
-import com.pubfinder.pubfinder.dto.PubDTO;
+import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.models.User;
-import com.pubfinder.pubfinder.models.UserVisitedPub;
 import com.pubfinder.pubfinder.util.TestUtil;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest(properties = {
         "spring.cache.type=none",
@@ -37,17 +39,14 @@ public class PubServiceTest {
     @MockBean UserService userService;
 
     @MockBean
-    UserVisitedPubRepository userVisitedPubRepository;
-
-    @MockBean
     private PubRepository pubRepository;
 
     @Test
     public void getPubTest() throws ResourceNotFoundException {
         UUID pubId = pub.getId();
         when(pubRepository.findById(any())).thenReturn(Optional.of(pub));
-        PubDTO result = pubsService.getPub(pubId);
-        assertEquals(Mapper.INSTANCE.entityToDto(pub), result);
+        Pub result = pubsService.getPub(pubId);
+        assertEquals(pub, result);
         verify(pubRepository, times(1)).findById(pubId);
     }
 
@@ -61,12 +60,12 @@ public class PubServiceTest {
 
     @Test
     public void searchPubsByTermTest() throws ResourceNotFoundException {
-        PubDTO bigBen = PubDTO.builder().id(UUID.randomUUID()).name("The Big Ben Pub").build();
-        PubDTO liffey = PubDTO.builder().id(UUID.randomUUID()).name("The Liffey").build();
+        PubDto bigBen = PubDto.builder().id(UUID.randomUUID()).name("The Big Ben Pub").build();
+        PubDto liffey = PubDto.builder().id(UUID.randomUUID()).name("The Liffey").build();
         List<Object[]> dbRs = List.of(new Object[]{bigBen.getId(), bigBen.getName()}, new Object[]{liffey.getId(), liffey.getName()});
 
         when(pubRepository.findPubsByNameContaining(any())).thenReturn(dbRs);
-        List<PubDTO> result = pubsService.searchPubsByTerm("The");
+        List<PubDto> result = pubsService.searchPubsByTerm("The");
         assertEquals(List.of(bigBen, liffey), result);
         verify(pubRepository, times(1)).findPubsByNameContaining("The");
     }
@@ -75,7 +74,7 @@ public class PubServiceTest {
     public void getPubsTest() {
         List<Pub> pubs = new ArrayList<>(TestUtil.generateListOfMockPubs());
         when(pubRepository.findPubsWithInRadius(40.712810, 74.006010,1)).thenReturn(pubs);
-        List<PubDTO> result = pubsService.getPubs(40.712810, 74.006010,1.0);
+        List<PubDto> result = pubsService.getPubs(40.712810, 74.006010,1.0);
         assertEquals( 3, result.size());
         verify(pubRepository, times(1)).findPubsWithInRadius(40.712810, 74.006010,1);
     }
@@ -83,14 +82,14 @@ public class PubServiceTest {
     @Test
     public void savePubTest() throws BadRequestException {
         when(pubRepository.save(any())).thenReturn(pub);
-        PubDTO result = pubsService.savePub(pub);
+        PubDto result = pubsService.save(pub);
         assertEquals(Mapper.INSTANCE.entityToDto(pub), result);
         verify(pubRepository, times(1)).save(pub);
     }
 
     @Test
     public void savePubTest_BAD_REQUEST() {
-        assertThrows( BadRequestException.class ,() -> pubsService.savePub(null));
+        assertThrows( BadRequestException.class ,() -> pubsService.save(null));
     }
 
     @Test
@@ -112,7 +111,7 @@ public class PubServiceTest {
 
         when(pubRepository.findById(pub.getId())).thenReturn(Optional.of(pub));
         when(pubRepository.save(any())).thenReturn(updatedPub);
-        PubDTO result = pubsService.editPub(updatedPub);
+        PubDto result = pubsService.edit(updatedPub);
         assertEquals(Mapper.INSTANCE.entityToDto(updatedPub), result);
         verify(pubRepository, times(1)).save(updatedPub);
     }
@@ -134,52 +133,19 @@ public class PubServiceTest {
                 .accessibility(pub.getAccessibility())
                 .build();
         when(pubRepository.findById(pub.getId())).thenReturn(Optional.empty());
-        assertThrows(BadRequestException.class, () -> pubsService.editPub(updatedPub));
+        assertThrows(BadRequestException.class, () -> pubsService.edit(updatedPub));
     }
 
     @Test
     public void deletePubTest() throws BadRequestException {
         doNothing().when(pubRepository).delete(pub);
-        pubsService.deletePub(pub);
+        pubsService.delete(pub);
         verify(pubRepository, times(1)).delete(any());
     }
 
     @Test
     public void deletePubTest_BAD_REQUEST() {
-        assertThrows(BadRequestException.class, () -> pubsService.deletePub(null));
-    }
-
-    @Test
-    public void visitPubTest() throws ResourceNotFoundException {
-        when(pubRepository.findById(any())).thenReturn(Optional.of(pub));
-        when(userService.getUser(any())).thenReturn(user);
-        when(userVisitedPubRepository.findByPubAndUser(any(), any())).thenReturn(Optional.empty());
-
-        pubsService.visitPub(pub.getId(), user.getUsername());
-
-        verify(userVisitedPubRepository, times(1)).findByPubAndUser(pub, user);
-        verify(userVisitedPubRepository, times(1)).save(any(UserVisitedPub.class));
-    }
-
-    @Test
-    public void visitPubTest_UpdateDate() throws ResourceNotFoundException {
-        when(pubRepository.findById(any())).thenReturn(Optional.of(pub));
-        when(userService.getUser(any())).thenReturn(user);
-
-        UserVisitedPub userVisitedPub = UserVisitedPub.builder().user(user).pub(pub).visitedDate(LocalDateTime.now()).build();
-        when(userVisitedPubRepository.findByPubAndUser(any(), any())).thenReturn(Optional.of(userVisitedPub));
-
-        pubsService.visitPub(pub.getId(), user.getUsername());
-
-        verify(userVisitedPubRepository, times(1)).findByPubAndUser(pub, user);
-        verify(userVisitedPubRepository, times(1)).save(any(UserVisitedPub.class));
-    }
-
-    @Test
-    public void visitPubTest_PubNotFound() {
-        when(pubRepository.findById(any())).thenReturn(Optional.empty());
-        assertThrows( ResourceNotFoundException.class,
-                    () -> pubsService.visitPub(pub.getId(), user.getUsername()));
+        assertThrows(BadRequestException.class, () -> pubsService.delete(null));
     }
 
     private final User user = TestUtil.generateMockUser();
