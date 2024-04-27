@@ -1,7 +1,9 @@
 package com.pubfinder.pubfinder.service;
 
+import com.pubfinder.pubfinder.db.ReviewRepository;
 import com.pubfinder.pubfinder.db.TokenRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
+import com.pubfinder.pubfinder.db.VisitedRepository;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.LoginRequest;
 import com.pubfinder.pubfinder.dto.ReviewDto;
@@ -50,10 +52,10 @@ public class UserService {
   private PasswordEncoder passwordEncoder;
 
   @Autowired
-  private VisitedService visitedService;
+  private VisitedRepository visitedRepository;
 
   @Autowired
-  private ReviewService reviewService;
+  private ReviewRepository reviewRepository;
 
   /**
    * Register user authentication response.
@@ -93,8 +95,8 @@ public class UserService {
         () -> new ResourceNotFoundException("User with id: " + user.getId() + " was not found"));
 
     deleteAllUserTokens(foundUser);
-    visitedService.deleteAllVisitsByUser(foundUser);
-    reviewService.deleteAllReviewsByUser(foundUser);
+    deleteAllUserVisits(foundUser);
+    deleteAllUserReviews(foundUser);
     userRepository.delete(foundUser);
   }
 
@@ -252,6 +254,14 @@ public class UserService {
   private void deleteAllUserTokens(User user) {
     List<Token> tokens = tokenRepository.findAllTokensByUser(user.getId());
     tokens.forEach((token -> tokenRepository.delete(token)));
+  }
+
+  private void deleteAllUserVisits(User user) {
+    visitedRepository.deleteAllByVisitor(user);
+  }
+
+  private void deleteAllUserReviews(User user) {
+    reviewRepository.deleteAllByReviewer(user);
   }
 
   private void saveToken(User user, String accessToken) {

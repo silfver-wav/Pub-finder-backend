@@ -61,8 +61,4 @@ public class VisitedService {
     visitedRepository.delete(visited);
   }
 
-  protected void deleteAllVisitsByUser(User user) {
-    visitedRepository.deleteAllByVisitor(user);
-  }
-
 }

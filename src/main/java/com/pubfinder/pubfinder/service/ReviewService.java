@@ -47,6 +47,8 @@ public class ReviewService {
           "User: " + username + " has already made a review on Pub: " + pubId);
     }
 
+    review.setReviewer(user);
+    review.setPub(pub);
     review.setReviewDate(LocalDateTime.now());
     return Mapper.INSTANCE.entityToDto(reviewRepository.save(review));
   }
@@ -77,7 +79,4 @@ public class ReviewService {
     return Mapper.INSTANCE.entityToDto(reviewRepository.save(review));
   }
 
-  protected void deleteAllReviewsByUser(User user) {
-    reviewRepository.deleteAllByReviewer(user);
-  }
 }

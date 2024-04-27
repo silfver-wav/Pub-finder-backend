@@ -1,27 +1,29 @@
 package com.pubfinder.pubfinder.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.pubfinder.pubfinder.db.PubRepository;
-import com.pubfinder.pubfinder.db.VisitedRepository;
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.models.User;
-import com.pubfinder.pubfinder.models.Visited;
 import com.pubfinder.pubfinder.util.TestUtil;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest(properties = {
         "spring.cache.type=none",
@@ -35,9 +37,6 @@ public class PubServiceTest {
     @Autowired PubsService pubsService;
 
     @MockBean UserService userService;
-
-    @MockBean
-    VisitedRepository visitedRepository;
 
     @MockBean
     private PubRepository pubRepository;

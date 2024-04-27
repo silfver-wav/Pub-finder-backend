@@ -4,6 +4,8 @@ import com.pubfinder.pubfinder.models.enums.LoudnessRating;
 import com.pubfinder.pubfinder.models.enums.Rating;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -46,11 +48,15 @@ public class Review {
   @Column(length = 1000)
   private String review;
   @Column(nullable = false)
+  @Enumerated(EnumType.ORDINAL)
   private Rating rating;
   @Column
+  @Enumerated(EnumType.ORDINAL)
   private Rating toilets;
   @Column
+  @Enumerated(EnumType.ORDINAL)
   private LoudnessRating loudness;
   @Column
+  @Enumerated(EnumType.ORDINAL)
   private Rating service;
 }

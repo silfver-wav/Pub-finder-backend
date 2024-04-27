@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ import org.hibernate.annotations.Type;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Pub {
+public class Pub implements Serializable {
 
   @Id
   @GeneratedValue

@@ -27,9 +27,6 @@ public class PubsService {
   @Autowired
   private UserService userService;
 
-  @Autowired
-  private VisitedRepository visitedRepository;
-
   /**
    * Gets pub.
    *

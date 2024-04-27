@@ -172,7 +172,7 @@ public class PubRepositoryTest {
     }
 
     @Test
-    public void findMoviesByNameContainingTest() {
+    public void findPubsByNameContainingTest() {
         Pub bigBen = TestUtil.generateMockPub();
         bigBen.setName("The Big Ben Pub");
 
