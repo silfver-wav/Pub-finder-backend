@@ -158,7 +158,7 @@ public class TestUtil {
                 .pub(pub)
                 .reviewer(user)
                 .reviewDate(LocalDateTime.now())
-                .rating(Rating.FIVE)
+                .rating(5)
                 .build();
     }
 
@@ -168,7 +168,7 @@ public class TestUtil {
                 .pubId(UUID.randomUUID())
                 .username("username")
                 .reviewDate(LocalDateTime.now())
-                .rating(Rating.FIVE)
+                .rating(5)
                 .build();
     }
 

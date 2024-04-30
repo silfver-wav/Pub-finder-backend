@@ -76,9 +76,7 @@ public class UserService {
     String jwtToken = authenticationService.generateToken(savedUser);
     String refresherToken = authenticationService.generateRefresherToken(savedUser);
     saveToken(savedUser, jwtToken);
-    return AuthenticationResponse.builder()
-        .accessToken(jwtToken)
-        .refreshToken(refresherToken)
+    return AuthenticationResponse.builder().accessToken(jwtToken).refreshToken(refresherToken)
         .build();
   }
 
@@ -137,11 +135,8 @@ public class UserService {
    */
   public AuthenticationResponse login(LoginRequest loginRequest) throws ResourceNotFoundException {
     authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            loginRequest.getUsername(),
-            loginRequest.getPassword()
-        )
-    );
+        new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+            loginRequest.getPassword()));
 
     var user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(
         () -> new ResourceNotFoundException(
@@ -153,9 +148,7 @@ public class UserService {
     deleteAllUserTokens(user);
     saveToken(user, accessToken);
 
-    return AuthenticationResponse.builder()
-        .accessToken(accessToken)
-        .refreshToken(refreshToken)
+    return AuthenticationResponse.builder().accessToken(accessToken).refreshToken(refreshToken)
         .build();
   }
 
@@ -213,12 +206,11 @@ public class UserService {
    * @throws ResourceNotFoundException the user not found exception
    */
   public List<VisitedDto> getVisitedPubs(String username) throws ResourceNotFoundException {
-    User user = getUser(username);
-    List<Visited> visits = userRepository.getVisitedPubs(user.getId());
+    List<Visited> visits = userRepository.getVisitedPubs(username);
     List<VisitedDto> visitsDto = new ArrayList<>();
     for (Visited visit : visits) {
       visitsDto.add(VisitedDto.builder().pubDto(Mapper.INSTANCE.entityToDto(visit.getPub()))
-          .visitedDate(visit.getVisitedDate()).build());
+          .visitedDate(visit.getVisitedDate()).id(visit.getId()).build());
     }
     return visitsDto;
   }
@@ -245,9 +237,7 @@ public class UserService {
    * @return the user reviews
    */
   public List<ReviewDto> getUserReviews(String username) {
-    return userRepository.findAllReviewsByUser(username)
-        .stream()
-        .map(Mapper.INSTANCE::entityToDto)
+    return userRepository.findAllReviewsByUser(username).stream().map(Mapper.INSTANCE::entityToDto)
         .toList();
   }
 
@@ -265,13 +255,8 @@ public class UserService {
   }
 
   private void saveToken(User user, String accessToken) {
-    Token token = Token.builder()
-        .token(accessToken)
-        .tokenType(TokenType.BEARER)
-        .revoked(false)
-        .expired(false)
-        .user(user)
-        .build();
+    Token token = Token.builder().token(accessToken).tokenType(TokenType.BEARER).revoked(false)
+        .expired(false).user(user).build();
     tokenRepository.save(token);
   }
 

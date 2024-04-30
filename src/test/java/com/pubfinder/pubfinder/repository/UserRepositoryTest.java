@@ -106,7 +106,7 @@ public class UserRepositoryTest {
         Visited uvp = Visited.builder().visitor(savedUser).pub(pubs.get(0)).visitedDate(LocalDateTime.now()).build();
         visitedRepository.save(uvp);
 
-        List<Visited> uvpList = userRepository.getVisitedPubs(savedUser.getId());
+        List<Visited> uvpList = userRepository.getVisitedPubs(savedUser.getUsername());
         assertEquals(uvpList.size(), 1);
         assertEquals(uvpList.get(0).getPub(), uvp.getPub());
     }
@@ -118,7 +118,7 @@ public class UserRepositoryTest {
                         .pub(pub)
                         .reviewer(user)
                         .reviewDate(LocalDateTime.now())
-                        .rating(Rating.FIVE)
+                        .rating(5)
                         .build();
 
         List<Review> reviews1 = userRepository.findAllReviewsByUser(user.getUsername());

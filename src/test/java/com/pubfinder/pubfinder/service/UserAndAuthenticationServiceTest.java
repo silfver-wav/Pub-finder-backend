@@ -243,7 +243,7 @@ public class UserAndAuthenticationServiceTest {
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         List<Visited> uvp = List.of(
             Visited.builder().visitedDate(LocalDateTime.now()).pub(TestUtil.generateMockPub()).visitor(user).build());
-        when(userRepository.getVisitedPubs(user.getId())).thenReturn(uvp);
+        when(userRepository.getVisitedPubs(user.getUsername())).thenReturn(uvp);
         List<VisitedDto> rs = userService.getVisitedPubs(user.getUsername());
 
         assertEquals(rs.size(), 1);

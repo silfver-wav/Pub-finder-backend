@@ -9,8 +9,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * User Visited Pubs.
@@ -18,6 +20,8 @@ import lombok.Data;
 @Entity
 @Table(name = "user_visited_pub")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Visited {
 

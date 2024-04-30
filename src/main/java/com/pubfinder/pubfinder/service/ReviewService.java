@@ -73,10 +73,13 @@ public class ReviewService {
    * @throws ResourceNotFoundException the review not found exception
    */
   public ReviewDto updateReview(Review review) throws ResourceNotFoundException {
-    reviewRepository.findById(review.getId()).orElseThrow(
+    Review foundReview = reviewRepository.findById(review.getId()).orElseThrow(
         () -> new ResourceNotFoundException("Review: " + review.getId() + " not found."));
     review.setReviewDate(LocalDateTime.now());
-    return Mapper.INSTANCE.entityToDto(reviewRepository.save(review));
+    review.setPub(foundReview.getPub());
+    review.setReviewer(foundReview.getReviewer());
+    Review updatedReview = reviewRepository.save(review);
+    return Mapper.INSTANCE.entityToDto(updatedReview);
   }
 
 }

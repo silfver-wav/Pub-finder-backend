@@ -210,7 +210,7 @@ public class PubRepositoryTest {
                 .pub(pub)
                 .reviewer(user)
                 .reviewDate(LocalDateTime.now())
-                .rating(Rating.FIVE)
+                .rating(5)
                 .build();
 
         List<Review> reviews1 = pubRepository.findAllReviewsForPub(pub.getId());

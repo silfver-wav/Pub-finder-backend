@@ -17,11 +17,12 @@ public class ReviewDto {
 
   private UUID id;
   private UUID pubId;
+  private String pubname;
   private String username;
   private LocalDateTime reviewDate;
   private String review;
-  private Rating rating;
-  private Rating toilets;
+  private int rating;
+  private int toilets;
   private LoudnessRating loudness;
-  private Rating service;
+  private int service;
 }
