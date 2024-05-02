@@ -1,5 +1,10 @@
 package com.pubfinder.pubfinder.security;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pubfinder.pubfinder.dto.UserDto;
 import com.pubfinder.pubfinder.models.User;
@@ -16,108 +21,106 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest(properties = {
-        "spring.datasource.url=",
-        "spring.jpa.database-platform=",
-        "spring.jpa.hibernate.ddl-auto=none"
+    "spring.datasource.url=",
+    "spring.jpa.database-platform=",
+    "spring.jpa.hibernate.ddl-auto=none",
+    "spring.cache.type=none",
+    "bucket4j.enabled=false",
 })
 @AutoConfigureMockMvc()
 public class UserSecurityTest {
-    @Autowired
-    private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @MockBean
-    private UserDetailsService userDetailsService;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-    @MockBean
-    private UserService userService;
+  @MockBean
+  private UserDetailsService userDetailsService;
 
-    @Autowired
-    private AuthenticationService authenticationService;
+  @MockBean
+  private UserService userService;
 
-    @Test
-    public void deletePubAdminAuthorizedTest() throws Exception {
-        User user = TestUtil.generateMockUser();
-        user.setRole(Role.ADMIN);
-        String jwtToken = authenticationService.generateToken(user);
+  @Autowired
+  private AuthenticationService authenticationService;
 
-        when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
+  @Test
+  public void deletePubAdminAuthorizedTest() throws Exception {
+    User user = TestUtil.generateMockUser();
+    user.setRole(Role.ADMIN);
+    String jwtToken = authenticationService.generateToken(user);
 
-        mockMvc.perform(delete("/user/delete")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userDTO))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
-                .andExpect(status().isNoContent());
-    }
+    when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
 
-    @Test
-    public void deleteUserUserAuthorizedTest() throws Exception {
-        User user = TestUtil.generateMockUser();
-        user.setRole(Role.USER);
-        String jwtToken = authenticationService.generateToken(user);
+    mockMvc.perform(delete("/user/delete")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(userDTO))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+        .andExpect(status().isNoContent());
+  }
 
-        when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
+  @Test
+  public void deleteUserUserAuthorizedTest() throws Exception {
+    User user = TestUtil.generateMockUser();
+    user.setRole(Role.USER);
+    String jwtToken = authenticationService.generateToken(user);
 
-        mockMvc.perform(delete("/user/delete")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDTO))
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
-                .andExpect(status().isNoContent());
-    }
+    when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
 
-    @Test
-    public void deleteUserUnauthenticatedTest() throws Exception {
-        mockMvc.perform(delete("/user/delete")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userDTO)))
-                .andExpect(status().isForbidden());
-    }
+    mockMvc.perform(delete("/user/delete")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(userDTO))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+        .andExpect(status().isNoContent());
+  }
 
-    @Test
-    public void editPubAdminAuthorizedTest() throws Exception {
-        User user = TestUtil.generateMockUser();
-        user.setRole(Role.ADMIN);
-        String jwtToken = authenticationService.generateToken(user);
+  @Test
+  public void deleteUserUnauthenticatedTest() throws Exception {
+    mockMvc.perform(delete("/user/delete")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(userDTO)))
+        .andExpect(status().isForbidden());
+  }
 
-        when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
+  @Test
+  public void editPubAdminAuthorizedTest() throws Exception {
+    User user = TestUtil.generateMockUser();
+    user.setRole(Role.ADMIN);
+    String jwtToken = authenticationService.generateToken(user);
 
-        mockMvc.perform(put("/user/edit")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDTO))
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
-                .andExpect(status().isOk());
-    }
+    when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
 
-    @Test
-    public void editUserUserAuthorizedTest() throws Exception {
-        User user = TestUtil.generateMockUser();
-        user.setRole(Role.USER);
-        String jwtToken = authenticationService.generateToken(user);
+    mockMvc.perform(put("/user/edit")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(userDTO))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+        .andExpect(status().isOk());
+  }
 
-        when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
+  @Test
+  public void editUserUserAuthorizedTest() throws Exception {
+    User user = TestUtil.generateMockUser();
+    user.setRole(Role.USER);
+    String jwtToken = authenticationService.generateToken(user);
 
-        mockMvc.perform(put("/user/edit")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userDTO))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
-                .andExpect(status().isOk());
-    }
+    when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
 
-    @Test
-    public void editUserUnauthenticatedTest() throws Exception {
-        mockMvc.perform(put("/user/edit")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userDTO)))
-                .andExpect(status().isForbidden());
-    }
+    mockMvc.perform(put("/user/edit")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(userDTO))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+        .andExpect(status().isOk());
+  }
 
-    UserDto userDTO = TestUtil.generateMockUserDTO();
+  @Test
+  public void editUserUnauthenticatedTest() throws Exception {
+    mockMvc.perform(put("/user/edit")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(userDTO)))
+        .andExpect(status().isForbidden());
+  }
+
+  UserDto userDTO = TestUtil.generateMockUserDTO();
 }

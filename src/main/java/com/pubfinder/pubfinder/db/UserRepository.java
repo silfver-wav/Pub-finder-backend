@@ -16,8 +16,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
   Optional<User> findByUsername(String username);
 
-  @Query("SELECT u.visitedPubs FROM User u WHERE u.id = :id")
-  List<Visited> getVisitedPubs(@Param("id") UUID id);
+  @Query("SELECT u.visitedPubs FROM User u WHERE u.username = :username")
+  List<Visited> getVisitedPubs(@Param("username") String username);
 
   @Query("SELECT u.reviews FROM User u WHERE u.username = :username")
   List<Review> findAllReviewsByUser(@Param("username") String username);

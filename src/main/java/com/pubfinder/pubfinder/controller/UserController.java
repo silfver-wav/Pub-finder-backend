@@ -61,7 +61,7 @@ public class UserController {
     return ResponseEntity.ok(userService.login(loginRequest));
   }
 
-  @PostMapping("/refreshToken")
+  @GetMapping("/refreshToken")
   public ResponseEntity<AuthenticationResponse> refreshToken(HttpServletRequest request)
       throws Exception {
     return ResponseEntity.ok(userService.refreshToken(request));

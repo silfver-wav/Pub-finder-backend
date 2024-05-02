@@ -1,5 +1,11 @@
 package com.pubfinder.pubfinder.security;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.pubfinder.pubfinder.dto.PubDto;
@@ -19,148 +25,146 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest(properties = {
-        "spring.datasource.url=",
-        "spring.jpa.database-platform=",
-        "spring.jpa.hibernate.ddl-auto=none"
+    "spring.datasource.url=",
+    "spring.jpa.database-platform=",
+    "spring.jpa.hibernate.ddl-auto=none",
+    "spring.cache.type=none",
+    "bucket4j.enabled=false"
 })
 @AutoConfigureMockMvc()
 public class PubsSecurityTest {
-    @Autowired
-    private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @MockBean
-    private PubsService pubsService;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-    @Autowired
-    private AuthenticationService authenticationService;
+  @MockBean
+  private PubsService pubsService;
 
-    @MockBean
-    private UserDetailsService userDetailsService;
+  @Autowired
+  private AuthenticationService authenticationService;
 
-    @BeforeEach
-    public void setup() {
-        objectMapper.registerModule(new JavaTimeModule());
-    }
+  @MockBean
+  private UserDetailsService userDetailsService;
 
-    @Test
-    public void createPubAdminAuthorizedTest() throws Exception {
-        User user = TestUtil.generateMockUser();
-        user.setRole(Role.ADMIN);
-        String jwtToken = authenticationService.generateToken(user);
+  @BeforeEach
+  public void setup() {
+    objectMapper.registerModule(new JavaTimeModule());
+  }
 
-        when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-        when(pubsService.save(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+  @Test
+  public void createPubAdminAuthorizedTest() throws Exception {
+    User user = TestUtil.generateMockUser();
+    user.setRole(Role.ADMIN);
+    String jwtToken = authenticationService.generateToken(user);
 
-        mockMvc.perform(post("/pub/createPub")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(pub))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
-                .andExpect(status().isCreated());
-    }
+    when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
+    when(pubsService.save(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
-    @Test
-    public void createPubUserUnauthorizedTest() throws Exception {
-        User user = TestUtil.generateMockUser();
-        user.setRole(Role.USER);
-        String jwtToken = authenticationService.generateToken(user);
+    mockMvc.perform(post("/pub/createPub")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(pub))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+        .andExpect(status().isCreated());
+  }
 
-        when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-        when(pubsService.save(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+  @Test
+  public void createPubUserUnauthorizedTest() throws Exception {
+    User user = TestUtil.generateMockUser();
+    user.setRole(Role.USER);
+    String jwtToken = authenticationService.generateToken(user);
 
-        mockMvc.perform(post("/pub/createPub")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(pub))
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
-                .andExpect(status().isForbidden());
-    }
+    when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
+    when(pubsService.save(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
-    @Test
-    public void createPubUnauthenticatedTest() throws Exception {
-        mockMvc.perform(post("/pub/createPub").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
-    }
+    mockMvc.perform(post("/pub/createPub")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(pub))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+        .andExpect(status().isForbidden());
+  }
 
-    @Test
-    public void editPubAdminAuthorizedTest() throws Exception {
-        User user = TestUtil.generateMockUser();
-        user.setRole(Role.ADMIN);
-        String jwtToken = authenticationService.generateToken(user);
+  @Test
+  public void createPubUnauthenticatedTest() throws Exception {
+    mockMvc.perform(post("/pub/createPub").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isForbidden());
+  }
 
-        when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-        when(pubsService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+  @Test
+  public void editPubAdminAuthorizedTest() throws Exception {
+    User user = TestUtil.generateMockUser();
+    user.setRole(Role.ADMIN);
+    String jwtToken = authenticationService.generateToken(user);
 
-        mockMvc.perform(put("/pub/editPub")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(pub))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
-                .andExpect(status().isOk());
-    }
+    when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
+    when(pubsService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
-    @Test
-    public void editPubUserUnauthorizedTest() throws Exception {
-        User user = TestUtil.generateMockUser();
-        user.setRole(Role.USER);
-        String jwtToken = authenticationService.generateToken(user);
+    mockMvc.perform(put("/pub/editPub")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(pub))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+        .andExpect(status().isOk());
+  }
 
-        when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-        when(pubsService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+  @Test
+  public void editPubUserUnauthorizedTest() throws Exception {
+    User user = TestUtil.generateMockUser();
+    user.setRole(Role.USER);
+    String jwtToken = authenticationService.generateToken(user);
 
-        mockMvc.perform(put("/pub/editPub")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(pub))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
-                .andExpect(status().isForbidden());
-    }
+    when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
+    when(pubsService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
-    @Test
-    public void editPubUnauthenticatedTest() throws Exception {
-        mockMvc.perform(put("/pub/editPub").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
-    }
+    mockMvc.perform(put("/pub/editPub")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(pub))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+        .andExpect(status().isForbidden());
+  }
 
-    @Test
-    public void deletePubAdminAuthorizedTest() throws Exception {
-        User user = TestUtil.generateMockUser();
-        user.setRole(Role.ADMIN);
-        String jwtToken = authenticationService.generateToken(user);
+  @Test
+  public void editPubUnauthenticatedTest() throws Exception {
+    mockMvc.perform(put("/pub/editPub").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isForbidden());
+  }
 
-        when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-        mockMvc.perform(delete("/pub/deletePub")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(pub))
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
-                .andExpect(status().isNoContent());
-    }
+  @Test
+  public void deletePubAdminAuthorizedTest() throws Exception {
+    User user = TestUtil.generateMockUser();
+    user.setRole(Role.ADMIN);
+    String jwtToken = authenticationService.generateToken(user);
 
-    @Test
-    public void deletePubUserUnauthorizedTest() throws Exception {
-        User user = TestUtil.generateMockUser();
-        user.setRole(Role.USER);
-        String jwtToken = authenticationService.generateToken(user);
+    when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
+    mockMvc.perform(delete("/pub/deletePub")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(pub))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+        .andExpect(status().isNoContent());
+  }
 
-        when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
+  @Test
+  public void deletePubUserUnauthorizedTest() throws Exception {
+    User user = TestUtil.generateMockUser();
+    user.setRole(Role.USER);
+    String jwtToken = authenticationService.generateToken(user);
 
-        mockMvc.perform(delete("/pub/deletePub")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(pub))
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
-                .andExpect(status().isForbidden());
-    }
+    when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
 
-    @Test
-    public void deletePubUnauthenticatedTest() throws Exception {
-        mockMvc.perform(delete("/pub/deletePub").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
-    }
+    mockMvc.perform(delete("/pub/deletePub")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(pub))
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+        .andExpect(status().isForbidden());
+  }
 
-    PubDto pub = TestUtil.generateMockPubDTO();
+  @Test
+  public void deletePubUnauthenticatedTest() throws Exception {
+    mockMvc.perform(delete("/pub/deletePub").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isForbidden());
+  }
+
+  PubDto pub = TestUtil.generateMockPubDTO();
 }

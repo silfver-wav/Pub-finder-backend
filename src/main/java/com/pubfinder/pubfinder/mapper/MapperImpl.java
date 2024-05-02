@@ -50,6 +50,7 @@ public class MapperImpl implements Mapper {
   public ReviewDto entityToDto(Review entity) {
     return ReviewDto.builder()
         .id(entity.getId())
+        .pubname(entity.getPub().getName())
         .pubId(entity.getPub().getId())
         .username(entity.getReviewer().getUsername())
         .reviewDate(entity.getReviewDate())
@@ -107,6 +108,7 @@ public class MapperImpl implements Mapper {
   @Override
   public Review dtoToEntity(ReviewDto dto) {
     return Review.builder()
+        .id(dto.getId())
         .review(dto.getReview())
         .rating(dto.getRating())
         .toilets(dto.getToilets())

@@ -18,7 +18,10 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.ToString.Exclude;
 import org.hibernate.annotations.Type;
 
 /**
@@ -30,6 +33,8 @@ import org.hibernate.annotations.Type;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString(exclude = { "visitors", "reviews" })
+@EqualsAndHashCode(exclude = { "visitors", "reviews" })
 public class Pub implements Serializable {
 
   @Id
@@ -66,4 +71,6 @@ public class Pub implements Serializable {
 
   @OneToMany(mappedBy = "pub", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
   private Set<Review> reviews;
+
+  // score
 }
