@@ -60,7 +60,8 @@ public class VisitedServiceTest {
     User user = TestUtil.generateMockUser();
     Pub pub = TestUtil.generateMockPub();
     when(userService.getUser(any())).thenThrow(ResourceNotFoundException.class);
-    assertThrows(ResourceNotFoundException.class, () -> visitedService.saveVisit(pub.getId(), user.getUsername()));
+    assertThrows(ResourceNotFoundException.class,
+        () -> visitedService.saveVisit(pub.getId(), user.getUsername()));
   }
 
   @Test
@@ -69,7 +70,8 @@ public class VisitedServiceTest {
     Pub pub = TestUtil.generateMockPub();
     when(userService.getUser(any())).thenReturn(user);
     when(pubsService.getPub(any())).thenThrow(ResourceNotFoundException.class);
-    assertThrows(ResourceNotFoundException.class, () -> visitedService.saveVisit(pub.getId(), user.getUsername()));
+    assertThrows(ResourceNotFoundException.class,
+        () -> visitedService.saveVisit(pub.getId(), user.getUsername()));
   }
 
   @Test
