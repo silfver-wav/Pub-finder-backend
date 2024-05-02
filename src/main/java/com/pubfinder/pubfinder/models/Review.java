@@ -1,7 +1,6 @@
 package com.pubfinder.pubfinder.models;
 
 import com.pubfinder.pubfinder.models.enums.LoudnessRating;
-import com.pubfinder.pubfinder.models.enums.Rating;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,6 +33,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicInsert
 @DynamicUpdate
 public class Review {
+
   @Id
   @GeneratedValue
   @Column(unique = true, nullable = false)
