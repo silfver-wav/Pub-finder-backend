@@ -82,7 +82,7 @@ public class UserControllerTest {
   public void refreshTokenTest() throws Exception {
     AuthenticationResponse response = TestUtil.generateMockAuthenticationResponse();
     when(userService.refreshToken(any())).thenReturn(response);
-    mockMvc.perform(post("/user/refreshToken", response)
+    mockMvc.perform(get("/user/refreshToken", response)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(user)))
         .andExpect(status().isOk());

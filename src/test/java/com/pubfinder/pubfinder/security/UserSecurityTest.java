@@ -24,7 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties = {
         "spring.datasource.url=",
         "spring.jpa.database-platform=",
-        "spring.jpa.hibernate.ddl-auto=none"
+        "spring.jpa.hibernate.ddl-auto=none",
+        "spring.cache.type=none",
+        "bucket4j.enabled=false",
 })
 @AutoConfigureMockMvc()
 public class UserSecurityTest {

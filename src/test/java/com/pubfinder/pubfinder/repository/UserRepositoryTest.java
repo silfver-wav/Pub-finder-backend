@@ -75,7 +75,7 @@ public class UserRepositoryTest {
         Optional<User> foundUser = userRepository.findByEmail(savedUser.getEmail());
 
         assertTrue(foundUser.isPresent());
-        assertEquals(savedUser.getFirstname(), foundUser.get().getLastname());
+        assertEquals(savedUser.getFirstname(), foundUser.get().getFirstname());
         assertEquals(savedUser.getLastname(), foundUser.get().getLastname());
         assertEquals(savedUser.getEmail(), foundUser.get().getEmail());
         assertEquals(savedUser.getUsername(), foundUser.get().getUsername());
@@ -86,6 +86,7 @@ public class UserRepositoryTest {
     @Test
     public void deleteUserTest() {
         User savedUser = userRepository.save(TestUtil.generateMockUser());
+
         userRepository.delete(savedUser);
         Optional<User> user = userRepository.findById(savedUser.getId());
         assertTrue(user.isEmpty());

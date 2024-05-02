@@ -162,19 +162,19 @@ public class UserService {
    */
   public AuthenticationResponse refreshToken(HttpServletRequest request)
       throws BadRequestException, ResourceNotFoundException {
-    String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-    if (authHeader == null) {
+    String refreshToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+    if (refreshToken == null) {
       throw new BadRequestException();
     }
-    String refreshToken = authHeader.substring(7);
+
     String finalRefreshToken = refreshToken;
-    String userEmail = Optional.ofNullable(authenticationService.extractUsername(refreshToken))
+    String username = Optional.ofNullable(authenticationService.extractUsername(refreshToken))
         .orElseThrow(() -> new ResourceNotFoundException(
             "User with refresherToken: " + finalRefreshToken + " was not found"));
 
-    User user = userRepository.findByEmail(userEmail).orElseThrow(
+    User user = userRepository.findByUsername(username).orElseThrow(
         () -> new ResourceNotFoundException(
-            "User with the email: " + userEmail + " was not found"));
+            "User with the email: " + username + " was not found"));
 
     if (authenticationService.isTokenValid(refreshToken, user)) {
       String accessToken = authenticationService.generateToken(user);
@@ -203,9 +203,8 @@ public class UserService {
    *
    * @param username the users username
    * @return the visited pubs
-   * @throws ResourceNotFoundException the user not found exception
    */
-  public List<VisitedDto> getVisitedPubs(String username) throws ResourceNotFoundException {
+  public List<VisitedDto> getVisitedPubs(String username) {
     List<Visited> visits = userRepository.getVisitedPubs(username);
     List<VisitedDto> visitsDto = new ArrayList<>();
     for (Visited visit : visits) {

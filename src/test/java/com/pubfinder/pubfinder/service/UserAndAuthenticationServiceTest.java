@@ -1,12 +1,23 @@
 package com.pubfinder.pubfinder.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.pubfinder.pubfinder.db.ReviewRepository;
 import com.pubfinder.pubfinder.db.TokenRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
 import com.pubfinder.pubfinder.db.VisitedRepository;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.LoginRequest;
-import com.pubfinder.pubfinder.dto.VisitedDto;
 import com.pubfinder.pubfinder.dto.UserDto;
+import com.pubfinder.pubfinder.dto.VisitedDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Token;
@@ -16,6 +27,9 @@ import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.security.AuthenticationService;
 import com.pubfinder.pubfinder.util.TestUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,259 +41,257 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @SpringBootTest(properties = {
-        "spring.cache.type=none",
-        "bucket4j.enabled=false",
-        "spring.datasource.url=",
-        "spring.jpa.database-platform=",
-        "spring.jpa.hibernate.ddl-auto=none"
+    "spring.cache.type=none",
+    "bucket4j.enabled=false",
+    "spring.datasource.url=",
+    "spring.jpa.database-platform=",
+    "spring.jpa.hibernate.ddl-auto=none"
 })
 public class UserAndAuthenticationServiceTest {
 
-    @Autowired
-    private UserService userService;
+  @Autowired
+  private UserService userService;
 
-    @Autowired
-    private AuthenticationService authenticationService;
+  @Autowired
+  private AuthenticationService authenticationService;
 
-    @MockBean
-    private AuthenticationManager authenticationManager;
+  @MockBean
+  private AuthenticationManager authenticationManager;
 
-    @MockBean
-    private TokenRepository tokenRepository;
+  @MockBean
+  private TokenRepository tokenRepository;
 
-    @MockBean
-    private UserRepository userRepository;
+  @MockBean
+  private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
-    @MockBean
-    private HttpServletRequest request;
+  @MockBean
+  private HttpServletRequest request;
 
-    @MockBean
-    private UserDetailsService userDetailsService;
+  @MockBean
+  private UserDetailsService userDetailsService;
 
-    @MockBean
-    private VisitedService visitedService;
+  @MockBean
+  private VisitedService visitedService;
 
-    @MockBean
-    private ReviewService reviewService;
+  @MockBean
+  private ReviewService reviewService;
 
-    @Test
-    public void registerUserTest() throws BadRequestException {
-        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
-        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
-        when(userRepository.save(any())).thenReturn(user);
-        when(tokenRepository.save(any())).thenReturn(new Token());
+  @MockBean
+  private VisitedRepository visitedRepository;
 
-        AuthenticationResponse result = userService.registerUser(user);
-        assertTrue(result.getAccessToken() != null && result.getRefreshToken() != null);
-        verify(userRepository, times(1)).save(user);
-    }
+  @MockBean
+  private ReviewRepository reviewRepository;
 
-    @Test
-    public void registerUserTestBadRequest() throws BadRequestException {
-        when(userRepository.findByEmail(any())).thenReturn(Optional.ofNullable(user));
-        assertThrows( BadRequestException.class, () -> userService.registerUser(user));
-    }
+  @Test
+  public void registerUserTest() throws BadRequestException {
+    when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
+    when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+    when(userRepository.save(any())).thenReturn(user);
+    when(tokenRepository.save(any())).thenReturn(new Token());
 
-    @Test
-    public void deleteUserTest() throws ResourceNotFoundException {
-        doNothing().when(userRepository).delete(user);
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
-        doNothing().when(visitedService).deleteVisit(user.getId());
-        doNothing().when(reviewService).deleteReview(user.getId());
-        doNothing().when(tokenRepository).delete(token);
+    AuthenticationResponse result = userService.registerUser(user);
+    assertTrue(result.getAccessToken() != null && result.getRefreshToken() != null);
+    verify(userRepository, times(1)).save(user);
+  }
 
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(user));
-        userService.delete(user, request);
-        verify(userRepository, times(1)).findById(any());
-        verify(userRepository, times(1)).delete(any());
-        verify(tokenRepository, times(1)).findAllTokensByUser(any());
-        verify(tokenRepository, times(1)).delete(any());
-    }
+  @Test
+  public void registerUserTestBadRequest() throws BadRequestException {
+    when(userRepository.findByEmail(any())).thenReturn(Optional.ofNullable(user));
+    assertThrows(BadRequestException.class, () -> userService.registerUser(user));
+  }
 
-    @Test
-    public void deleteUserAdminTest() throws ResourceNotFoundException {
-        doNothing().when(userRepository).delete(user);
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
-        doNothing().when(tokenRepository).delete(token);
+  @Test
+  public void deleteUserTest() throws ResourceNotFoundException {
+    doNothing().when(userRepository).delete(user);
+    when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+    when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
+    doNothing().when(visitedRepository).deleteAllByVisitor(user);
+    doNothing().when(reviewRepository).deleteAllByReviewer(user);
+    doNothing().when(tokenRepository).delete(token);
 
-        User admin = TestUtil.generateMockUser();
-        admin.setRole(Role.ADMIN);
-        admin.setUsername("David Bowie");
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + generateAdminToken(admin));
-        when(userRepository.findByUsername("David Bowie")).thenReturn(Optional.of(admin));
+    when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(user));
+    userService.delete(user, request);
+    verify(userRepository, times(1)).findById(any());
+    verify(userRepository, times(1)).delete(any());
+    verify(tokenRepository, times(1)).findAllTokensByUser(any());
+    verify(tokenRepository, times(1)).delete(any());
+  }
 
-        userService.delete(user, request);
-        verify(userRepository, times(1)).findById(any());
-        verify(userRepository, times(1)).delete(any());
-        verify(tokenRepository, times(1)).findAllTokensByUser(any());
-        verify(tokenRepository, times(1)).delete(any());
-    }
+  @Test
+  public void deleteUserAdminTest() throws ResourceNotFoundException {
+    doNothing().when(userRepository).delete(user);
+    when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+    when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
+    doNothing().when(tokenRepository).delete(token);
+    doNothing().when(visitedRepository).deleteAllByVisitor(user);
+    doNothing().when(reviewRepository).deleteAllByReviewer(user);
 
-    @Test
-    public void deleteUserUnauthorizedTest() throws ResourceNotFoundException {
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-        doNothing().when(tokenRepository).delete(token);
+    User admin = TestUtil.generateMockUser();
+    admin.setRole(Role.ADMIN);
+    admin.setUsername("David Bowie");
+    when(request.getHeader("Authorization")).thenReturn("Bearer " + generateAdminToken(admin));
+    when(userRepository.findByUsername("David Bowie")).thenReturn(Optional.of(admin));
 
-        User unauthorizedDeletingUser = TestUtil.generateMockUser();
-        unauthorizedDeletingUser .setUsername("Mick Jagger");
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(unauthorizedDeletingUser ));
-        assertThrows(BadCredentialsException.class, () -> userService.delete(user, request));
-    }
+    userService.delete(user, request);
+    verify(userRepository, times(1)).findById(any());
+    verify(userRepository, times(1)).delete(any());
+    verify(tokenRepository, times(1)).findAllTokensByUser(any());
+    verify(tokenRepository, times(1)).delete(any());
+  }
 
-    @Test
-    public void deleteUserTestResourceNotFound() throws ResourceNotFoundException {
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(user));
-        assertThrows(ResourceNotFoundException.class, () -> userService.delete(user, request));
-        verify(userRepository, times(1)).findById(any());
-    }
+  @Test
+  public void deleteUserUnauthorizedTest() throws ResourceNotFoundException {
+    when(userRepository.findById(any())).thenReturn(Optional.of(user));
+    doNothing().when(tokenRepository).delete(token);
 
-    @Test
-    public void editUserTest() throws BadRequestException, ResourceNotFoundException {
-        User editedUser = TestUtil.generateMockUser();
-        editedUser.setUsername("Something else");
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-        when(userRepository.save(any())).thenReturn(editedUser);
+    User unauthorizedDeletingUser = TestUtil.generateMockUser();
+    unauthorizedDeletingUser.setUsername("Mick Jagger");
+    when(request.getHeader("Authorization")).thenReturn(
+        "Bearer " + generateUserToken(unauthorizedDeletingUser));
+    assertThrows(BadCredentialsException.class, () -> userService.delete(user, request));
+  }
 
-        when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
-        doNothing().when(tokenRepository).delete(token);
+  @Test
+  public void deleteUserTestResourceNotFound() throws ResourceNotFoundException {
+    when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(user));
+    assertThrows(ResourceNotFoundException.class, () -> userService.delete(user, request));
+    verify(userRepository, times(1)).findById(any());
+  }
 
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(user));
-        UserDto result = userService.edit(editedUser, request);
-        assertEquals(Mapper.INSTANCE.entityToDto(editedUser), result);
-        verify(userRepository, times(1)).save(editedUser);
-    }
+  @Test
+  public void editUserTest() throws BadRequestException, ResourceNotFoundException {
+    User editedUser = TestUtil.generateMockUser();
+    editedUser.setUsername("Something else");
+    when(userRepository.findById(any())).thenReturn(Optional.of(user));
+    when(userRepository.save(any())).thenReturn(editedUser);
 
-    @Test
-    public void editUserAdminTest() throws ResourceNotFoundException, BadRequestException {
-        User editedUser = TestUtil.generateMockUser();
-        editedUser.setUsername("Something else");
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-        when(userRepository.save(any())).thenReturn(editedUser);
+    when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
+    doNothing().when(tokenRepository).delete(token);
 
-        when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
-        doNothing().when(tokenRepository).delete(token);
+    when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(user));
+    UserDto result = userService.edit(editedUser, request);
+    assertEquals(Mapper.INSTANCE.entityToDto(editedUser), result);
+    verify(userRepository, times(1)).save(editedUser);
+  }
 
-        User admin = TestUtil.generateMockUser();
-        admin.setRole(Role.ADMIN);
-        admin.setUsername("David Bowie");
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + generateAdminToken(admin));
-        when(userRepository.findByUsername("David Bowie")).thenReturn(Optional.of(admin));
+  @Test
+  public void editUserAdminTest() throws ResourceNotFoundException, BadRequestException {
+    User editedUser = TestUtil.generateMockUser();
+    editedUser.setUsername("Something else");
+    when(userRepository.findById(any())).thenReturn(Optional.of(user));
+    when(userRepository.save(any())).thenReturn(editedUser);
 
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(user));
-        UserDto result = userService.edit(editedUser, request);
-        assertEquals(Mapper.INSTANCE.entityToDto(editedUser), result);
-        verify(userRepository, times(1)).save(editedUser);
-    }
+    when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
+    doNothing().when(tokenRepository).delete(token);
 
-    @Test
-    public void editUserTestBadRequest() {
-        assertThrows(BadRequestException.class, () -> userService.edit(null, request));
-    }
+    User admin = TestUtil.generateMockUser();
+    admin.setRole(Role.ADMIN);
+    admin.setUsername("David Bowie");
+    when(request.getHeader("Authorization")).thenReturn("Bearer " + generateAdminToken(admin));
+    when(userRepository.findByUsername("David Bowie")).thenReturn(Optional.of(admin));
 
-    @Test
-    public void editUserTestResourceNotFound() {
-        User editedUser = TestUtil.generateMockUser();
-        editedUser.setUsername("Something else");
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(user));
-        when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> userService.edit(editedUser, request));
-    }
+    when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(user));
+    UserDto result = userService.edit(editedUser, request);
+    assertEquals(Mapper.INSTANCE.entityToDto(editedUser), result);
+    verify(userRepository, times(1)).save(editedUser);
+  }
 
-    @Test
-    public void editUserUnauthorizedTest() throws ResourceNotFoundException {
-        User editedUser = TestUtil.generateMockUser();
-        editedUser.setUsername("Something else");
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-        User unauthorizedDeletingUser = TestUtil.generateMockUser();
-        unauthorizedDeletingUser .setUsername("Mick Jagger");
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(unauthorizedDeletingUser ));
-        assertThrows(BadCredentialsException.class, () -> userService.edit(editedUser, request));
-    }
+  @Test
+  public void editUserTestBadRequest() {
+    assertThrows(BadRequestException.class, () -> userService.edit(null, request));
+  }
 
-    @Test
-    public void loginTest() throws ResourceNotFoundException {
-        Authentication authentication = mock(Authentication.class);
-        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+  @Test
+  public void editUserTestResourceNotFound() {
+    User editedUser = TestUtil.generateMockUser();
+    editedUser.setUsername("Something else");
+    when(request.getHeader("Authorization")).thenReturn("Bearer " + generateUserToken(user));
+    when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
+    assertThrows(ResourceNotFoundException.class, () -> userService.edit(editedUser, request));
+  }
 
-        when(userRepository.findByEmail(any())).thenReturn(Optional.ofNullable(user));
-        when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
-        doNothing().when(tokenRepository).delete(token);
-        when(tokenRepository.save(token)).thenReturn(token);
-        when(userRepository.findByUsername(any())).thenReturn(Optional.of(user));
-        LoginRequest loginRequest = LoginRequest.builder().username("username").password("password").build();
-        AuthenticationResponse response = userService.login(loginRequest);
+  @Test
+  public void editUserUnauthorizedTest() throws ResourceNotFoundException {
+    User editedUser = TestUtil.generateMockUser();
+    editedUser.setUsername("Something else");
+    when(userRepository.findById(any())).thenReturn(Optional.of(user));
+    User unauthorizedDeletingUser = TestUtil.generateMockUser();
+    unauthorizedDeletingUser.setUsername("Mick Jagger");
+    when(request.getHeader("Authorization")).thenReturn(
+        "Bearer " + generateUserToken(unauthorizedDeletingUser));
+    assertThrows(BadCredentialsException.class, () -> userService.edit(editedUser, request));
+  }
 
-        assert(response.getAccessToken() != null && response.getRefreshToken() != null);
-    }
+  @Test
+  public void loginTest() throws ResourceNotFoundException {
+    Authentication authentication = mock(Authentication.class);
+    when(authenticationManager.authenticate(any())).thenReturn(authentication);
 
-    @Test
-    public void loginTestResourceNotFound() {
-        LoginRequest loginRequest = LoginRequest.builder().username("username").password("password").build();
-        assertThrows(ResourceNotFoundException.class, () -> userService.login(loginRequest));
-    }
+    when(userRepository.findByEmail(any())).thenReturn(Optional.ofNullable(user));
+    when(tokenRepository.findAllTokensByUser(user.getId())).thenReturn(List.of(token));
+    doNothing().when(tokenRepository).delete(token);
+    when(tokenRepository.save(token)).thenReturn(token);
+    when(userRepository.findByUsername(any())).thenReturn(Optional.of(user));
+    LoginRequest loginRequest = LoginRequest.builder().username("username").password("password")
+        .build();
+    AuthenticationResponse response = userService.login(loginRequest);
 
-    @Test
-    public void refreshTokenTestBadRequest() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        assertThrows(BadRequestException.class, () -> userService.refreshToken(request));
-    }
+    assert (response.getAccessToken() != null && response.getRefreshToken() != null);
+  }
 
-    @Test
-    public void getVisitedPubsTest() throws ResourceNotFoundException {
-        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
-        List<Visited> uvp = List.of(
-            Visited.builder().visitedDate(LocalDateTime.now()).pub(TestUtil.generateMockPub()).visitor(user).build());
-        when(userRepository.getVisitedPubs(user.getUsername())).thenReturn(uvp);
-        List<VisitedDto> rs = userService.getVisitedPubs(user.getUsername());
+  @Test
+  public void loginTestResourceNotFound() {
+    LoginRequest loginRequest = LoginRequest.builder().username("username").password("password")
+        .build();
+    assertThrows(ResourceNotFoundException.class, () -> userService.login(loginRequest));
+  }
 
-        assertEquals(rs.size(), 1);
-        assertEquals(rs.get(0).getPubDto().getName(), uvp.get(0).getPub().getName());
-    }
+  @Test
+  public void refreshTokenTestBadRequest() {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    assertThrows(BadRequestException.class, () -> userService.refreshToken(request));
+  }
 
-    @Test
-    public void getVisitedPubsTestResource_NotFound() throws ResourceNotFoundException {
-        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+  @Test
+  public void getVisitedPubsTest() throws ResourceNotFoundException {
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+    List<Visited> uvp = List.of(
+        Visited.builder().visitedDate(LocalDateTime.now()).pub(TestUtil.generateMockPub())
+            .visitor(user).build());
+    when(userRepository.getVisitedPubs(user.getUsername())).thenReturn(uvp);
+    List<VisitedDto> rs = userService.getVisitedPubs(user.getUsername());
 
-        assertThrows(ResourceNotFoundException.class, () -> userService.getVisitedPubs(user.getUsername()));
-    }
+    assertEquals(rs.size(), 1);
+    assertEquals(rs.get(0).getPubDto().getName(), uvp.get(0).getPub().getName());
+  }
 
-    @Test
-    public void getUserTest() throws ResourceNotFoundException {
-        when(userRepository.findByUsername(any())).thenReturn(Optional.of(user));
+  @Test
+  public void getUserTest() throws ResourceNotFoundException {
+    when(userRepository.findByUsername(any())).thenReturn(Optional.of(user));
 
-        User result = userService.getUser(user.getUsername());
-        assertEquals(result, user);
-    }
+    User result = userService.getUser(user.getUsername());
+    assertEquals(result, user);
+  }
 
-    @Test
-    public void getUserTest_NotFound() throws ResourceNotFoundException {
-        when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> userService.getUser(user.getUsername()));
-    }
+  @Test
+  public void getUserTest_NotFound() throws ResourceNotFoundException {
+    when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
+    assertThrows(ResourceNotFoundException.class, () -> userService.getUser(user.getUsername()));
+  }
 
 
-    private String generateUserToken(User user) {
-        return authenticationService.generateToken(user);
-    }
+  private String generateUserToken(User user) {
+    return authenticationService.generateToken(user);
+  }
 
-    private String generateAdminToken(User user) {
-        return authenticationService.generateToken(user);
-    }
+  private String generateAdminToken(User user) {
+    return authenticationService.generateToken(user);
+  }
 
-    private final User user = TestUtil.generateMockUser();
-    private final Token token = TestUtil.generateMockToken(user);
+  private final User user = TestUtil.generateMockUser();
+  private final Token token = TestUtil.generateMockToken(user);
 }

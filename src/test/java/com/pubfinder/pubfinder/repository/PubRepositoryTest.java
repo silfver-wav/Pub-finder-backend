@@ -190,13 +190,13 @@ public class PubRepositoryTest {
         pubRepository.save(connell);
         pubRepository.save(queens);
 
-        List<Object[]> foundThePubs = pubRepository.findPubsByNameContaining("The");
+        List<Object[]> foundThePubs = pubRepository.findPubsByNameContaining("the");
         assertEquals(foundThePubs.size(), 3);
         assertEquals(foundThePubs.get(0)[1], bigBen.getName());
         assertEquals(foundThePubs.get(1)[1], liffey.getName());
         assertEquals(foundThePubs.get(2)[1], queens.getName());
 
-        List<Object[]> foundPubPubs = pubRepository.findPubsByNameContaining("Pub");
+        List<Object[]> foundPubPubs = pubRepository.findPubsByNameContaining("pub");
         assertEquals(foundPubPubs.size(), 2);
         assertEquals(foundPubPubs.get(0)[1], bigBen.getName());
         assertEquals(foundPubPubs.get(1)[1], connell.getName());
