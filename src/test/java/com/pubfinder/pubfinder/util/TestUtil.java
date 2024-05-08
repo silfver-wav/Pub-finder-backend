@@ -11,7 +11,7 @@ import com.pubfinder.pubfinder.models.Review;
 import com.pubfinder.pubfinder.models.Token;
 import com.pubfinder.pubfinder.models.User;
 import com.pubfinder.pubfinder.models.Visited;
-import com.pubfinder.pubfinder.models.enums.LoudnessRating;
+import com.pubfinder.pubfinder.models.enums.Volume;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.models.enums.TokenType;
 import java.time.DayOfWeek;
@@ -200,7 +200,7 @@ public class TestUtil {
       review.setService(rand.nextInt(5));
       review.setToilets(rand.nextInt(5));
       if (rand.nextBoolean()) {
-        review.setLoudness(LoudnessRating.values()[rand.nextInt(5)]);
+        review.setVolume(Volume.values()[rand.nextInt(5)]);
       }
       reviews.add(review);
     }

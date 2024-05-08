@@ -16,7 +16,7 @@ import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
 import com.pubfinder.pubfinder.models.Review;
 import com.pubfinder.pubfinder.models.User;
-import com.pubfinder.pubfinder.models.enums.LoudnessRating;
+import com.pubfinder.pubfinder.models.enums.Volume;
 import com.pubfinder.pubfinder.util.TestUtil;
 import java.util.Optional;
 import org.apache.coyote.BadRequestException;
@@ -122,7 +122,7 @@ public class ReviewServiceTest {
     Pub pub = TestUtil.generateMockPub();
     Review review = TestUtil.generateMockReview(user, pub);
     when(reviewRepository.findById(any())).thenReturn(Optional.of(review));
-    review.setLoudness(LoudnessRating.LOUD);
+    review.setVolume(Volume.LOUD);
     when(reviewRepository.save(any())).thenReturn(review);
 
     ReviewDto result = reviewService.updateReview(review);

@@ -1,6 +1,6 @@
 package com.pubfinder.pubfinder.models;
 
-import com.pubfinder.pubfinder.models.enums.LoudnessRating;
+import com.pubfinder.pubfinder.models.enums.Volume;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -64,7 +64,7 @@ public class Review {
   private int toilets;
 
   @Enumerated(EnumType.ORDINAL)
-  private LoudnessRating loudness;
+  private Volume volume;
 
   @Column(columnDefinition = "integer default 0")
   @Min(value = 1, message = "Rating must be greater than or equal to 1")

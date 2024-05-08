@@ -1,6 +1,6 @@
 package com.pubfinder.pubfinder.models.enums;
 
-public enum LoudnessRating {
+public enum Volume {
   QUITE, PLEASANT, AVERAGE, LOUD, VERY_LOUD;
 
   public int getOrdinal() {

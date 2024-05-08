@@ -1,6 +1,6 @@
 package com.pubfinder.pubfinder.models;
 
-import com.pubfinder.pubfinder.models.enums.LoudnessRating;
+import com.pubfinder.pubfinder.models.enums.Volume;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -78,6 +78,6 @@ public class Pub implements Serializable {
   private int avgServiceRating;
 
   @Column
-  private LoudnessRating avgVolume;
+  private Volume avgVolume;
 
 }

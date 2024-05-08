@@ -1,6 +1,6 @@
 package com.pubfinder.pubfinder.dto;
 
-import com.pubfinder.pubfinder.models.enums.LoudnessRating;
+import com.pubfinder.pubfinder.models.enums.Volume;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -22,6 +22,6 @@ public class ReviewDto {
   private String review;
   private int rating;
   private int toilets;
-  private LoudnessRating loudness;
+  private Volume loudness;
   private int service;
 }

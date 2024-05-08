@@ -6,7 +6,7 @@ import com.pubfinder.pubfinder.dto.ReviewDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
-import com.pubfinder.pubfinder.models.enums.LoudnessRating;
+import com.pubfinder.pubfinder.models.enums.Volume;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -160,12 +160,12 @@ public class PubsService {
     return calculateAverage(Arrays.stream(ratings).sum(), ratings.length);
   }
 
-  private LoudnessRating calculateAverageVolume(List<ReviewDto> reviews) {
+  private Volume calculateAverageVolume(List<ReviewDto> reviews) {
     int[] loudness = reviews.stream().filter(r -> r.getLoudness() != null)
         .mapToInt(r -> r.getLoudness().getOrdinal()).toArray();
 
     int value = calculateAverage(Arrays.stream(loudness).sum(), loudness.length);
-    return LoudnessRating.values()[value];
+    return Volume.values()[value];
   }
 
   private int calculateAverage(int sum, int length) {

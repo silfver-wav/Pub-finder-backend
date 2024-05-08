@@ -2,7 +2,7 @@ package com.pubfinder.pubfinder.dto;
 
 import com.pubfinder.pubfinder.models.Accessibility;
 import com.pubfinder.pubfinder.models.OpeningHours;
-import com.pubfinder.pubfinder.models.enums.LoudnessRating;
+import com.pubfinder.pubfinder.models.enums.Volume;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.util.List;
@@ -34,6 +34,6 @@ public class PubDto implements Serializable {
   private int rating;
   private int toiletRating;
   private int serviceRating;
-  private LoudnessRating loudnessRating;
+  private Volume volume;
 
 }
