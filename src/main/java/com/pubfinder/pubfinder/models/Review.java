@@ -1,6 +1,6 @@
 package com.pubfinder.pubfinder.models;
 
-import com.pubfinder.pubfinder.models.enums.LoudnessRating;
+import com.pubfinder.pubfinder.models.enums.Volume;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -56,18 +56,17 @@ public class Review {
   @Column(nullable = false)
   @Min(value = 0, message = "Rating must be greater than or equal to 0")
   @Max(value = 5, message = "Rating must be less than or equal to 100")
-  private int rating;
+  private Integer rating;
 
-  @Column
+  @Column(columnDefinition = "integer default 0")
   @Min(value = 0, message = "Rating must be greater than or equal to 0")
   @Max(value = 5, message = "Rating must be less than or equal to 100")
   private int toilets;
 
-  @Column
   @Enumerated(EnumType.ORDINAL)
-  private LoudnessRating loudness;
+  private Volume volume;
 
-  @Column
+  @Column(columnDefinition = "integer default 0")
   @Min(value = 0, message = "Rating must be greater than or equal to 0")
   @Max(value = 5, message = "Rating must be less than or equal to 100")
   private int service;

@@ -28,6 +28,10 @@ public class MapperImpl implements Mapper {
         .website(entity.getWebsite())
         .washroom(entity.getWashroom())
         .outDoorSeating(entity.getOutDoorSeating())
+        .rating(entity.getAvgRating())
+        .volume(entity.getAvgVolume())
+        .serviceRating(entity.getAvgServiceRating())
+        .toiletRating(entity.getAvgToiletRating())
         .build();
   }
 
@@ -57,7 +61,7 @@ public class MapperImpl implements Mapper {
         .review(entity.getReview())
         .rating(entity.getRating())
         .toilets(entity.getToilets())
-        .loudness(entity.getLoudness())
+        .loudness(entity.getVolume())
         .service(entity.getService())
         .build();
   }
@@ -112,7 +116,7 @@ public class MapperImpl implements Mapper {
         .review(dto.getReview())
         .rating(dto.getRating())
         .toilets(dto.getToilets())
-        .loudness(dto.getLoudness())
+        .volume(dto.getLoudness())
         .service(dto.getService())
         .build();
   }

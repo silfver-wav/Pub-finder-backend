@@ -10,6 +10,7 @@ import com.pubfinder.pubfinder.models.Review;
 import com.pubfinder.pubfinder.models.User;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class ReviewService {
   private PubsService pubsService;
 
   /**
-   * Save review review dto.
+   * Saves review and updates pub ratings.
    *
    * @param review   the review
    * @param pubId    the pub id
@@ -39,7 +40,7 @@ public class ReviewService {
    * @throws ReviewAlreadyExistsException the review already exists exception
    */
   public ReviewDto saveReview(Review review, UUID pubId, String username)
-      throws ResourceNotFoundException, ReviewAlreadyExistsException {
+      throws ResourceNotFoundException, ReviewAlreadyExistsException, BadRequestException {
     User user = userService.getUser(username);
     Pub pub = pubsService.getPub(pubId);
     if (reviewRepository.findByPubAndReviewer(pub, user).isPresent()) {
@@ -50,7 +51,11 @@ public class ReviewService {
     review.setReviewer(user);
     review.setPub(pub);
     review.setReviewDate(LocalDateTime.now());
-    return Mapper.INSTANCE.entityToDto(reviewRepository.save(review));
+    ReviewDto reviewDto = Mapper.INSTANCE.entityToDto(reviewRepository.save(review));
+
+    pubsService.updateRatingsInPub(pub);
+
+    return reviewDto;
   }
 
   /**
@@ -59,10 +64,12 @@ public class ReviewService {
    * @param id the id
    * @throws ResourceNotFoundException the review not found exception
    */
-  public void deleteReview(UUID id) throws ResourceNotFoundException {
+  public void deleteReview(UUID id) throws ResourceNotFoundException, BadRequestException {
     Review review = reviewRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Review: " + id + " not found."));
     reviewRepository.delete(review);
+
+    pubsService.updateRatingsInPub(review.getPub());
   }
 
   /**

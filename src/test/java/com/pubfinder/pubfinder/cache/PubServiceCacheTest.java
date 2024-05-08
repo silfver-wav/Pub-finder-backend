@@ -24,7 +24,7 @@ import org.springframework.cache.CacheManager;
 @SpringBootTest(properties = {
     "spring.datasource.url=",
     "spring.jpa.database-platform=",
-    "spring.jpa.hibernate.ddl-auto=none"
+    "spring.jpa.hibernate.ddl-auto=none",
 })
 public class PubServiceCacheTest {
 
