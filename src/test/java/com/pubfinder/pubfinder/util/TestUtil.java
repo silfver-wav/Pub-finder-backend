@@ -11,14 +11,17 @@ import com.pubfinder.pubfinder.models.Review;
 import com.pubfinder.pubfinder.models.Token;
 import com.pubfinder.pubfinder.models.User;
 import com.pubfinder.pubfinder.models.Visited;
+import com.pubfinder.pubfinder.models.enums.LoudnessRating;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.models.enums.TokenType;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 public class TestUtil {
@@ -185,5 +188,22 @@ public class TestUtil {
         .pub(TestUtil.generateMockPub())
         .visitor(TestUtil.generateMockUser())
         .build();
+  }
+
+  public static List<Review> generateListOfMockReviews() {
+    Random rand = new Random();
+    Pub pub = generateMockPub();
+    List<Review> reviews = new ArrayList<>();
+    for (int i = 0; i < 20; i++) {
+      Review review = generateMockReview(generateMockUser(), pub);
+      review.setRating(rand.nextInt(5));
+      review.setService(rand.nextInt(5));
+      review.setToilets(rand.nextInt(5));
+      if (rand.nextBoolean()) {
+        review.setLoudness(LoudnessRating.values()[rand.nextInt(5)]);
+      }
+      reviews.add(review);
+    }
+    return reviews;
   }
 }

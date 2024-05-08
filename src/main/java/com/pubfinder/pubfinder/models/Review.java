@@ -54,21 +54,20 @@ public class Review {
   private String review;
 
   @Column(nullable = false)
-  @Min(value = 0, message = "Rating must be greater than or equal to 0")
+  @Min(value = 1, message = "Rating must be greater than or equal to 1")
   @Max(value = 5, message = "Rating must be less than or equal to 100")
-  private int rating;
+  private Integer rating;
 
-  @Column
-  @Min(value = 0, message = "Rating must be greater than or equal to 0")
+  @Column(columnDefinition = "integer default 0")
+  @Min(value = 1, message = "Rating must be greater than or equal to 1")
   @Max(value = 5, message = "Rating must be less than or equal to 100")
   private int toilets;
 
-  @Column
   @Enumerated(EnumType.ORDINAL)
   private LoudnessRating loudness;
 
-  @Column
-  @Min(value = 0, message = "Rating must be greater than or equal to 0")
+  @Column(columnDefinition = "integer default 0")
+  @Min(value = 1, message = "Rating must be greater than or equal to 1")
   @Max(value = 5, message = "Rating must be less than or equal to 100")
   private int service;
 }

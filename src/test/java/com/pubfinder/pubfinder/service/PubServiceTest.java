@@ -1,6 +1,7 @@
 package com.pubfinder.pubfinder.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -149,6 +150,19 @@ public class PubServiceTest {
   @Test
   public void deletePubTest_BAD_REQUEST() {
     assertThrows(BadRequestException.class, () -> pubsService.delete(null));
+  }
+
+  @Test
+  public void updateRatingsInPubTest() throws BadRequestException, ResourceNotFoundException {
+    when(pubRepository.findAllReviewsForPub(any())).thenReturn(
+        TestUtil.generateListOfMockReviews());
+    when(pubRepository.findById(pub.getId())).thenReturn(Optional.of(pub));
+
+    when(pubRepository.save(any())).thenReturn(pub);
+
+    PubDto result = pubsService.updateRatingsInPub(pub);
+    assertNotEquals(0, result.getRating());
+    verify(pubRepository, times(1)).save(any(Pub.class));
   }
 
   private final User user = TestUtil.generateMockUser();

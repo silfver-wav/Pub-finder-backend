@@ -6,6 +6,7 @@ import com.pubfinder.pubfinder.exception.ReviewAlreadyExistsException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.service.ReviewService;
 import java.util.UUID;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +31,15 @@ public class ReviewController {
   @PostMapping("/save/{pubId}/{username}")
   public ResponseEntity<ReviewDto> save(@RequestBody ReviewDto review,
       @PathVariable("pubId") UUID pudId, @PathVariable("username") String username)
-      throws ReviewAlreadyExistsException, ResourceNotFoundException {
+      throws ReviewAlreadyExistsException, ResourceNotFoundException, BadRequestException {
     ReviewDto reviewDto = reviewService.saveReview(Mapper.INSTANCE.dtoToEntity(review), pudId,
         username);
     return ResponseEntity.status(HttpStatus.CREATED).body(reviewDto);
   }
 
   @DeleteMapping("/delete/{id}")
-  public ResponseEntity<Void> delete(@PathVariable("id") UUID id) throws ResourceNotFoundException {
+  public ResponseEntity<Void> delete(@PathVariable("id") UUID id)
+      throws ResourceNotFoundException, BadRequestException {
     reviewService.deleteReview(id);
     return ResponseEntity.noContent().build();
   }

@@ -1,15 +1,17 @@
 package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.PubRepository;
-import com.pubfinder.pubfinder.db.VisitedRepository;
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.dto.ReviewDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.enums.LoudnessRating;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.ToIntFunction;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -136,5 +138,37 @@ public class PubsService {
         .stream()
         .map(Mapper.INSTANCE::entityToDto)
         .toList();
+  }
+
+  protected PubDto updateRatingsInPub(Pub pub) throws BadRequestException, ResourceNotFoundException {
+    List<ReviewDto> reviews = getReviews(pub.getId());
+
+    pub.setAvgRating(calculateAverageRating(reviews, ReviewDto::getRating));
+    pub.setAvgToiletRating(calculateAverageRating(reviews, ReviewDto::getToilets));
+    pub.setAvgServiceRating(calculateAverageRating(reviews, ReviewDto::getService));
+    pub.setAvgVolume(calculateAverageVolume(reviews));
+
+    return edit(pub);
+  }
+
+  private int calculateAverageRating(List<ReviewDto> reviews, ToIntFunction<ReviewDto> extractor) {
+    int[] ratings = reviews.stream()
+        .mapToInt(extractor)
+        .filter(rating -> rating != 0)
+        .toArray();
+
+    return calculateAverage(Arrays.stream(ratings).sum(), ratings.length);
+  }
+
+  private LoudnessRating calculateAverageVolume(List<ReviewDto> reviews) {
+    int[] loudness = reviews.stream().filter(r -> r.getLoudness() != null)
+        .mapToInt(r -> r.getLoudness().getOrdinal()).toArray();
+
+    int value = calculateAverage(Arrays.stream(loudness).sum(), loudness.length);
+    return LoudnessRating.values()[value];
+  }
+
+  private int calculateAverage(int sum, int length) {
+    return (int) Math.round((double) sum / length);
   }
 }

@@ -28,6 +28,10 @@ public class MapperImpl implements Mapper {
         .website(entity.getWebsite())
         .washroom(entity.getWashroom())
         .outDoorSeating(entity.getOutDoorSeating())
+        .rating(entity.getAvgRating())
+        .loudnessRating(entity.getAvgVolume())
+        .serviceRating(entity.getAvgServiceRating())
+        .toiletRating(entity.getAvgToiletRating())
         .build();
   }
 

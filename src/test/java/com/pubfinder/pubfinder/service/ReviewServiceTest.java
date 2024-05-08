@@ -19,6 +19,7 @@ import com.pubfinder.pubfinder.models.User;
 import com.pubfinder.pubfinder.models.enums.LoudnessRating;
 import com.pubfinder.pubfinder.util.TestUtil;
 import java.util.Optional;
+import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,7 +44,8 @@ public class ReviewServiceTest {
   public PubsService pubsService;
 
   @Test
-  public void saveReviewTest() throws ResourceNotFoundException, ReviewAlreadyExistsException {
+  public void saveReviewTest()
+      throws ResourceNotFoundException, ReviewAlreadyExistsException, BadRequestException {
     User user = TestUtil.generateMockUser();
     Pub pub = TestUtil.generateMockPub();
     when(userService.getUser(any())).thenReturn(user);
@@ -51,6 +53,7 @@ public class ReviewServiceTest {
     when(reviewRepository.findByPubAndReviewer(pub, user)).thenReturn(Optional.empty());
     Review review = TestUtil.generateMockReview(user, pub);
     when(reviewRepository.save(any())).thenReturn(review);
+    when(pubsService.updateRatingsInPub(any())).thenReturn(TestUtil.generateMockPubDTO());
     ReviewDto result = reviewService.saveReview(review, pub.getId(), user.getUsername());
 
     assertEquals(result, Mapper.INSTANCE.entityToDto(review));
@@ -92,12 +95,13 @@ public class ReviewServiceTest {
 
 
   @Test
-  public void deleteReviewTest() throws ResourceNotFoundException {
+  public void deleteReviewTest() throws ResourceNotFoundException, BadRequestException {
     User user = TestUtil.generateMockUser();
     Pub pub = TestUtil.generateMockPub();
     Review review = TestUtil.generateMockReview(user, pub);
     when(reviewRepository.findById(any())).thenReturn(Optional.of(review));
     doNothing().when(reviewRepository).delete(review);
+    when(pubsService.updateRatingsInPub(any())).thenReturn(TestUtil.generateMockPubDTO());
 
     reviewService.deleteReview(review.getId());
     verify(reviewRepository, times(1)).delete(review);
@@ -127,7 +131,7 @@ public class ReviewServiceTest {
   }
 
   @Test
-  public void updateReviewTest_ReviewNotFound() throws ResourceNotFoundException {
+  public void updateReviewTest_ReviewNotFound() {
     User user = TestUtil.generateMockUser();
     Pub pub = TestUtil.generateMockPub();
     Review review = TestUtil.generateMockReview(user, pub);
