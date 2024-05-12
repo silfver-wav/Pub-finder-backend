@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.db.ReviewRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
-import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Pub.Pub;
 import com.pubfinder.pubfinder.models.Review;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.util.TestUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -93,10 +93,6 @@ public class PubRepositoryTest {
             .location("location")
             .description("description")
             .price("$")
-            .website("google.com")
-            .outDoorSeating(true)
-            .washroom(true)
-            .accessibility(TestUtil.generateMockAccessibility())
             .build()
     );
     Pub pub2 = pubRepository.save(
@@ -109,10 +105,6 @@ public class PubRepositoryTest {
             .location("location")
             .description("description")
             .price("$")
-            .website("google.com")
-            .outDoorSeating(true)
-            .washroom(true)
-            .accessibility(TestUtil.generateMockAccessibility())
             .build()
     );
     Pub pub3 = pubRepository.save(
@@ -125,10 +117,6 @@ public class PubRepositoryTest {
             .location("location")
             .description("description")
             .price("$")
-            .website("google.com")
-            .outDoorSeating(true)
-            .washroom(true)
-            .accessibility(TestUtil.generateMockAccessibility())
             .build()
     );
 
@@ -142,10 +130,6 @@ public class PubRepositoryTest {
             .location("location")
             .description("description")
             .price("$")
-            .website("google.com")
-            .outDoorSeating(true)
-            .washroom(true)
-            .accessibility(TestUtil.generateMockAccessibility())
             .build()
     );
     pubRepository.save(
@@ -158,10 +142,6 @@ public class PubRepositoryTest {
             .location("location")
             .description("description")
             .price("$")
-            .website("google.com")
-            .outDoorSeating(true)
-            .washroom(true)
-            .accessibility(TestUtil.generateMockAccessibility())
             .build()
     );
 

@@ -2,8 +2,8 @@ package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.VisitedRepository;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
-import com.pubfinder.pubfinder.models.Pub;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.Pub.Pub;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.models.Visited;
 import java.time.LocalDateTime;
 import java.util.Optional;

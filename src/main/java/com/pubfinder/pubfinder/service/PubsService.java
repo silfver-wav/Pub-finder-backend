@@ -5,7 +5,7 @@ import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.dto.ReviewDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
-import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Pub.Pub;
 import com.pubfinder.pubfinder.models.enums.Volume;
 import java.util.ArrayList;
 import java.util.Arrays;

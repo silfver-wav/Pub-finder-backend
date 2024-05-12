@@ -13,8 +13,8 @@ import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
-import com.pubfinder.pubfinder.models.Pub;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.Pub.Pub;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.util.TestUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,10 +107,6 @@ public class PubServiceTest {
         .location(pub.getLocation())
         .description(pub.getDescription())
         .price(pub.getPrice())
-        .website(pub.getWebsite())
-        .outDoorSeating(pub.getOutDoorSeating())
-        .washroom(pub.getWashroom())
-        .accessibility(pub.getAccessibility())
         .build();
 
     when(pubRepository.findById(pub.getId())).thenReturn(Optional.of(pub));
@@ -131,10 +127,6 @@ public class PubServiceTest {
         .location(pub.getLocation())
         .description(pub.getDescription())
         .price(pub.getPrice())
-        .website(pub.getWebsite())
-        .outDoorSeating(pub.getOutDoorSeating())
-        .washroom(pub.getWashroom())
-        .accessibility(pub.getAccessibility())
         .build();
     when(pubRepository.findById(pub.getId())).thenReturn(Optional.empty());
     assertThrows(BadRequestException.class, () -> pubsService.edit(updatedPub));

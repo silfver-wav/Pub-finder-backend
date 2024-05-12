@@ -1,4 +1,4 @@
-package com.pubfinder.pubfinder.models;
+package com.pubfinder.pubfinder.models.User;
 
 import com.pubfinder.pubfinder.models.enums.TokenType;
 import jakarta.persistence.Column;

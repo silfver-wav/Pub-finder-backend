@@ -7,9 +7,10 @@ import static com.pubfinder.pubfinder.applicationRunner.extractInfo.getWashroom;
 import static com.pubfinder.pubfinder.applicationRunner.extractTime.openingHours;
 
 import com.pubfinder.pubfinder.db.PubRepository;
-import com.pubfinder.pubfinder.models.Accessibility;
-import com.pubfinder.pubfinder.models.OpeningHours;
-import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Pub.Accessibility;
+import com.pubfinder.pubfinder.models.Pub.AdditionalInfo;
+import com.pubfinder.pubfinder.models.Pub.OpeningHours;
+import com.pubfinder.pubfinder.models.Pub.Pub;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -104,10 +105,14 @@ public class AddPubsToDatabase implements ApplicationRunner {
           .lat(geo.getDouble("lat"))
           .lng(geo.getDouble("lng"))
           .price(price)
-          .website(website)
-          .accessibility(accessibility)
-          .washroom(washroom)
-          .outDoorSeating(outDoorSeating)
+          .additionalInfo(
+              AdditionalInfo.builder()
+                  .website(website)
+                  .accessibility(accessibility)
+                  .washroom(washroom)
+                  .outDoorSeating(outDoorSeating)
+                  .build()
+          )
           .build();
       pubs.add(pub);
     }

@@ -1,4 +1,4 @@
-package com.pubfinder.pubfinder.models;
+package com.pubfinder.pubfinder.models.Pub;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;

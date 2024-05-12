@@ -1,4 +1,4 @@
-package com.pubfinder.pubfinder.models;
+package com.pubfinder.pubfinder.models.Pub;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

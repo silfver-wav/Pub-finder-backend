@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.mapper.Mapper;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.service.PubsService;
 import com.pubfinder.pubfinder.util.TestUtil;

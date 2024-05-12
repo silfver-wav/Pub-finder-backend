@@ -1,11 +1,13 @@
 package com.pubfinder.pubfinder.mapper;
 
+import com.pubfinder.pubfinder.dto.AdditionalInfoDto;
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.dto.ReviewDto;
 import com.pubfinder.pubfinder.dto.UserDto;
-import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Pub.AdditionalInfo;
+import com.pubfinder.pubfinder.models.Pub.Pub;
 import com.pubfinder.pubfinder.models.Review;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.models.enums.Role;
 
 public class MapperImpl implements Mapper {
@@ -23,11 +25,7 @@ public class MapperImpl implements Mapper {
         .openingHours(entity.getOpeningHours())
         .location(entity.getLocation())
         .description(entity.getDescription())
-        .accessibility(entity.getAccessibility())
-        .price(entity.getPrice())
-        .website(entity.getWebsite())
-        .washroom(entity.getWashroom())
-        .outDoorSeating(entity.getOutDoorSeating())
+        .additionalInfoDto(entityToDto(entity.getAdditionalInfo()))
         .rating(entity.getAvgRating())
         .volume(entity.getAvgVolume())
         .serviceRating(entity.getAvgServiceRating())
@@ -67,6 +65,16 @@ public class MapperImpl implements Mapper {
   }
 
   @Override
+  public AdditionalInfoDto entityToDto(AdditionalInfo additionalInfo) {
+    return AdditionalInfoDto.builder()
+        .website(additionalInfo.getWebsite())
+        .accessibility(additionalInfo.getAccessibility())
+        .washroom(additionalInfo.getWashroom())
+        .outDoorSeating(additionalInfo.getOutDoorSeating())
+        .build();
+  }
+
+  @Override
   public Pub dtoToEntity(PubDto dto) {
     if (dto == null) {
       return null;
@@ -79,11 +87,7 @@ public class MapperImpl implements Mapper {
         .openingHours(dto.getOpeningHours())
         .location(dto.getLocation())
         .description(dto.getDescription())
-        .accessibility(dto.getAccessibility())
-        .price(dto.getPrice())
-        .website(dto.getWebsite())
-        .washroom(dto.getWashroom())
-        .outDoorSeating(dto.getOutDoorSeating());
+        .additionalInfo(dtoToEntity(dto.getAdditionalInfoDto()));
 
     if (dto.getId() != null) {
       builder.id(dto.getId());
@@ -118,6 +122,16 @@ public class MapperImpl implements Mapper {
         .toilets(dto.getToilets())
         .volume(dto.getLoudness())
         .service(dto.getService())
+        .build();
+  }
+
+  @Override
+  public AdditionalInfo dtoToEntity(AdditionalInfoDto dto) {
+    return AdditionalInfo.builder()
+        .accessibility(dto.getAccessibility())
+        .website(dto.getWebsite())
+        .washroom(dto.getWashroom())
+        .outDoorSeating(dto.getOutDoorSeating())
         .build();
   }
 }

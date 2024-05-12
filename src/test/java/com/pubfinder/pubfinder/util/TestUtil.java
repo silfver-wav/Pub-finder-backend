@@ -4,12 +4,12 @@ import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.dto.ReviewDto;
 import com.pubfinder.pubfinder.dto.UserDto;
-import com.pubfinder.pubfinder.models.Accessibility;
-import com.pubfinder.pubfinder.models.OpeningHours;
-import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Pub.Accessibility;
+import com.pubfinder.pubfinder.models.Pub.OpeningHours;
+import com.pubfinder.pubfinder.models.Pub.Pub;
 import com.pubfinder.pubfinder.models.Review;
-import com.pubfinder.pubfinder.models.Token;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.User.Token;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.models.Visited;
 import com.pubfinder.pubfinder.models.enums.Volume;
 import com.pubfinder.pubfinder.models.enums.Role;
@@ -50,10 +50,6 @@ public class TestUtil {
         .location("location")
         .description("description")
         .price("$")
-        .website("google.com")
-        .outDoorSeating(true)
-        .washroom(true)
-        .accessibility(generateMockAccessibility())
         .build();
   }
 
@@ -66,10 +62,6 @@ public class TestUtil {
         .location("location")
         .description("description")
         .price("$")
-        .website("google.com")
-        .outDoorSeating(true)
-        .washroom(true)
-        .accessibility(generateMockAccessibility())
         .build();
   }
 

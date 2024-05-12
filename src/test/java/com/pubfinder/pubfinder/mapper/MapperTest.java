@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.dto.UserDto;
-import com.pubfinder.pubfinder.models.Pub;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.Pub.Pub;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,9 +57,7 @@ public class MapperTest {
     assertEquals(pubDTO.getLocation(), pub.getLocation());
     assertEquals(pubDTO.getDescription(), pub.getDescription());
     assertEquals(pubDTO.getPrice(), pub.getPrice());
-    assertEquals(pubDTO.getWashroom(), pub.getWashroom());
-    assertEquals(pubDTO.getAccessibility(), pub.getAccessibility());
-    assertEquals(pubDTO.getOutDoorSeating(), pub.getOutDoorSeating());
+    assertEquals(pubDTO.getAdditionalInfoDto(), pub.getAdditionalInfo());
   }
 
   private void checkUser(UserDto userDTO, User user) {

@@ -8,8 +8,8 @@ import static org.mockito.Mockito.when;
 
 import com.pubfinder.pubfinder.db.VisitedRepository;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
-import com.pubfinder.pubfinder.models.Pub;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.Pub.Pub;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.models.Visited;
 import com.pubfinder.pubfinder.util.TestUtil;
 import java.util.Optional;

@@ -1,5 +1,7 @@
 package com.pubfinder.pubfinder.models;
 
+import com.pubfinder.pubfinder.models.Pub.Pub;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.models.enums.Volume;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

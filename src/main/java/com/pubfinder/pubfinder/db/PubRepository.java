@@ -1,6 +1,6 @@
 package com.pubfinder.pubfinder.db;
 
-import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Pub.Pub;
 import com.pubfinder.pubfinder.models.Review;
 import java.util.List;
 import java.util.Optional;

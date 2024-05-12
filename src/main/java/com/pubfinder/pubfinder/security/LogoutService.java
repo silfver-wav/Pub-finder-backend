@@ -1,7 +1,7 @@
 package com.pubfinder.pubfinder.security;
 
 import com.pubfinder.pubfinder.db.TokenRepository;
-import com.pubfinder.pubfinder.models.Token;
+import com.pubfinder.pubfinder.models.User.Token;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

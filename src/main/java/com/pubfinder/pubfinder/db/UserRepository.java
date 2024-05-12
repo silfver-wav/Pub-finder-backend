@@ -1,7 +1,7 @@
 package com.pubfinder.pubfinder.db;
 
 import com.pubfinder.pubfinder.models.Review;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.models.Visited;
 import java.util.List;
 import java.util.Optional;
