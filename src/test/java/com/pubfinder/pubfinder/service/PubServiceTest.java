@@ -10,9 +10,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.pubfinder.pubfinder.db.PubRepository;
+import com.pubfinder.pubfinder.dto.AdditionalInfoDto;
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
+import com.pubfinder.pubfinder.models.Pub.AdditionalInfo;
 import com.pubfinder.pubfinder.models.Pub.Pub;
 import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.util.TestUtil;
@@ -155,6 +157,30 @@ public class PubServiceTest {
     PubDto result = pubService.updateRatingsInPub(pub);
     assertNotEquals(0, result.getRating());
     verify(pubRepository, times(1)).save(any(Pub.class));
+  }
+
+  @Test
+  public void getAdditionalInfo() throws ResourceNotFoundException {
+    AdditionalInfo info = TestUtil.generateMockAdditionalInfo();
+
+    when(pubRepository.findAdditionalInfoForPub(any())).thenReturn(
+        Optional.ofNullable(info));
+
+    AdditionalInfoDto foundInfo = pubService.getAdditionalInfo(UUID.randomUUID());
+
+    assert info != null;
+    assertEquals(foundInfo.getWebsite(), info.getWebsite());
+    assertEquals(foundInfo.getAccessibility(), info.getAccessibility());
+    assertEquals(foundInfo.getWashroom(), info.getWashroom());
+    assertEquals(foundInfo.getOutDoorSeating(), info.getOutDoorSeating());
+  }
+
+  @Test
+  public void getAdditionalInfo_NOT_FOUND() {
+    UUID id = UUID.randomUUID();
+    when(pubRepository.findAdditionalInfoForPub(any())).thenReturn(Optional.empty());
+    assertThrows(ResourceNotFoundException.class, () -> pubService.getAdditionalInfo(id));
+    verify(pubRepository, times(1)).findAdditionalInfoForPub(id);
   }
 
   private final User user = TestUtil.generateMockUser();

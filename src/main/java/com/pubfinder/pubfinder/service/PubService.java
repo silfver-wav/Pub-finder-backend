@@ -1,6 +1,7 @@
 package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.PubRepository;
+import com.pubfinder.pubfinder.dto.AdditionalInfoDto;
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.dto.ReviewDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
@@ -140,7 +141,16 @@ public class PubService {
         .toList();
   }
 
-  protected PubDto updateRatingsInPub(Pub pub) throws BadRequestException, ResourceNotFoundException {
+  public AdditionalInfoDto getAdditionalInfo(UUID id) throws ResourceNotFoundException {
+    return pubRepository.findAdditionalInfoForPub(id)
+        .map(Mapper.INSTANCE::entityToDto)
+        .orElseThrow(
+        () -> new ResourceNotFoundException(
+            "Additional Info for pub with id " + id + " was not found"));
+  }
+
+  protected PubDto updateRatingsInPub(Pub pub)
+      throws BadRequestException, ResourceNotFoundException {
     List<ReviewDto> reviews = getReviews(pub.getId());
 
     pub.setAvgRating(calculateAverageRating(reviews, ReviewDto::getRating));

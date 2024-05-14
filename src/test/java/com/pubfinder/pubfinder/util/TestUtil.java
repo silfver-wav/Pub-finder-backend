@@ -1,5 +1,6 @@
 package com.pubfinder.pubfinder.util;
 
+import com.pubfinder.pubfinder.dto.AdditionalInfoDto;
 import com.pubfinder.pubfinder.dto.AuthenticationResponse;
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.dto.ReviewDto;
@@ -202,6 +203,21 @@ public class TestUtil {
 
   public static AdditionalInfo generateMockAdditionalInfo() {
     return AdditionalInfo.builder()
+        .outDoorSeating(true)
+        .washroom(true)
+        .website("website.com")
+        .accessibility(
+            Accessibility.builder()
+                .accessibleEntrance(true)
+                .accessibleParking(true)
+                .accessibleSeating(true)
+                .build()
+        )
+        .build();
+  }
+
+  public static AdditionalInfoDto generateMockAdditionalInfoDto() {
+    return AdditionalInfoDto.builder()
         .outDoorSeating(true)
         .washroom(true)
         .website("website.com")

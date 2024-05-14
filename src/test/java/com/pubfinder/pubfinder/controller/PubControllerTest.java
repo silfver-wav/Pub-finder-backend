@@ -152,5 +152,19 @@ public class PubControllerTest {
         .andExpect(status().isOk());
   }
 
+  @Test
+  public void getAdditionalInfoTest() throws Exception {
+    when(pubService.getAdditionalInfo(any())).thenReturn(TestUtil.generateMockAdditionalInfoDto());
+    mockMvc.perform(get("/pub/info/{id}", UUID.randomUUID()))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  public void getAdditionalInfoTest_NOT_FOUND() throws Exception {
+    when(pubService.getAdditionalInfo(any())).thenThrow(ResourceNotFoundException.class);
+    mockMvc.perform(get("/pub/info/{id}", UUID.randomUUID()))
+        .andExpect(status().isNotFound());
+  }
+
   PubDto pub = TestUtil.generateMockPubDTO();
 }
