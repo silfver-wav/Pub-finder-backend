@@ -5,6 +5,7 @@ import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.dto.ReviewDto;
 import com.pubfinder.pubfinder.dto.UserDto;
 import com.pubfinder.pubfinder.models.Pub.Accessibility;
+import com.pubfinder.pubfinder.models.Pub.AdditionalInfo;
 import com.pubfinder.pubfinder.models.Pub.OpeningHours;
 import com.pubfinder.pubfinder.models.Pub.Pub;
 import com.pubfinder.pubfinder.models.Review;
@@ -197,5 +198,20 @@ public class TestUtil {
       reviews.add(review);
     }
     return reviews;
+  }
+
+  public static AdditionalInfo generateMockAdditionalInfo() {
+    return AdditionalInfo.builder()
+        .outDoorSeating(true)
+        .washroom(true)
+        .website("website.com")
+        .accessibility(
+            Accessibility.builder()
+                .accessibleEntrance(true)
+                .accessibleParking(true)
+                .accessibleSeating(true)
+                .build()
+        )
+        .build();
   }
 }

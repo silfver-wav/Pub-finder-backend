@@ -3,10 +3,8 @@ package com.pubfinder.pubfinder.models.Pub;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -27,7 +25,8 @@ import org.hibernate.annotations.Type;
 public class AdditionalInfo {
 
   @Id
-  @Column(name = "pub_id")
+  @GeneratedValue
+  @Column(name = "id")
   private UUID id;
 
   @Column
@@ -40,8 +39,4 @@ public class AdditionalInfo {
   @Column
   private Boolean outDoorSeating;
 
-  @OneToOne
-  @MapsId
-  @JoinColumn(name = "pub_id")
-  private Pub pub;
 }

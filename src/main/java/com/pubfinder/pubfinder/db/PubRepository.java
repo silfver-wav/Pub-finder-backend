@@ -1,5 +1,6 @@
 package com.pubfinder.pubfinder.db;
 
+import com.pubfinder.pubfinder.models.Pub.AdditionalInfo;
 import com.pubfinder.pubfinder.models.Pub.Pub;
 import com.pubfinder.pubfinder.models.Review;
 import java.util.List;
@@ -27,4 +28,8 @@ public interface PubRepository extends JpaRepository<Pub, UUID> {
 
   @Query("SELECT u.reviews FROM Pub u WHERE u.id = :id")
   List<Review> findAllReviewsForPub(@Param("id") UUID id);
+
+  @Query("SELECT u.additionalInfo FROM Pub u WHERE u.id = :id")
+  Optional<AdditionalInfo> findAdditionalInfoForPub(UUID id);
+
 }

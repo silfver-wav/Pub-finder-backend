@@ -1,0 +1,3 @@
+lägg till test för additonal info
+lägg till endpoint för additinal info
+gör en cloud database i amazon

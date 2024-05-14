@@ -1,11 +1,13 @@
 package com.pubfinder.pubfinder.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.db.ReviewRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
+import com.pubfinder.pubfinder.models.Pub.AdditionalInfo;
 import com.pubfinder.pubfinder.models.Pub.Pub;
 import com.pubfinder.pubfinder.models.Review;
 import com.pubfinder.pubfinder.models.User.User;
@@ -49,6 +51,10 @@ public class PubRepositoryTest {
     assertEquals(savedPub.getOpeningHours(), foundPub.get().getOpeningHours());
     assertEquals(savedPub.getLocation(), foundPub.get().getLocation());
     assertEquals(savedPub.getDescription(), foundPub.get().getDescription());
+
+    assertNull(foundPub.get().getAdditionalInfo());
+    assertNull(foundPub.get().getReviews());
+    assertNull(foundPub.get().getVisitors());
   }
 
   @Test
@@ -67,10 +73,16 @@ public class PubRepositoryTest {
 
   @Test
   public void deletePubTest() {
-    Pub savedPub = pubRepository.save(TestUtil.generateMockPub());
+    Pub pub = TestUtil.generateMockPub();
+    pub.setAdditionalInfo(TestUtil.generateMockAdditionalInfo());
+    Pub savedPub = pubRepository.save(pub);
     pubRepository.delete(savedPub);
-    Optional<Pub> pub = pubRepository.findById(savedPub.getId());
-    assertTrue(pub.isEmpty());
+
+    Optional<Pub> foundPub = pubRepository.findById(savedPub.getId());
+    assertTrue(foundPub.isEmpty());
+
+    Optional<AdditionalInfo> foundInfo = pubRepository.findAdditionalInfoForPub(savedPub.getId());
+    assertTrue(foundInfo.isEmpty());
   }
 
   @Test
@@ -200,5 +212,20 @@ public class PubRepositoryTest {
 
     List<Review> reviews2 = pubRepository.findAllReviewsForPub(pub.getId());
     assertEquals(1, reviews2.size());
+  }
+
+  @Test
+  public void getAdditionalInfo() {
+    AdditionalInfo info = TestUtil.generateMockAdditionalInfo();
+    Pub pub = TestUtil.generateMockPub();
+    pub.setAdditionalInfo(info);
+    Pub savedPub = pubRepository.save(pub);
+
+    Optional<AdditionalInfo> foundInfo = pubRepository.findAdditionalInfoForPub(savedPub.getId());
+    assertTrue(foundInfo.isPresent());
+    assertEquals(info.getAccessibility(), foundInfo.get().getAccessibility());
+    assertEquals(info.getWebsite(), foundInfo.get().getWebsite());
+    assertEquals(info.getWashroom(), foundInfo.get().getWashroom());
+    assertEquals(info.getOutDoorSeating(), foundInfo.get().getOutDoorSeating());
   }
 }

@@ -10,9 +10,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.DayOfWeek;
@@ -75,8 +75,8 @@ public class Pub implements Serializable {
   @OneToMany(mappedBy = "pub", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
   private Set<Review> reviews;
 
-  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @PrimaryKeyJoinColumn
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "info_id")
   private AdditionalInfo additionalInfo;
 
 }
