@@ -37,14 +37,14 @@ public class VisitedServiceTest {
   private UserService userService;
 
   @MockBean
-  private PubsService pubsService;
+  private PubService pubService;
 
   @Test
   public void saveVisitTest() throws ResourceNotFoundException {
     User user = TestUtil.generateMockUser();
     Pub pub = TestUtil.generateMockPub();
     when(userService.getUser(any())).thenReturn(user);
-    when(pubsService.getPub(any())).thenReturn(pub);
+    when(pubService.getPub(any())).thenReturn(pub);
     Visited visited = TestUtil.generateMockVisited();
 
     when(visitedRepository.findByPubAndVisitor(pub, user)).thenReturn(Optional.of(visited));
@@ -69,7 +69,7 @@ public class VisitedServiceTest {
     User user = TestUtil.generateMockUser();
     Pub pub = TestUtil.generateMockPub();
     when(userService.getUser(any())).thenReturn(user);
-    when(pubsService.getPub(any())).thenThrow(ResourceNotFoundException.class);
+    when(pubService.getPub(any())).thenThrow(ResourceNotFoundException.class);
     assertThrows(ResourceNotFoundException.class,
         () -> visitedService.saveVisit(pub.getId(), user.getUsername()));
   }

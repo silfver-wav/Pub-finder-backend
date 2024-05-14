@@ -9,7 +9,7 @@ import com.pubfinder.pubfinder.db.PubRepository;
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.models.Pub.Pub;
-import com.pubfinder.pubfinder.service.PubsService;
+import com.pubfinder.pubfinder.service.PubService;
 import com.pubfinder.pubfinder.util.TestUtil;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +29,7 @@ import org.springframework.cache.CacheManager;
 public class PubServiceCacheTest {
 
   @Autowired
-  private PubsService pubsService;
+  private PubService pubService;
   @MockBean
   private PubRepository pubRepository;
   @Autowired
@@ -45,8 +45,8 @@ public class PubServiceCacheTest {
     when(pubRepository.findPubsWithInRadius(40.712811, 74.006011, radius)).thenReturn(
         TestUtil.generateListOfMockPubs());
 
-    List<PubDto> response1 = pubsService.getPubs(40.712810, 74.006010, radius);
-    List<PubDto> response2 = pubsService.getPubs(40.712811, 74.006011, radius);
+    List<PubDto> response1 = pubService.getPubs(40.712810, 74.006010, radius);
+    List<PubDto> response2 = pubService.getPubs(40.712811, 74.006011, radius);
 
     assertEquals(response1, response2);
 
@@ -63,8 +63,8 @@ public class PubServiceCacheTest {
     when(pubRepository.findPubsWithInRadius(40.712811, 74.006011, radius)).thenReturn(
         TestUtil.generateListOfMockPubs());
 
-    List<PubDto> response1 = pubsService.getPubs(40.712810, 74.006010, radius);
-    List<PubDto> response2 = pubsService.getPubs(40.712811, 74.006011, radius);
+    List<PubDto> response1 = pubService.getPubs(40.712810, 74.006010, radius);
+    List<PubDto> response2 = pubService.getPubs(40.712811, 74.006011, radius);
 
     verify(pubRepository, times(1)).findPubsWithInRadius(40.712810, 74.006010, radius);
     verify(pubRepository, times(1)).findPubsWithInRadius(40.712811, 74.006011, radius);
@@ -76,8 +76,8 @@ public class PubServiceCacheTest {
 
     when(pubRepository.findById(pub.getId())).thenReturn(Optional.of(pub));
 
-    Pub result1 = pubsService.getPub(pub.getId());
-    Pub result2 = pubsService.getPub(pub.getId());
+    Pub result1 = pubService.getPub(pub.getId());
+    Pub result2 = pubService.getPub(pub.getId());
 
     assertEquals(result1, result2);
 
@@ -93,8 +93,8 @@ public class PubServiceCacheTest {
 
     when(pubRepository.findPubsByNameContaining("The")).thenReturn(dbRs);
 
-    List<PubDto> result1 = pubsService.searchPubsByTerm("The");
-    List<PubDto> result2 = pubsService.searchPubsByTerm("The");
+    List<PubDto> result1 = pubService.searchPubsByTerm("The");
+    List<PubDto> result2 = pubService.searchPubsByTerm("The");
 
     assertEquals(result1, result2);
 
@@ -110,8 +110,8 @@ public class PubServiceCacheTest {
 
     when(pubRepository.findPubsByNameContaining("T")).thenReturn(dbRs);
 
-    List<PubDto> result1 = pubsService.searchPubsByTerm("T");
-    List<PubDto> result2 = pubsService.searchPubsByTerm("T");
+    List<PubDto> result1 = pubService.searchPubsByTerm("T");
+    List<PubDto> result2 = pubService.searchPubsByTerm("T");
 
     assertEquals(result1, result2);
 
@@ -125,8 +125,8 @@ public class PubServiceCacheTest {
 
     when(pubRepository.findPubsByNameContaining("The Big Ben ")).thenReturn(dbRs);
 
-    List<PubDto> result1 = pubsService.searchPubsByTerm("The Big Ben ");
-    List<PubDto> result2 = pubsService.searchPubsByTerm("The Big Ben ");
+    List<PubDto> result1 = pubService.searchPubsByTerm("The Big Ben ");
+    List<PubDto> result2 = pubService.searchPubsByTerm("The Big Ben ");
 
     assertEquals(result1, result2);
 

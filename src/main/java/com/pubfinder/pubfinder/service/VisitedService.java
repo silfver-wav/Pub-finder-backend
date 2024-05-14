@@ -24,7 +24,7 @@ public class VisitedService {
   private UserService userService;
 
   @Autowired
-  private PubsService pubsService;
+  private PubService pubService;
 
   /**
    * Save visit.
@@ -35,7 +35,7 @@ public class VisitedService {
    */
   public void saveVisit(UUID pubId, String username) throws ResourceNotFoundException {
     User user = userService.getUser(username);
-    Pub pub = pubsService.getPub(pubId);
+    Pub pub = pubService.getPub(pubId);
 
     Optional<Visited> uvp = visitedRepository.findByPubAndVisitor(pub, user);
     Visited visited;

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
  * The type Pubs service.
  */
 @Service
-public class PubsService {
+public class PubService {
 
   @Autowired
   private PubRepository pubRepository;

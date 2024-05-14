@@ -12,7 +12,7 @@ import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.models.enums.Role;
-import com.pubfinder.pubfinder.service.PubsService;
+import com.pubfinder.pubfinder.service.PubService;
 import com.pubfinder.pubfinder.util.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ public class PubsSecurityTest {
   private ObjectMapper objectMapper;
 
   @MockBean
-  private PubsService pubsService;
+  private PubService pubService;
 
   @Autowired
   private AuthenticationService authenticationService;
@@ -62,7 +62,7 @@ public class PubsSecurityTest {
     String jwtToken = authenticationService.generateToken(user);
 
     when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-    when(pubsService.save(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+    when(pubService.save(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
     mockMvc.perform(post("/pub/createPub")
             .contentType(MediaType.APPLICATION_JSON)
@@ -78,7 +78,7 @@ public class PubsSecurityTest {
     String jwtToken = authenticationService.generateToken(user);
 
     when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-    when(pubsService.save(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+    when(pubService.save(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
     mockMvc.perform(post("/pub/createPub")
             .contentType(MediaType.APPLICATION_JSON)
@@ -100,7 +100,7 @@ public class PubsSecurityTest {
     String jwtToken = authenticationService.generateToken(user);
 
     when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-    when(pubsService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+    when(pubService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
     mockMvc.perform(put("/pub/editPub")
             .contentType(MediaType.APPLICATION_JSON)
@@ -116,7 +116,7 @@ public class PubsSecurityTest {
     String jwtToken = authenticationService.generateToken(user);
 
     when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(user);
-    when(pubsService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+    when(pubService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
     mockMvc.perform(put("/pub/editPub")
             .contentType(MediaType.APPLICATION_JSON)

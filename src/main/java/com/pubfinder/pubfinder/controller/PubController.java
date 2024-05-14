@@ -5,7 +5,7 @@ import com.pubfinder.pubfinder.dto.ReviewDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
 import com.pubfinder.pubfinder.models.Pub.Pub;
-import com.pubfinder.pubfinder.service.PubsService;
+import com.pubfinder.pubfinder.service.PubService;
 import java.util.List;
 import java.util.UUID;
 import org.apache.coyote.BadRequestException;
@@ -27,49 +27,49 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/pub")
-public class PubsController {
+public class PubController {
 
   @Autowired
-  private PubsService pubsService;
+  private PubService pubService;
 
   @GetMapping(value = "/getPubs/{lat}/{lng}/{radius}", produces = "application/json;charset=UTF-8")
   public ResponseEntity<List<PubDto>> getPubs(@PathVariable("lat") Double lat,
       @PathVariable("lng") Double lng, @PathVariable("radius") Double radius) {
-    return ResponseEntity.ok().body(pubsService.getPubs(lat, lng, radius));
+    return ResponseEntity.ok().body(pubService.getPubs(lat, lng, radius));
   }
 
   @GetMapping("/getPub/{id}")
   public ResponseEntity<PubDto> getPub(@PathVariable("id") UUID id)
       throws ResourceNotFoundException {
-    Pub pub = pubsService.getPub(id);
+    Pub pub = pubService.getPub(id);
     return ResponseEntity.ok(Mapper.INSTANCE.entityToDto(pub));
   }
 
   @GetMapping("/searchPubs/{term}")
   public ResponseEntity<List<PubDto>> searchForPubs(@PathVariable("term") String term) {
-    return ResponseEntity.ok(pubsService.searchPubsByTerm(term));
+    return ResponseEntity.ok(pubService.searchPubsByTerm(term));
   }
 
   @PostMapping("/createPub")
   public ResponseEntity<PubDto> save(@RequestBody PubDto pub) throws BadRequestException {
     return ResponseEntity.status(HttpStatus.CREATED)
-        .body(pubsService.save(Mapper.INSTANCE.dtoToEntity(pub)));
+        .body(pubService.save(Mapper.INSTANCE.dtoToEntity(pub)));
   }
 
   @PutMapping("/editPub")
   public ResponseEntity<PubDto> edit(@RequestBody PubDto pub)
       throws ResourceNotFoundException, BadRequestException {
-    return ResponseEntity.ok().body(pubsService.edit(Mapper.INSTANCE.dtoToEntity(pub)));
+    return ResponseEntity.ok().body(pubService.edit(Mapper.INSTANCE.dtoToEntity(pub)));
   }
 
   @DeleteMapping("/deletePub")
   public ResponseEntity<Void> delete(@RequestBody PubDto pub) throws BadRequestException {
-    pubsService.delete(Mapper.INSTANCE.dtoToEntity(pub));
+    pubService.delete(Mapper.INSTANCE.dtoToEntity(pub));
     return ResponseEntity.noContent().build();
   }
 
   @GetMapping("/reviews/{id}")
   public ResponseEntity<List<ReviewDto>> getReviews(@PathVariable("id") UUID id) {
-    return ResponseEntity.ok(pubsService.getReviews(id));
+    return ResponseEntity.ok(pubService.getReviews(id));
   }
 }

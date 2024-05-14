@@ -41,7 +41,7 @@ public class ReviewServiceTest {
   @MockBean
   public UserService userService;
   @MockBean
-  public PubsService pubsService;
+  public PubService pubService;
 
   @Test
   public void saveReviewTest()
@@ -49,11 +49,11 @@ public class ReviewServiceTest {
     User user = TestUtil.generateMockUser();
     Pub pub = TestUtil.generateMockPub();
     when(userService.getUser(any())).thenReturn(user);
-    when(pubsService.getPub(any())).thenReturn(pub);
+    when(pubService.getPub(any())).thenReturn(pub);
     when(reviewRepository.findByPubAndReviewer(pub, user)).thenReturn(Optional.empty());
     Review review = TestUtil.generateMockReview(user, pub);
     when(reviewRepository.save(any())).thenReturn(review);
-    when(pubsService.updateRatingsInPub(any())).thenReturn(TestUtil.generateMockPubDTO());
+    when(pubService.updateRatingsInPub(any())).thenReturn(TestUtil.generateMockPubDTO());
     ReviewDto result = reviewService.saveReview(review, pub.getId(), user.getUsername());
 
     assertEquals(result, Mapper.INSTANCE.entityToDto(review));
@@ -75,7 +75,7 @@ public class ReviewServiceTest {
     User user = TestUtil.generateMockUser();
     Pub pub = TestUtil.generateMockPub();
     when(userService.getUser(any())).thenReturn(user);
-    when(pubsService.getPub(any())).thenThrow(ResourceNotFoundException.class);
+    when(pubService.getPub(any())).thenThrow(ResourceNotFoundException.class);
     Review review = TestUtil.generateMockReview(user, pub);
     assertThrows(ResourceNotFoundException.class,
         () -> reviewService.saveReview(review, pub.getId(), user.getUsername()));
@@ -86,7 +86,7 @@ public class ReviewServiceTest {
     User user = TestUtil.generateMockUser();
     Pub pub = TestUtil.generateMockPub();
     when(userService.getUser(any())).thenReturn(user);
-    when(pubsService.getPub(any())).thenReturn(pub);
+    when(pubService.getPub(any())).thenReturn(pub);
     Review review = TestUtil.generateMockReview(user, pub);
     when(reviewRepository.findByPubAndReviewer(pub, user)).thenReturn(Optional.of(review));
     assertThrows(ReviewAlreadyExistsException.class,
@@ -101,7 +101,7 @@ public class ReviewServiceTest {
     Review review = TestUtil.generateMockReview(user, pub);
     when(reviewRepository.findById(any())).thenReturn(Optional.of(review));
     doNothing().when(reviewRepository).delete(review);
-    when(pubsService.updateRatingsInPub(any())).thenReturn(TestUtil.generateMockPubDTO());
+    when(pubService.updateRatingsInPub(any())).thenReturn(TestUtil.generateMockPubDTO());
 
     reviewService.deleteReview(review.getId());
     verify(reviewRepository, times(1)).delete(review);
