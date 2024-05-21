@@ -1,6 +1,6 @@
 package com.pubfinder.pubfinder.db;
 
-import com.pubfinder.pubfinder.models.Token;
+import com.pubfinder.pubfinder.models.User.Token;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

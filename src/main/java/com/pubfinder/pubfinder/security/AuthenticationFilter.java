@@ -36,7 +36,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       "/user/login",
       "/user/refreshToken",
       "/pub/searchPubs/**",
-      "/pub/getPub/**"
+      "/pub/getPub/**",
+      "pub/info/**",
   };
 
   @Override

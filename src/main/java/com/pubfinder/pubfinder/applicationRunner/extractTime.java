@@ -1,6 +1,6 @@
 package com.pubfinder.pubfinder.applicationRunner;
 
-import com.pubfinder.pubfinder.models.OpeningHours;
+import com.pubfinder.pubfinder.models.Pub.OpeningHours;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;

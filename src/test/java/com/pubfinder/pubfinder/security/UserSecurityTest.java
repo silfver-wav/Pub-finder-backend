@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pubfinder.pubfinder.dto.UserDto;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.models.enums.Role;
 import com.pubfinder.pubfinder.service.UserService;
 import com.pubfinder.pubfinder.util.TestUtil;

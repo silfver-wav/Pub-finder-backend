@@ -16,8 +16,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
-import com.pubfinder.pubfinder.models.Pub;
-import com.pubfinder.pubfinder.service.PubsService;
+import com.pubfinder.pubfinder.models.Pub.Pub;
+import com.pubfinder.pubfinder.service.PubService;
 import com.pubfinder.pubfinder.util.TestUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +33,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 
-@WebMvcTest(value = PubsController.class)
+@WebMvcTest(value = PubController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class PubsControllerTest {
+public class PubControllerTest {
 
   @MockBean
-  private PubsService pubsService;
+  private PubService pubService;
 
   @Autowired
   private MockMvc mockMvc;
@@ -59,7 +59,7 @@ public class PubsControllerTest {
             .build()
 
     ));
-    when(pubsService.getPubs(1.0, 1.0, 1.0)).thenReturn(pubs);
+    when(pubService.getPubs(1.0, 1.0, 1.0)).thenReturn(pubs);
 
     mockMvc.perform(get("/pub/getPubs/{lat}/{lng}/{radius}", 1.0, 1.0, 1.0))
         .andExpect(status().isOk())
@@ -70,7 +70,7 @@ public class PubsControllerTest {
   @Test
   public void getPubByIdTest() throws Exception {
     Pub pub = TestUtil.generateMockPub();
-    when(pubsService.getPub(any())).thenReturn(pub);
+    when(pubService.getPub(any())).thenReturn(pub);
 
     mockMvc.perform(get("/pub/getPub/{id}", UUID.randomUUID()))
         .andExpect(status().isOk());
@@ -80,14 +80,14 @@ public class PubsControllerTest {
   @Test
   public void searchForPubsTest() throws Exception {
     List<PubDto> pubs = new ArrayList<>(List.of(pub));
-    when(pubsService.searchPubsByTerm("name")).thenReturn(pubs);
+    when(pubService.searchPubsByTerm("name")).thenReturn(pubs);
     mockMvc.perform(get("/pub/searchPubs/{term}", "name")).andExpect(status().isOk())
         .andExpect(content().json(objectMapper.writeValueAsString(pubs)));
   }
 
   @Test
   public void savePubTest() throws Exception {
-    when(pubsService.save(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+    when(pubService.save(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
     mockMvc.perform(post("/pub/createPub")
             .contentType(MediaType.APPLICATION_JSON)
@@ -97,7 +97,7 @@ public class PubsControllerTest {
 
   @Test
   public void savePubTest_BAD_REQUEST() throws Exception {
-    when(pubsService.save(null)).thenThrow(BadRequestException.class);
+    when(pubService.save(null)).thenThrow(BadRequestException.class);
 
     mockMvc.perform(post("/pub/createPub").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest()).andDo(print());
@@ -105,7 +105,7 @@ public class PubsControllerTest {
 
   @Test
   public void editPubTest() throws Exception {
-    when(pubsService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
+    when(pubService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenReturn(pub);
 
     mockMvc.perform(put("/pub/editPub")
             .contentType(MediaType.APPLICATION_JSON)
@@ -115,7 +115,7 @@ public class PubsControllerTest {
 
   @Test
   public void editPubTest_BAD_REQUEST() throws Exception {
-    when(pubsService.edit(null)).thenThrow(BadRequestException.class);
+    when(pubService.edit(null)).thenThrow(BadRequestException.class);
 
     mockMvc.perform(put("/pub/editPub").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest()).andDo(print());
@@ -123,7 +123,7 @@ public class PubsControllerTest {
 
   @Test
   public void editPubTest_NOT_FOUND() throws Exception {
-    when(pubsService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenThrow(
+    when(pubService.edit(Mapper.INSTANCE.dtoToEntity(pub))).thenThrow(
         ResourceNotFoundException.class);
 
     mockMvc.perform(put("/pub/editPub").contentType(MediaType.APPLICATION_JSON)
@@ -140,16 +140,30 @@ public class PubsControllerTest {
 
   @Test
   public void deletePubTest_BAD_REQUEST() throws Exception {
-    doThrow(BadRequestException.class).when(pubsService).delete(null);
+    doThrow(BadRequestException.class).when(pubService).delete(null);
     mockMvc.perform(delete("/pub/deletePub").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest()).andDo(print());
   }
 
   @Test
   public void getReviewsTest() throws Exception {
-    when(pubsService.getReviews(any())).thenReturn(List.of(TestUtil.generateMockReviewDTO()));
+    when(pubService.getReviews(any())).thenReturn(List.of(TestUtil.generateMockReviewDTO()));
     mockMvc.perform(get("/pub/reviews/{id}", UUID.randomUUID()))
         .andExpect(status().isOk());
+  }
+
+  @Test
+  public void getAdditionalInfoTest() throws Exception {
+    when(pubService.getAdditionalInfo(any())).thenReturn(TestUtil.generateMockAdditionalInfoDto());
+    mockMvc.perform(get("/pub/info/{id}", UUID.randomUUID()))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  public void getAdditionalInfoTest_NOT_FOUND() throws Exception {
+    when(pubService.getAdditionalInfo(any())).thenThrow(ResourceNotFoundException.class);
+    mockMvc.perform(get("/pub/info/{id}", UUID.randomUUID()))
+        .andExpect(status().isNotFound());
   }
 
   PubDto pub = TestUtil.generateMockPubDTO();

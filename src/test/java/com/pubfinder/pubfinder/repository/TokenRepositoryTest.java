@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.pubfinder.pubfinder.db.TokenRepository;
 import com.pubfinder.pubfinder.db.UserRepository;
-import com.pubfinder.pubfinder.models.Token;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.User.Token;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.util.TestUtil;
 import java.util.List;
 import java.util.Optional;

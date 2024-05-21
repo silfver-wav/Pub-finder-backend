@@ -1,5 +1,7 @@
-package com.pubfinder.pubfinder.models;
+package com.pubfinder.pubfinder.models.User;
 
+import com.pubfinder.pubfinder.models.Review;
+import com.pubfinder.pubfinder.models.Visited;
 import com.pubfinder.pubfinder.models.enums.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

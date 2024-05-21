@@ -1,11 +1,12 @@
 package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.PubRepository;
+import com.pubfinder.pubfinder.dto.AdditionalInfoDto;
 import com.pubfinder.pubfinder.dto.PubDto;
 import com.pubfinder.pubfinder.dto.ReviewDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.mapper.Mapper;
-import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Pub.Pub;
 import com.pubfinder.pubfinder.models.enums.Volume;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
  * The type Pubs service.
  */
 @Service
-public class PubsService {
+public class PubService {
 
   @Autowired
   private PubRepository pubRepository;
@@ -140,7 +141,16 @@ public class PubsService {
         .toList();
   }
 
-  protected PubDto updateRatingsInPub(Pub pub) throws BadRequestException, ResourceNotFoundException {
+  public AdditionalInfoDto getAdditionalInfo(UUID id) throws ResourceNotFoundException {
+    return pubRepository.findAdditionalInfoForPub(id)
+        .map(Mapper.INSTANCE::entityToDto)
+        .orElseThrow(
+        () -> new ResourceNotFoundException(
+            "Additional Info for pub with id " + id + " was not found"));
+  }
+
+  protected PubDto updateRatingsInPub(Pub pub)
+      throws BadRequestException, ResourceNotFoundException {
     List<ReviewDto> reviews = getReviews(pub.getId());
 
     pub.setAvgRating(calculateAverageRating(reviews, ReviewDto::getRating));

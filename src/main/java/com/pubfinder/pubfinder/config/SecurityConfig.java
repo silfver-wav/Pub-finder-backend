@@ -48,6 +48,7 @@ public class SecurityConfig {
       "/pub/searchPubs/**",
       "/pub/getPub/**",
       "/pub/reviews/**",
+      "pub/info/**",
   };
 
 

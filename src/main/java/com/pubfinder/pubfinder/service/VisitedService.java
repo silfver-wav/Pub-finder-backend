@@ -2,8 +2,8 @@ package com.pubfinder.pubfinder.service;
 
 import com.pubfinder.pubfinder.db.VisitedRepository;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
-import com.pubfinder.pubfinder.models.Pub;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.Pub.Pub;
+import com.pubfinder.pubfinder.models.User.User;
 import com.pubfinder.pubfinder.models.Visited;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -24,7 +24,7 @@ public class VisitedService {
   private UserService userService;
 
   @Autowired
-  private PubsService pubsService;
+  private PubService pubService;
 
   /**
    * Save visit.
@@ -35,7 +35,7 @@ public class VisitedService {
    */
   public void saveVisit(UUID pubId, String username) throws ResourceNotFoundException {
     User user = userService.getUser(username);
-    Pub pub = pubsService.getPub(pubId);
+    Pub pub = pubService.getPub(pubId);
 
     Optional<Visited> uvp = visitedRepository.findByPubAndVisitor(pub, user);
     Visited visited;

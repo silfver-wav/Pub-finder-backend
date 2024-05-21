@@ -1,5 +1,7 @@
-package com.pubfinder.pubfinder.models;
+package com.pubfinder.pubfinder.models.Pub;
 
+import com.pubfinder.pubfinder.models.Review;
+import com.pubfinder.pubfinder.models.Visited;
 import com.pubfinder.pubfinder.models.enums.Volume;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.CascadeType;
@@ -8,7 +10,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.DayOfWeek;
@@ -52,15 +56,18 @@ public class Pub implements Serializable {
   private String description;
   @Column
   private String price;
+
   @Column
-  private String website;
-  @Type(JsonType.class)
-  @Column(columnDefinition = "jsonb")
-  private Accessibility accessibility;
+  private int avgRating = 0;
+
   @Column
-  private Boolean washroom;
+  private int avgToiletRating = 0;
+
   @Column
-  private Boolean outDoorSeating;
+  private int avgServiceRating = 0;
+
+  @Column
+  private Volume avgVolume;
 
   @OneToMany(mappedBy = "pub", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
   private Set<Visited> visitors;
@@ -68,16 +75,8 @@ public class Pub implements Serializable {
   @OneToMany(mappedBy = "pub", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
   private Set<Review> reviews;
 
-  @Column
-  private int avgRating;
-
-  @Column
-  private int avgToiletRating;
-
-  @Column
-  private int avgServiceRating;
-
-  @Column
-  private Volume avgVolume;
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "info_id")
+  private AdditionalInfo additionalInfo;
 
 }

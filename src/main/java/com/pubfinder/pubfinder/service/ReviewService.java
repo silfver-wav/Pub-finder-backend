@@ -5,9 +5,9 @@ import com.pubfinder.pubfinder.dto.ReviewDto;
 import com.pubfinder.pubfinder.exception.ResourceNotFoundException;
 import com.pubfinder.pubfinder.exception.ReviewAlreadyExistsException;
 import com.pubfinder.pubfinder.mapper.Mapper;
-import com.pubfinder.pubfinder.models.Pub;
+import com.pubfinder.pubfinder.models.Pub.Pub;
 import com.pubfinder.pubfinder.models.Review;
-import com.pubfinder.pubfinder.models.User;
+import com.pubfinder.pubfinder.models.User.User;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.apache.coyote.BadRequestException;
@@ -27,7 +27,7 @@ public class ReviewService {
   private UserService userService;
 
   @Autowired
-  private PubsService pubsService;
+  private PubService pubService;
 
   /**
    * Saves review and updates pub ratings.
@@ -42,7 +42,7 @@ public class ReviewService {
   public ReviewDto saveReview(Review review, UUID pubId, String username)
       throws ResourceNotFoundException, ReviewAlreadyExistsException, BadRequestException {
     User user = userService.getUser(username);
-    Pub pub = pubsService.getPub(pubId);
+    Pub pub = pubService.getPub(pubId);
     if (reviewRepository.findByPubAndReviewer(pub, user).isPresent()) {
       throw new ReviewAlreadyExistsException(
           "User: " + username + " has already made a review on Pub: " + pubId);
@@ -53,7 +53,7 @@ public class ReviewService {
     review.setReviewDate(LocalDateTime.now());
     ReviewDto reviewDto = Mapper.INSTANCE.entityToDto(reviewRepository.save(review));
 
-    pubsService.updateRatingsInPub(pub);
+    pubService.updateRatingsInPub(pub);
 
     return reviewDto;
   }
@@ -69,7 +69,7 @@ public class ReviewService {
         .orElseThrow(() -> new ResourceNotFoundException("Review: " + id + " not found."));
     reviewRepository.delete(review);
 
-    pubsService.updateRatingsInPub(review.getPub());
+    pubService.updateRatingsInPub(review.getPub());
   }
 
   /**

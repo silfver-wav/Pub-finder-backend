@@ -1,6 +1,6 @@
 package com.pubfinder.pubfinder.applicationRunner;
 
-import com.pubfinder.pubfinder.models.Accessibility;
+import com.pubfinder.pubfinder.models.Pub.Accessibility;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
