@@ -43,6 +43,7 @@ dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
 	implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.3")
+	implementation("org.postgresql:postgresql:42.7.3")
 
 	testImplementation("org.testcontainers:postgresql:1.19.7")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0")

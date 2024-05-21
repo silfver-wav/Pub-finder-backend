@@ -58,13 +58,13 @@ public class Pub implements Serializable {
   private String price;
 
   @Column
-  private int avgRating;
+  private int avgRating = 0;
 
   @Column
-  private int avgToiletRating;
+  private int avgToiletRating = 0;
 
   @Column
-  private int avgServiceRating;
+  private int avgServiceRating = 0;
 
   @Column
   private Volume avgVolume;
