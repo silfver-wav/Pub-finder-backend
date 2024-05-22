@@ -2,11 +2,12 @@ spring:
   config:
     import:  optional:secrets.yml
   datasource:
-    username: admin
-    url: jdbc:postgresql://localhost:15432/pubdb?charSet=UTF-8
-    password: admin
+    url: ${DB_URL} # jdbc:postgresql://localhost:15432/pubdb?charSet=UTF-8
+    username: ${DB_USERNAME} # admin
+    password: ${DB_PWD} # admin
+    driver-class-name: org.postgresql.Driver
     tomcat:
-      connection-properties: useUnicode=true;characterEncoding=utf8
+       connection-properties: useUnicode=true;characterEncoding=utf8
     sql-script-encoding: 'UTF-8'
   jpa:
     properties:
@@ -51,10 +52,10 @@ bucket4j:
           refill-speed: interval
 security:
   api-header-name: "X-API-KEY"
-  api-key: ""
-  jwt-secret: ""
-  jwt-expiration-ms: ""
-  jwt-refresh-expiration-ms : ""
+  api-key: ${API_KEY}
+  jwt-secret: ${JWT_SECRET}
+  jwt-expiration-ms: ${JWT_EXPIRATION}
+  jwt-refresh-expiration-ms : ${JWT_REFRESHER_EXPIRATION}
 
 # server:
 #  port: 443

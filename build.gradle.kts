@@ -50,6 +50,8 @@ dependencies {
 
 	implementation("com.google.guava:guava:17.0")
 	implementation("org.json:json:20240303")
+
+	implementation("com.amazonaws.serverless:aws-serverless-java-container-springboot3:2.0.1")
 }
 
 tasks.withType<Test> {
